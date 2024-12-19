@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
+    [SerializeField] private PlayerInput inputActions;
     [SerializeField] private float speed;
     private Rigidbody rb;
     private Vector3 movement;
@@ -12,6 +13,7 @@ public class PlayerMovement : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody>();
+        inputActions.Player.Enable();
     }
 
     private void Update()
