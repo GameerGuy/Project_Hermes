@@ -15,9 +15,27 @@
                     "initialStateCheck": true
                 },
                 {
-                    "name": "New action1",
+                    "name": "Jump",
                     "type": "Button",
                     "id": "1d87177c-aafe-4e08-bd59-cc404403376e",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Sprint",
+                    "type": "Button",
+                    "id": "ea879630-351e-4559-a9a0-690587795e75",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Crouch",
+                    "type": "Button",
+                    "id": "2abb4841-b7da-4e3e-ac09-2f312f14eadc",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -27,12 +45,12 @@
             "bindings": [
                 {
                     "name": "",
-                    "id": "b77dcf5f-552e-4573-b5a9-2997006ab7a9",
-                    "path": "",
+                    "id": "21d59a4a-0caf-4f81-8d9f-b92460e26f7d",
+                    "path": "<Keyboard>/space",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
-                    "action": "New action1",
+                    "groups": ";Keyboard & Mouse",
+                    "action": "Jump",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -154,6 +172,28 @@
                     "processors": "",
                     "groups": ";Gamepad",
                     "action": "Movement",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "afa54923-fa26-49df-b9d1-bbc12bce250f",
+                    "path": "<Keyboard>/shift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard & Mouse",
+                    "action": "Sprint",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "955242fc-8350-4412-a395-cab2fadb4ffa",
+                    "path": "<Keyboard>/ctrl",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard & Mouse",
+                    "action": "Crouch",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
