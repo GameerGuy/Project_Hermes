@@ -9,10 +9,11 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float gravity;
     [SerializeField] private float runAcceleration;
     [SerializeField] private float maxRunSpeed;
+    [SerializeField] private float turnSpeed;
     private PlayerInput inputActions;
     private Rigidbody rb;
     private Collider _collider;
-    private Vector3 movement;
+    private Vector3 movementDir;
     private bool grounded;
 
     // Start is called before the first frame update
@@ -29,11 +30,12 @@ public class PlayerMovement : MonoBehaviour
     {
         IsGrounded();
         Vector2 move = inputActions.Player.Movement.ReadValue<Vector2>();
-        movement = new Vector3(move.x, 0, move.y);
+        movementDir = new Vector3(move.x, 0, move.y);
     }
 
     private void FixedUpdate()
-    {
+    {   
+        HandleRotation();
         HandleMovement();
         HandleGravity();
     }
@@ -60,6 +62,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void Jump(InputAction.CallbackContext context)
     {
+        print("jump");
         if (!grounded) return;
         float jumpForce = Mathf.Sqrt(2 * gravity * jumpHeight);
         rb.AddForce(Vector3.up * jumpForce, ForceMode.VelocityChange);
@@ -70,7 +73,16 @@ public class PlayerMovement : MonoBehaviour
     {
         float horizontalSpeed = Mathf.Sqrt(rb.velocity.x * rb.velocity.x + rb.velocity.z * rb.velocity.z);
         if (horizontalSpeed > maxRunSpeed) return;
-        rb.AddForce(movement * runAcceleration, ForceMode.Acceleration);
+
+        rb.AddForce(movementDir.magnitude * transform.forward * runAcceleration, ForceMode.Acceleration);
+    }
+
+    private void HandleRotation()
+    {
+        if (movementDir.magnitude < 1) return;
+
+        Quaternion toRotation = Quaternion.LookRotation(movementDir.normalized, Vector3.up);
+        transform.rotation = Quaternion.Lerp(transform.rotation, toRotation, turnSpeed * Time.deltaTime);
     }
 
     private void HandleGravity()
@@ -78,12 +90,12 @@ public class PlayerMovement : MonoBehaviour
         rb.AddForce(Vector3.down * gravity, ForceMode.Acceleration);
     }
 
-    private void IsGrounded() {
+    private bool IsGrounded() {
         const float OFFSET = 0.01f;
         float radius = _collider.bounds.extents.x - OFFSET;
         float maxDistance = (_collider.bounds.extents.y / 2) + (OFFSET * 10);
         grounded = Physics.SphereCast(_collider.bounds.center, radius, -transform.up, out RaycastHit hitInfo, maxDistance);
-        print(grounded);
+        return grounded;
     }
 
 }
