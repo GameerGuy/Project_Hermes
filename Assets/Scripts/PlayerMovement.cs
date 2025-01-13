@@ -6,29 +6,46 @@ using UnityEngine.InputSystem;
 public class PlayerMovement : MonoBehaviour
 {
     [SerializeField] private float jumpHeight;
-    [SerializeField] private float gravity;
+    [SerializeField] private float groundedGravity;
+    [SerializeField] private float airbourneGravity;
+    [SerializeField] private float fallingGravity;
     [SerializeField] private float runAcceleration;
     [SerializeField] private float maxRunSpeed;
     [SerializeField] private float turnSpeed;
     private PlayerInput inputActions;
-    private Rigidbody rb;
+    private Rigidbody _rigidbody;
     private Collider _collider;
     private Vector3 movementDir;
+    private float currentGravity;
     private bool grounded;
+    private bool falling;
 
     // Start is called before the first frame update
-    void Awake()
+    private void Awake()
     {
-        rb = GetComponent<Rigidbody>();
+        _rigidbody = GetComponent<Rigidbody>();
         _collider = GetComponent<Collider>();
         inputActions = new PlayerInput();
-        inputActions.Player.Enable();
-        inputActions.Player.Jump.performed += Jump;
+        inputActions.Player.Jump.started += OnJumpPressed;
+        inputActions.Player.Jump.canceled += OnJumpReleased;
+    }
+
+    private void Start()
+    {
+        currentGravity = airbourneGravity;
     }
 
     private void Update()
     {
-        IsGrounded();
+        if (IsGrounded()) {
+            currentGravity = groundedGravity;
+            falling = false;
+        } 
+        else {
+            falling = (_rigidbody.velocity.y <= 0 || falling)  ;
+            currentGravity = (falling) ? fallingGravity : airbourneGravity;
+        }
+        //print(currentGravity);
         Vector2 move = inputActions.Player.Movement.ReadValue<Vector2>();
         movementDir = new Vector3(move.x, 0, move.y);
     }
@@ -38,6 +55,16 @@ public class PlayerMovement : MonoBehaviour
         HandleRotation();
         HandleMovement();
         HandleGravity();
+    }
+
+    private void OnEnable()
+    {
+        inputActions.Player.Enable();
+    }
+
+    private void OnDisable()
+    {
+        inputActions.Player.Disable();
     }
 
     //private void OnDrawGizmos()
@@ -60,21 +87,26 @@ public class PlayerMovement : MonoBehaviour
     //    }
     //}
 
-    private void Jump(InputAction.CallbackContext context)
+    private void OnJumpPressed(InputAction.CallbackContext context)
     {
-        print("jump");
         if (!grounded) return;
-        float jumpForce = Mathf.Sqrt(2 * gravity * jumpHeight);
-        rb.AddForce(Vector3.up * jumpForce, ForceMode.VelocityChange);
+        float jumpForce = Mathf.Sqrt(2 * airbourneGravity * jumpHeight);
+        _rigidbody.AddForce(Vector3.up * jumpForce, ForceMode.VelocityChange);
         
+    }
+    private void OnJumpReleased(InputAction.CallbackContext context)
+    {
+        falling = true;
     }
 
     private void HandleMovement()
-    {
-        float horizontalSpeed = Mathf.Sqrt(rb.velocity.x * rb.velocity.x + rb.velocity.z * rb.velocity.z);
-        if (horizontalSpeed > maxRunSpeed) return;
-
-        rb.AddForce(movementDir.magnitude * transform.forward * runAcceleration, ForceMode.Acceleration);
+    {   
+        float horizontalSpeed = Mathf.Sqrt(_rigidbody.velocity.x * _rigidbody.velocity.x + _rigidbody.velocity.z * _rigidbody.velocity.z);
+        _rigidbody.AddForce(movementDir.magnitude * transform.forward * runAcceleration, ForceMode.Acceleration);
+        
+        if (horizontalSpeed > maxRunSpeed) {
+            _rigidbody.velocity = _rigidbody.velocity.normalized * maxRunSpeed;
+        }
     }
 
     private void HandleRotation()
@@ -87,7 +119,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void HandleGravity()
     {
-        rb.AddForce(Vector3.down * gravity, ForceMode.Acceleration);
+        _rigidbody.AddForce(Vector3.down * currentGravity, ForceMode.Acceleration);
     }
 
     private bool IsGrounded() {
