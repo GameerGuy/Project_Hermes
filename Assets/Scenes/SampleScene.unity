@@ -1067,8 +1067,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   jumpHeight: 5
-  gravity: 20
+  groundedGravity: 10
+  airbourneGravity: 20
+  fallingGravity: 40
   runAcceleration: 50
+  groundDeceleration: 0
   maxRunSpeed: 20
   turnSpeed: 10
 --- !u!136 &1903171889

@@ -1,17 +1,24 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerMovement : MonoBehaviour
 {
+    #region Variables
+
     [SerializeField] private float jumpHeight;
+
     [SerializeField] private float groundedGravity;
     [SerializeField] private float airbourneGravity;
     [SerializeField] private float fallingGravity;
+
     [SerializeField] private float runAcceleration;
+    [SerializeField] private float groundDeceleration;
     [SerializeField] private float maxRunSpeed;
     [SerializeField] private float turnSpeed;
+
     private PlayerInput inputActions;
     private Rigidbody _rigidbody;
     private Collider _collider;
@@ -19,6 +26,10 @@ public class PlayerMovement : MonoBehaviour
     private float currentGravity;
     private bool grounded;
     private bool falling;
+
+    #endregion
+
+    #region MonoBehaviours
 
     // Start is called before the first frame update
     private void Awake()
@@ -37,15 +48,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
-        if (IsGrounded()) {
-            currentGravity = groundedGravity;
-            falling = false;
-        } 
-        else {
-            falling = (_rigidbody.velocity.y <= 0 || falling)  ;
-            currentGravity = (falling) ? fallingGravity : airbourneGravity;
-        }
-        //print(currentGravity);
+        AssignGravity();
         Vector2 move = inputActions.Player.Movement.ReadValue<Vector2>();
         movementDir = new Vector3(move.x, 0, move.y);
     }
@@ -87,6 +90,10 @@ public class PlayerMovement : MonoBehaviour
     //    }
     //}
 
+    #endregion
+
+    #region Input Functions
+
     private void OnJumpPressed(InputAction.CallbackContext context)
     {
         if (!grounded) return;
@@ -100,10 +107,23 @@ public class PlayerMovement : MonoBehaviour
     }
 
     private void HandleMovement()
-    {   
-        float horizontalSpeed = Mathf.Sqrt(_rigidbody.velocity.x * _rigidbody.velocity.x + _rigidbody.velocity.z * _rigidbody.velocity.z);
+    {
+        Vector3 horizontalVector = GetHorizontalVelocity();
+        float horizontalSpeed = horizontalVector.magnitude;
+
+        if (movementDir.magnitude < 1) {
+
+            if (horizontalSpeed <= 1) {
+                _rigidbody.velocity = new Vector3(0, _rigidbody.velocity.y, 0);
+                return;
+            }
+
+            _rigidbody.AddForce(horizontalVector.normalized * -1 * groundDeceleration, ForceMode.Acceleration);
+            return;
+        }
+
         _rigidbody.AddForce(movementDir.magnitude * transform.forward * runAcceleration, ForceMode.Acceleration);
-        
+
         if (horizontalSpeed > maxRunSpeed) {
             _rigidbody.velocity = _rigidbody.velocity.normalized * maxRunSpeed;
         }
@@ -122,6 +142,15 @@ public class PlayerMovement : MonoBehaviour
         _rigidbody.AddForce(Vector3.down * currentGravity, ForceMode.Acceleration);
     }
 
+    #endregion
+
+    #region Utility Functions
+
+    private Vector3 GetHorizontalVelocity()
+    {
+        return new Vector3(_rigidbody.velocity.x, 0, _rigidbody.velocity.z);
+    }
+
     private bool IsGrounded() {
         const float OFFSET = 0.01f;
         float radius = _collider.bounds.extents.x - OFFSET;
@@ -130,4 +159,18 @@ public class PlayerMovement : MonoBehaviour
         return grounded;
     }
 
+    private void AssignGravity()
+    {
+        if (IsGrounded()) {
+            currentGravity = groundedGravity;
+            falling = false;
+        } else {
+            falling = (_rigidbody.velocity.y <= 0 || falling);
+            currentGravity = (falling) 
+                ? fallingGravity 
+                : airbourneGravity;
+        }
+    }
+
+    #endregion
 }
