@@ -18,16 +18,17 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float groundDeceleration;
     [SerializeField] private float maxRunSpeed;
     [SerializeField] private float sprintSpeedMult;
-    [SerializeField] private float turnSpeed;
+    [SerializeField] private float baseTurnSpeed;
 
     private PlayerInput inputActions;
     private Rigidbody _rigidbody;
     private Collider _collider;
     private Vector3 movementDir;
+    private float currentTurnSpeed;
     private float currentGravity;
+    private bool sprinting;
     private bool grounded;
     private bool falling;
-    private bool sprinting;
 
     #endregion
 
@@ -124,6 +125,7 @@ public class PlayerMovement : MonoBehaviour
     {
         Vector3 horizontalVector = GetHorizontalVelocity();
         float horizontalSpeed = horizontalVector.magnitude;
+        float maxSpeed = sprinting ? maxRunSpeed * sprintSpeedMult : maxRunSpeed;
 
         if (movementDir.magnitude < 1) {
 
@@ -136,27 +138,26 @@ public class PlayerMovement : MonoBehaviour
             return;
         }
 
-        _rigidbody.AddForce(movementDir.magnitude * transform.forward * runAcceleration, ForceMode.Acceleration);
-
-        if (horizontalSpeed > maxRunSpeed) {
-            if (!sprinting) {
-                _rigidbody.velocity = _rigidbody.velocity.normalized * maxRunSpeed;
-                return;
-            }
-
-            if (horizontalSpeed > maxRunSpeed * sprintSpeedMult) {
-                GetComponent<Rigidbody>().velocity = _rigidbody.velocity.normalized * maxRunSpeed * sprintSpeedMult;
-                return;
-            }
+        if (horizontalSpeed < maxSpeed) {
+            _rigidbody.AddForce(movementDir.magnitude * transform.forward * runAcceleration, ForceMode.Acceleration);
+        } else if (horizontalSpeed > maxSpeed) {
+            _rigidbody.AddForce(horizontalVector.normalized * -1 * groundDeceleration, ForceMode.Acceleration);
+        } else {
+            _rigidbody.velocity = transform.forward * maxSpeed;
         }
     }
 
     private void HandleRotation()
     {
-        if (movementDir.magnitude < 1) return;
-
+        if (movementDir.magnitude == 0) return;
+        
         Quaternion toRotation = Quaternion.LookRotation(movementDir.normalized, Vector3.up);
-        transform.rotation = Quaternion.Lerp(transform.rotation, toRotation, turnSpeed * Time.deltaTime);
+        
+        float horizontalSpeed = GetHorizontalVelocity().magnitude;
+        currentTurnSpeed = (horizontalSpeed <= maxRunSpeed) ? baseTurnSpeed:
+            baseTurnSpeed - (horizontalSpeed * horizontalSpeed / (maxRunSpeed * maxRunSpeed)) + 1;
+
+        transform.rotation = Quaternion.Lerp(transform.rotation, toRotation, currentTurnSpeed * Time.deltaTime);
     }
 
     private void HandleGravity()
