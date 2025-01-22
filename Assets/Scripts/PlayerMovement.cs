@@ -79,7 +79,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void Start()
     {
-        currentGravity = airbourneGravity;
+        currentGravity = fallingGravity;
     }
 
     private void Update()
