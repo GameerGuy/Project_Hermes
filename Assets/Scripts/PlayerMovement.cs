@@ -8,17 +8,35 @@ public class PlayerMovement : MonoBehaviour
 {
     #region Variables
 
+    [Range(1,50)][Tooltip("How high in units the player jumps with a full press")]
     [SerializeField] private float jumpHeight;
 
+    [Range(1,50)][Tooltip("Force that keeps the player grounded")]
     [SerializeField] private float groundedGravity;
+
+    [Range(1,50)][Tooltip("Gravity at the start of a jump")]
     [SerializeField] private float airbourneGravity;
+
+    [Range(1,100)][Tooltip("Gravity when falling")]
     [SerializeField] private float fallingGravity;
 
+    [Range(1,100)][Tooltip("Baseline movement acceleration")]
     [SerializeField] private float runAcceleration;
+
+    [Range(1,100)][Tooltip("Movement deceleration when Grounded")]
     [SerializeField] private float groundDeceleration;
+    
+    [Range(1,100)][Tooltip("Max speed achievable with basic movement")]
     [SerializeField] private float maxRunSpeed;
+
+    [Range(1,10)][Tooltip("Speed cap multiplier")]
     [SerializeField] private float sprintSpeedMult;
+
+    [Range(1,100)][Tooltip("Baseline turn rate")]
     [SerializeField] private float baseTurnSpeed;
+
+    [Range(1,100)][Tooltip("Minimum turn rate")]
+    [SerializeField] private float minTurnSpeed;
 
     private PlayerInput inputActions;
     private Rigidbody _rigidbody;
@@ -53,6 +71,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
+        IsGrounded();
         AssignGravity();
         Vector2 move = inputActions.Player.Movement.ReadValue<Vector2>();
         movementDir = new Vector3(move.x, 0, move.y);
@@ -154,8 +173,9 @@ public class PlayerMovement : MonoBehaviour
         Quaternion toRotation = Quaternion.LookRotation(movementDir.normalized, Vector3.up);
         
         float horizontalSpeed = GetHorizontalVelocity().magnitude;
-        currentTurnSpeed = (horizontalSpeed <= maxRunSpeed) ? baseTurnSpeed:
-            baseTurnSpeed - (horizontalSpeed * horizontalSpeed / (maxRunSpeed * maxRunSpeed)) + 1;
+        float scaledTurnSpeed = baseTurnSpeed - (horizontalSpeed * horizontalSpeed / (maxRunSpeed * maxRunSpeed)) + 1;
+        
+        currentTurnSpeed = (horizontalSpeed <= maxRunSpeed) ? baseTurnSpeed: (scaledTurnSpeed > minTurnSpeed) ? scaledTurnSpeed : minTurnSpeed;
 
         transform.rotation = Quaternion.Lerp(transform.rotation, toRotation, currentTurnSpeed * Time.deltaTime);
     }
@@ -184,7 +204,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void AssignGravity()
     {
-        if (IsGrounded()) {
+        if (grounded) {
             currentGravity = groundedGravity;
             falling = false;
         } else {

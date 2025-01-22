@@ -1075,6 +1075,7 @@ MonoBehaviour:
   maxRunSpeed: 20
   sprintSpeedMult: 4
   baseTurnSpeed: 20
+  minTurnSpeed: 5
 --- !u!136 &1903171889
 CapsuleCollider:
   m_ObjectHideFlags: 0
