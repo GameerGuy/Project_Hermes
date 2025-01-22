@@ -17,6 +17,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float runAcceleration;
     [SerializeField] private float groundDeceleration;
     [SerializeField] private float maxRunSpeed;
+    [SerializeField] private float sprintSpeedMult;
     [SerializeField] private float turnSpeed;
 
     private PlayerInput inputActions;
@@ -26,6 +27,7 @@ public class PlayerMovement : MonoBehaviour
     private float currentGravity;
     private bool grounded;
     private bool falling;
+    private bool sprinting;
 
     #endregion
 
@@ -39,6 +41,8 @@ public class PlayerMovement : MonoBehaviour
         inputActions = new PlayerInput();
         inputActions.Player.Jump.started += OnJumpPressed;
         inputActions.Player.Jump.canceled += OnJumpReleased;
+        inputActions.Player.Sprint.started += OnSprintPressed;
+        inputActions.Player.Sprint.canceled += OnSprintReleased;
     }
 
     private void Start()
@@ -106,6 +110,16 @@ public class PlayerMovement : MonoBehaviour
         falling = true;
     }
 
+    private void OnSprintPressed(InputAction.CallbackContext context)
+    {
+        sprinting = true;
+    }
+
+    private void OnSprintReleased(InputAction.CallbackContext context)
+    {
+        sprinting = false;
+    }
+
     private void HandleMovement()
     {
         Vector3 horizontalVector = GetHorizontalVelocity();
@@ -125,7 +139,15 @@ public class PlayerMovement : MonoBehaviour
         _rigidbody.AddForce(movementDir.magnitude * transform.forward * runAcceleration, ForceMode.Acceleration);
 
         if (horizontalSpeed > maxRunSpeed) {
-            _rigidbody.velocity = _rigidbody.velocity.normalized * maxRunSpeed;
+            if (!sprinting) {
+                _rigidbody.velocity = _rigidbody.velocity.normalized * maxRunSpeed;
+                return;
+            }
+
+            if (horizontalSpeed > maxRunSpeed * sprintSpeedMult) {
+                GetComponent<Rigidbody>().velocity = _rigidbody.velocity.normalized * maxRunSpeed * sprintSpeedMult;
+                return;
+            }
         }
     }
 
