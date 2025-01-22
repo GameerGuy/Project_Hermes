@@ -23,8 +23,11 @@ public class PlayerMovement : MonoBehaviour
     [Range(1,100)][Tooltip("Baseline movement acceleration")]
     [SerializeField] private float runAcceleration;
 
-    [Range(1,100)][Tooltip("Movement deceleration when Grounded")]
+    [Range(1,100)][Tooltip("Movement deceleration when grounded")]
     [SerializeField] private float groundDeceleration;
+
+    [Range(1,100)][Tooltip("Movement deceleration when in the air")]
+    [SerializeField] private float airbourneDeceleration;
     
     [Range(1,100)][Tooltip("Max speed achievable with basic movement")]
     [SerializeField] private float maxRunSpeed;
@@ -37,17 +40,25 @@ public class PlayerMovement : MonoBehaviour
 
     [Range(1,100)][Tooltip("Minimum turn rate")]
     [SerializeField] private float minTurnSpeed;
+    
+    [Range(0,10)][Tooltip("Multiplyer for the initial speed boost when sliding (proportional to current speed)")]
+    [SerializeField] private float slideMult;
+    
+    [Range(1,100)][Tooltip("Force applied when diving")]
+    [SerializeField] private float diveForce;
 
     private PlayerInput inputActions;
     private Rigidbody _rigidbody;
     private Collider _collider;
     private Vector3 movementDir;
     private float currentTurnSpeed;
+    private float currentDeceleration;
     private float currentGravity;
     private bool sprinting;
+    private bool crouching;
     private bool grounded;
     private bool falling;
-
+    private bool diving;
     #endregion
 
     #region MonoBehaviours
@@ -62,6 +73,8 @@ public class PlayerMovement : MonoBehaviour
         inputActions.Player.Jump.canceled += OnJumpReleased;
         inputActions.Player.Sprint.started += OnSprintPressed;
         inputActions.Player.Sprint.canceled += OnSprintReleased;
+        inputActions.Player.Crouch.started += OnCrouchPressed;
+        inputActions.Player.Crouch.canceled += OnCrouchReleased;
     }
 
     private void Start()
@@ -72,6 +85,7 @@ public class PlayerMovement : MonoBehaviour
     private void Update()
     {
         IsGrounded();
+        currentDeceleration = grounded ? groundDeceleration: airbourneDeceleration;
         AssignGravity();
         Vector2 move = inputActions.Player.Movement.ReadValue<Vector2>();
         movementDir = new Vector3(move.x, 0, move.y);
@@ -140,27 +154,46 @@ public class PlayerMovement : MonoBehaviour
         sprinting = false;
     }
 
+    private void OnCrouchPressed(InputAction.CallbackContext context)
+    {
+        crouching = true;
+        if (grounded) {
+            float slideForce = GetHorizontalVelocity().magnitude * slideMult;
+            _rigidbody.AddForce(transform.forward * slideForce, ForceMode.VelocityChange);
+        } 
+        if (diving) return;
+        falling = true;
+        diving = true;
+        _rigidbody.AddForce(transform.up * -1 * diveForce, ForceMode.VelocityChange);
+        
+    }
+
+    private void OnCrouchReleased(InputAction.CallbackContext context)
+    {
+        crouching = false;
+    }
+
     private void HandleMovement()
     {
         Vector3 horizontalVector = GetHorizontalVelocity();
         float horizontalSpeed = horizontalVector.magnitude;
         float maxSpeed = sprinting ? maxRunSpeed * sprintSpeedMult : maxRunSpeed;
 
-        if (movementDir.magnitude < 1) {
+        if (movementDir.magnitude < 1 || crouching) {
 
             if (horizontalSpeed <= 1) {
                 _rigidbody.velocity = new Vector3(0, _rigidbody.velocity.y, 0);
                 return;
             }
 
-            _rigidbody.AddForce(horizontalVector.normalized * -1 * groundDeceleration, ForceMode.Acceleration);
+            _rigidbody.AddForce(horizontalVector.normalized * -1 * currentDeceleration, ForceMode.Acceleration);
             return;
         }
 
         if (horizontalSpeed < maxSpeed) {
             _rigidbody.AddForce(movementDir.magnitude * transform.forward * runAcceleration, ForceMode.Acceleration);
         } else if (horizontalSpeed > maxSpeed) {
-            _rigidbody.AddForce(horizontalVector.normalized * -1 * groundDeceleration, ForceMode.Acceleration);
+            _rigidbody.AddForce(horizontalVector.normalized * -1 * currentDeceleration, ForceMode.Acceleration);
         } else {
             _rigidbody.velocity = transform.forward * maxSpeed;
         }
@@ -198,8 +231,7 @@ public class PlayerMovement : MonoBehaviour
         const float OFFSET = 0.01f;
         float radius = _collider.bounds.extents.x - OFFSET;
         float maxDistance = (_collider.bounds.extents.y / 2) + (OFFSET * 10);
-        grounded = Physics.SphereCast(_collider.bounds.center, radius, -transform.up, out RaycastHit hitInfo, maxDistance);
-        return grounded;
+        return grounded = Physics.SphereCast(_collider.bounds.center, radius, -transform.up, out RaycastHit hitInfo, maxDistance);
     }
 
     private void AssignGravity()
@@ -207,11 +239,13 @@ public class PlayerMovement : MonoBehaviour
         if (grounded) {
             currentGravity = groundedGravity;
             falling = false;
+            diving = false;
         } else {
             falling = (_rigidbody.velocity.y <= 0 || falling);
-            currentGravity = (falling) 
-                ? fallingGravity 
-                : airbourneGravity;
+            currentGravity = 
+                  (!falling) ? airbourneGravity
+                : (!diving) ?  fallingGravity
+                : fallingGravity * 3;
         }
     }
 

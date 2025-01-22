@@ -566,7 +566,6 @@ GameObject:
   - component: {fileID: 797134039}
   - component: {fileID: 797134042}
   - component: {fileID: 797134041}
-  - component: {fileID: 797134040}
   m_Layer: 0
   m_Name: Cube
   m_TagString: Untagged
@@ -589,27 +588,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1903171892}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &797134040
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 797134038}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!23 &797134041
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -1072,8 +1050,9 @@ MonoBehaviour:
   fallingGravity: 40
   runAcceleration: 50
   groundDeceleration: 30
+  airbourneDeceleration: 15
   maxRunSpeed: 20
-  sprintSpeedMult: 4
+  sprintSpeedMult: 2
   baseTurnSpeed: 20
   minTurnSpeed: 5
 --- !u!136 &1903171889
