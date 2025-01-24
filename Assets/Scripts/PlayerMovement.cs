@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -47,6 +48,9 @@ public class PlayerMovement : MonoBehaviour
     [Range(1,100)][Tooltip("Force applied when diving")]
     [SerializeField] private float diveForce;
 
+    private event EventHandler OnGroundedEvent;
+
+
     private PlayerInput inputActions;
     private Rigidbody _rigidbody;
     private Collider _collider;
@@ -69,12 +73,15 @@ public class PlayerMovement : MonoBehaviour
         _rigidbody = GetComponent<Rigidbody>();
         _collider = GetComponent<Collider>();
         inputActions = new PlayerInput();
+
         inputActions.Player.Jump.started += OnJumpPressed;
         inputActions.Player.Jump.canceled += OnJumpReleased;
         inputActions.Player.Sprint.started += OnSprintPressed;
         inputActions.Player.Sprint.canceled += OnSprintReleased;
         inputActions.Player.Crouch.started += OnCrouchPressed;
         inputActions.Player.Crouch.canceled += OnCrouchReleased;
+
+        OnGroundedEvent += OnGrounded;
     }
 
     private void Start()
@@ -141,7 +148,7 @@ public class PlayerMovement : MonoBehaviour
     }
     private void OnJumpReleased(InputAction.CallbackContext context)
     {
-        falling = true;
+        falling = !grounded;
     }
 
     private void OnSprintPressed(InputAction.CallbackContext context)
@@ -158,10 +165,16 @@ public class PlayerMovement : MonoBehaviour
     {
         crouching = true;
         if (grounded) {
+
+            float horizontalSpeed = GetHorizontalVelocity().magnitude;
+            if (horizontalSpeed < maxRunSpeed) return;
+
             float slideForce = GetHorizontalVelocity().magnitude * slideMult;
             _rigidbody.AddForce(transform.forward * slideForce, ForceMode.VelocityChange);
+            return;
         } 
         if (diving) return;
+
         falling = true;
         diving = true;
         _rigidbody.AddForce(transform.up * -1 * diveForce, ForceMode.VelocityChange);
@@ -172,6 +185,9 @@ public class PlayerMovement : MonoBehaviour
     {
         crouching = false;
     }
+    #endregion
+
+
 
     private void HandleMovement()
     {
@@ -218,9 +234,15 @@ public class PlayerMovement : MonoBehaviour
         _rigidbody.AddForce(Vector3.down * currentGravity, ForceMode.Acceleration);
     }
 
-    #endregion
 
-    #region Utility Functions
+
+    private void OnGrounded(object sender, EventArgs e)
+    {
+        currentGravity = groundedGravity;
+        currentDeceleration = groundDeceleration;
+        falling = false;
+        diving = false;
+    }
 
     private Vector3 GetHorizontalVelocity()
     {
@@ -228,19 +250,22 @@ public class PlayerMovement : MonoBehaviour
     }
 
     private bool IsGrounded() {
+        bool wasGrounded = grounded;
+
         const float OFFSET = 0.01f;
         float radius = _collider.bounds.extents.x - OFFSET;
         float maxDistance = (_collider.bounds.extents.y / 2) + (OFFSET * 10);
-        return grounded = Physics.SphereCast(_collider.bounds.center, radius, -transform.up, out RaycastHit hitInfo, maxDistance);
+        grounded = Physics.SphereCast(_collider.bounds.center, radius, -transform.up, out RaycastHit hitInfo, maxDistance);
+
+        if (wasGrounded != grounded && grounded) {
+            OnGroundedEvent?.Invoke(this, EventArgs.Empty);
+        }
+        return grounded;
     }
 
     private void AssignGravity()
     {
-        if (grounded) {
-            currentGravity = groundedGravity;
-            falling = false;
-            diving = false;
-        } else {
+        if (!grounded) {
             falling = (_rigidbody.velocity.y <= 0 || falling);
             currentGravity = 
                   (!falling) ? airbourneGravity
@@ -249,5 +274,4 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    #endregion
 }
