@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -11,6 +12,9 @@ public class PlayerMovement : MonoBehaviour
 
     [Range(1,50)][Tooltip("How high in units the player jumps with a full press")]
     [SerializeField] private float jumpHeight;
+
+    [Range(-50, 50)][Tooltip("Velocity threshold for the player to start falling faster")]
+    [SerializeField] private float fallingThreshold;
 
     [Range(1,50)][Tooltip("Force that keeps the player grounded")]
     [SerializeField] private float groundedGravity;
@@ -36,20 +40,33 @@ public class PlayerMovement : MonoBehaviour
     [Range(1,10)][Tooltip("Speed cap multiplier")]
     [SerializeField] private float sprintSpeedMult;
 
+    [Range(1, 1000)][Tooltip("Max speed achievable with basic movement")]
+    [SerializeField] private float trueSpeedCap;
+
     [Range(1,100)][Tooltip("Baseline turn rate")]
     [SerializeField] private float baseTurnSpeed;
+
+    [Range(0, 100)][Tooltip("Turn speed scaling factor")]
+    [SerializeField] private float turnScaling;
 
     [Range(1,100)][Tooltip("Minimum turn rate")]
     [SerializeField] private float minTurnSpeed;
     
     [Range(0,10)][Tooltip("Multiplyer for the initial speed boost when sliding (proportional to current speed)")]
     [SerializeField] private float slideMult;
-    
-    [Range(1,100)][Tooltip("Force applied when diving")]
+
+    [Range(0, 5000)][Tooltip("Minimum time between slides")]
+    [SerializeField] private int slideCooldown;
+
+    [Range(1,100)][Tooltip("Downwards force applied when diving")]
     [SerializeField] private float diveForce;
 
-    private event EventHandler OnGroundedEvent;
+    [Range(0, 10)][Tooltip("Horizontal speed penalty applied when diving")]
+    [SerializeField] private float divePenalty;
 
+    private event EventHandler OnGroundedEvent;
+    private event EventHandler OnAirbourneEvent;
+    private event EventHandler OnSlideEvent;
 
     private PlayerInput inputActions;
     private Rigidbody _rigidbody;
@@ -62,12 +79,13 @@ public class PlayerMovement : MonoBehaviour
     private bool crouching;
     private bool grounded;
     private bool falling;
+    private bool sliding;
     private bool diving;
     #endregion
 
-    #region MonoBehaviours
 
-    // Start is called before the first frame update
+
+    #region MonoBehaviours
     private void Awake()
     {
         _rigidbody = GetComponent<Rigidbody>();
@@ -82,6 +100,8 @@ public class PlayerMovement : MonoBehaviour
         inputActions.Player.Crouch.canceled += OnCrouchReleased;
 
         OnGroundedEvent += OnGrounded;
+        OnAirbourneEvent += OnAirbourne;
+        OnSlideEvent += OnSlide;
     }
 
     private void Start()
@@ -92,7 +112,6 @@ public class PlayerMovement : MonoBehaviour
     private void Update()
     {
         IsGrounded();
-        currentDeceleration = grounded ? groundDeceleration: airbourneDeceleration;
         AssignGravity();
         Vector2 move = inputActions.Player.Movement.ReadValue<Vector2>();
         movementDir = new Vector3(move.x, 0, move.y);
@@ -134,18 +153,22 @@ public class PlayerMovement : MonoBehaviour
     //        Gizmos.DrawWireSphere(_collider.bounds.center + -transform.up * maxDistance, radius);
     //    }
     //}
-
     #endregion
 
-    #region Input Functions
 
+
+    #region Input Functions
     private void OnJumpPressed(InputAction.CallbackContext context)
     {
         if (!grounded) return;
         float jumpForce = Mathf.Sqrt(2 * airbourneGravity * jumpHeight);
         _rigidbody.AddForce(Vector3.up * jumpForce, ForceMode.VelocityChange);
-        
+
+        if (!sliding) return;
+        sliding = false;
+        transform.localScale = new Vector3(1, 1, 1);
     }
+
     private void OnJumpReleased(InputAction.CallbackContext context)
     {
         falling = !grounded;
@@ -164,41 +187,47 @@ public class PlayerMovement : MonoBehaviour
     private void OnCrouchPressed(InputAction.CallbackContext context)
     {
         crouching = true;
+        Vector3 horizontalVector = GetHorizontalVelocity();
         if (grounded) {
+            transform.localScale = new Vector3(1, .5f, 1);
 
-            float horizontalSpeed = GetHorizontalVelocity().magnitude;
-            if (horizontalSpeed < maxRunSpeed) return;
+            float horizontalSpeed = horizontalVector.magnitude;
+            if (horizontalSpeed < maxRunSpeed - 1 || sliding) return;
 
-            float slideForce = GetHorizontalVelocity().magnitude * slideMult;
-            _rigidbody.AddForce(transform.forward * slideForce, ForceMode.VelocityChange);
+            OnSlideEvent?.Invoke(this, EventArgs.Empty);
             return;
         } 
         if (diving) return;
 
         falling = true;
         diving = true;
-        _rigidbody.AddForce(transform.up * -1 * diveForce, ForceMode.VelocityChange);
+
+        Vector3 finalDiveForce = (transform.up * diveForce + horizontalVector * divePenalty) * -1;
+        _rigidbody.AddForce(finalDiveForce, ForceMode.VelocityChange);
         
     }
 
     private void OnCrouchReleased(InputAction.CallbackContext context)
     {
         crouching = false;
+        if (!sliding) transform.localScale = new Vector3(1, 1, 1);
     }
     #endregion
 
 
 
+    #region Handler Functions
     private void HandleMovement()
     {
+        Vector3 verticalVector = GetVerticalVelocity();
         Vector3 horizontalVector = GetHorizontalVelocity();
         float horizontalSpeed = horizontalVector.magnitude;
         float maxSpeed = sprinting ? maxRunSpeed * sprintSpeedMult : maxRunSpeed;
 
-        if (movementDir.magnitude < 1 || crouching) {
+        if (movementDir.magnitude == 0) {
 
             if (horizontalSpeed <= 1) {
-                _rigidbody.velocity = new Vector3(0, _rigidbody.velocity.y, 0);
+                _rigidbody.velocity = verticalVector;
                 return;
             }
 
@@ -210,8 +239,11 @@ public class PlayerMovement : MonoBehaviour
             _rigidbody.AddForce(movementDir.magnitude * transform.forward * runAcceleration, ForceMode.Acceleration);
         } else if (horizontalSpeed > maxSpeed) {
             _rigidbody.AddForce(horizontalVector.normalized * -1 * currentDeceleration, ForceMode.Acceleration);
+
+            float turningLeniency = Mathf.Sin(Vector3.Angle(movementDir, horizontalVector) * Mathf.Deg2Rad);
+            _rigidbody.AddForce(movementDir.magnitude * transform.forward * runAcceleration * turningLeniency, ForceMode.Acceleration);
         } else {
-            _rigidbody.velocity = transform.forward * maxSpeed;
+            _rigidbody.velocity = transform.forward * maxSpeed + verticalVector;
         }
     }
 
@@ -222,10 +254,10 @@ public class PlayerMovement : MonoBehaviour
         Quaternion toRotation = Quaternion.LookRotation(movementDir.normalized, Vector3.up);
         
         float horizontalSpeed = GetHorizontalVelocity().magnitude;
-        float scaledTurnSpeed = baseTurnSpeed - (horizontalSpeed * horizontalSpeed / (maxRunSpeed * maxRunSpeed)) + 1;
+        float scaledTurnSpeed = baseTurnSpeed - turnScaling * (horizontalSpeed * horizontalSpeed / (maxRunSpeed * maxRunSpeed)) + turnScaling;
         
         currentTurnSpeed = (horizontalSpeed <= maxRunSpeed) ? baseTurnSpeed: (scaledTurnSpeed > minTurnSpeed) ? scaledTurnSpeed : minTurnSpeed;
-
+        
         transform.rotation = Quaternion.Lerp(transform.rotation, toRotation, currentTurnSpeed * Time.deltaTime);
     }
 
@@ -233,9 +265,11 @@ public class PlayerMovement : MonoBehaviour
     {
         _rigidbody.AddForce(Vector3.down * currentGravity, ForceMode.Acceleration);
     }
+    #endregion
 
 
 
+    #region Event Functions
     private void OnGrounded(object sender, EventArgs e)
     {
         currentGravity = groundedGravity;
@@ -244,9 +278,33 @@ public class PlayerMovement : MonoBehaviour
         diving = false;
     }
 
+    private void OnAirbourne(object sender, EventArgs e)
+    {
+        currentDeceleration = airbourneDeceleration;
+    }
+
+    private void OnSlide(object sender, EventArgs e)
+    {
+        float slideForce = GetHorizontalVelocity().magnitude * slideMult;
+        if (slideForce + GetHorizontalVelocity().magnitude >= trueSpeedCap) {
+            slideForce = trueSpeedCap;
+        }
+        _rigidbody.AddForce(transform.forward * slideForce, ForceMode.VelocityChange);
+        SlideCooldown();
+    }
+    #endregion
+
+
+
+    #region Utility Functions
     private Vector3 GetHorizontalVelocity()
     {
         return new Vector3(_rigidbody.velocity.x, 0, _rigidbody.velocity.z);
+    }
+
+    private Vector3 GetVerticalVelocity()
+    {
+        return new Vector3(0, _rigidbody.velocity.y, 0);
     }
 
     private bool IsGrounded() {
@@ -257,8 +315,12 @@ public class PlayerMovement : MonoBehaviour
         float maxDistance = (_collider.bounds.extents.y / 2) + (OFFSET * 10);
         grounded = Physics.SphereCast(_collider.bounds.center, radius, -transform.up, out RaycastHit hitInfo, maxDistance);
 
-        if (wasGrounded != grounded && grounded) {
+        if (wasGrounded == grounded) return grounded;
+
+        if (grounded) {
             OnGroundedEvent?.Invoke(this, EventArgs.Empty);
+        } else {
+            OnAirbourneEvent?.Invoke(this, EventArgs.Empty);
         }
         return grounded;
     }
@@ -266,7 +328,7 @@ public class PlayerMovement : MonoBehaviour
     private void AssignGravity()
     {
         if (!grounded) {
-            falling = (_rigidbody.velocity.y <= 0 || falling);
+            falling = (_rigidbody.velocity.y <= fallingThreshold || falling);
             currentGravity = 
                   (!falling) ? airbourneGravity
                 : (!diving) ?  fallingGravity
@@ -274,4 +336,20 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    private async void SlideCooldown()
+    {
+        sliding = true;
+        await Task.Delay(slideCooldown);
+
+        float horzontalSpeed = GetHorizontalVelocity().magnitude;
+        while (horzontalSpeed > maxRunSpeed * sprintSpeedMult && sliding) {
+            horzontalSpeed = GetHorizontalVelocity().magnitude;
+            await Task.Delay(20);
+            continue;
+        }
+
+        sliding = false;
+        if (!crouching) transform.localScale = new Vector3(1, 1, 1);
+    }
+    #endregion
 }

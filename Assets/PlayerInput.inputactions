@@ -55,6 +55,28 @@
                     "isPartOfComposite": false
                 },
                 {
+                    "name": "",
+                    "id": "2fd708ce-93b4-4db8-a925-5ff881cf15a2",
+                    "path": "<Gamepad>/buttonSouth",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Gamepad",
+                    "action": "Jump",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "1e74d1de-99cb-44b0-b98e-3722b79a04b3",
+                    "path": "<Gamepad>/buttonEast",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Gamepad",
+                    "action": "Jump",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
                     "name": "2D Vector",
                     "id": "999d4142-d9cb-478b-acd6-403b29a64289",
                     "path": "2DVector",
@@ -177,6 +199,17 @@
                 },
                 {
                     "name": "",
+                    "id": "23560df5-0197-48be-b448-fdd9156b9f0e",
+                    "path": "<Gamepad>/buttonNorth",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Gamepad",
+                    "action": "Sprint",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "afa54923-fa26-49df-b9d1-bbc12bce250f",
                     "path": "<Keyboard>/shift",
                     "interactions": "",
@@ -188,11 +221,44 @@
                 },
                 {
                     "name": "",
+                    "id": "428c553c-7143-4070-bc88-fc6d4a760c65",
+                    "path": "<Gamepad>/buttonWest",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Gamepad",
+                    "action": "Sprint",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "955242fc-8350-4412-a395-cab2fadb4ffa",
                     "path": "<Keyboard>/ctrl",
                     "interactions": "",
                     "processors": "",
                     "groups": ";Keyboard & Mouse",
+                    "action": "Crouch",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "e3897c9c-a08a-416b-8489-15656faa3f5e",
+                    "path": "<Gamepad>/rightShoulder",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Gamepad",
+                    "action": "Crouch",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "7c0f13ef-e965-4505-be78-2782882e9717",
+                    "path": "<Gamepad>/leftShoulder",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Gamepad",
                     "action": "Crouch",
                     "isComposite": false,
                     "isPartOfComposite": false
