@@ -64,6 +64,9 @@ public class PlayerMovement : MonoBehaviour
     [Range(0, 10)][Tooltip("Horizontal speed penalty applied when diving")]
     [SerializeField] private float divePenalty;
 
+    [Tooltip("Does the print button need to be held or is it a toggle?")]
+    [SerializeField] private bool toggleSprint;
+
     private event EventHandler OnGroundedEvent;
     private event EventHandler OnAirbourneEvent;
     private event EventHandler OnSlideEvent;
@@ -107,6 +110,8 @@ public class PlayerMovement : MonoBehaviour
     private void Start()
     {
         currentGravity = fallingGravity;
+        currentDeceleration = airbourneDeceleration;
+        currentTurnSpeed = baseTurnSpeed;
     }
 
     private void Update()
@@ -115,6 +120,7 @@ public class PlayerMovement : MonoBehaviour
         AssignGravity();
         Vector2 move = inputActions.Player.Movement.ReadValue<Vector2>();
         movementDir = new Vector3(move.x, 0, move.y);
+        print(sliding);
     }
 
     private void FixedUpdate()
@@ -165,23 +171,27 @@ public class PlayerMovement : MonoBehaviour
         _rigidbody.AddForce(Vector3.up * jumpForce, ForceMode.VelocityChange);
 
         if (!sliding) return;
-        sliding = false;
+        //sliding = false;
         transform.localScale = new Vector3(1, 1, 1);
     }
 
     private void OnJumpReleased(InputAction.CallbackContext context)
     {
+        if (sliding){
+            sliding = false;
+            return;
+        }
         falling = !grounded;
     }
 
     private void OnSprintPressed(InputAction.CallbackContext context)
     {
-        sprinting = true;
+        sprinting = (!toggleSprint) ? true : !sprinting;
     }
 
     private void OnSprintReleased(InputAction.CallbackContext context)
     {
-        sprinting = false;
+        sprinting = (!toggleSprint) ? false : sprinting;
     }
 
     private void OnCrouchPressed(InputAction.CallbackContext context)
@@ -223,8 +233,9 @@ public class PlayerMovement : MonoBehaviour
         Vector3 horizontalVector = GetHorizontalVelocity();
         float horizontalSpeed = horizontalVector.magnitude;
         float maxSpeed = sprinting ? maxRunSpeed * sprintSpeedMult : maxRunSpeed;
+        //float turningLeniency = Mathf.Sin(Vector3.Angle(movementDir, transform.forward) * Mathf.Deg2Rad);
 
-        if (movementDir.magnitude == 0) {
+        if (movementDir.magnitude == 0 || crouching) {
 
             if (horizontalSpeed <= 1) {
                 _rigidbody.velocity = verticalVector;
@@ -239,9 +250,6 @@ public class PlayerMovement : MonoBehaviour
             _rigidbody.AddForce(movementDir.magnitude * transform.forward * runAcceleration, ForceMode.Acceleration);
         } else if (horizontalSpeed > maxSpeed) {
             _rigidbody.AddForce(horizontalVector.normalized * -1 * currentDeceleration, ForceMode.Acceleration);
-
-            float turningLeniency = Mathf.Sin(Vector3.Angle(movementDir, horizontalVector) * Mathf.Deg2Rad);
-            _rigidbody.AddForce(movementDir.magnitude * transform.forward * runAcceleration * turningLeniency, ForceMode.Acceleration);
         } else {
             _rigidbody.velocity = transform.forward * maxSpeed + verticalVector;
         }
@@ -285,11 +293,16 @@ public class PlayerMovement : MonoBehaviour
 
     private void OnSlide(object sender, EventArgs e)
     {
-        float slideForce = GetHorizontalVelocity().magnitude * slideMult;
-        if (slideForce + GetHorizontalVelocity().magnitude >= trueSpeedCap) {
+        Vector3 horizontalVector = GetHorizontalVelocity();
+        float slideForce = horizontalVector.magnitude * slideMult;
+
+        if (slideForce + horizontalVector.magnitude >= trueSpeedCap) {
+            _rigidbody.velocity -= horizontalVector;
             slideForce = trueSpeedCap;
         }
-        _rigidbody.AddForce(transform.forward * slideForce, ForceMode.VelocityChange);
+
+        float turnSoftening = movementDir.magnitude > 0 ? Mathf.Abs(Vector3.Dot(horizontalVector.normalized, movementDir)): 1;
+        _rigidbody.AddForce(transform.forward * slideForce * turnSoftening, ForceMode.VelocityChange);
         SlideCooldown();
     }
     #endregion
