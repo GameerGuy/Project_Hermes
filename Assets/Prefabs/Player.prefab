@@ -232,21 +232,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3d7d39858529da4d8699fe71d64dd1d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  jumpHeight: 5.5
+  jumpHeight: 6
   fallingThreshold: 3
   groundedGravity: 10
   airbourneGravity: 20
   fallingGravity: 60
   runAcceleration: 50
   groundDeceleration: 30
-  airbourneDeceleration: 10
+  airbourneDeceleration: 5
   maxRunSpeed: 30
   sprintSpeedMult: 2
-  trueSpeedCap: 50
+  trueSpeedCap: 1000
   baseTurnSpeed: 20
   turnScaling: 0.73
   minTurnSpeed: 2
-  slideMult: 0.2
+  slideMult: 0.45
   slideCooldown: 200
   diveForce: 20
-  divePenalty: 1
+  divePenalty: 0.5
+  toggleSprint: 1

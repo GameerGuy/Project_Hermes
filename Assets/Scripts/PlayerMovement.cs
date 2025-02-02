@@ -120,7 +120,6 @@ public class PlayerMovement : MonoBehaviour
         AssignGravity();
         Vector2 move = inputActions.Player.Movement.ReadValue<Vector2>();
         movementDir = new Vector3(move.x, 0, move.y);
-        print(sliding);
     }
 
     private void FixedUpdate()
@@ -301,8 +300,8 @@ public class PlayerMovement : MonoBehaviour
             slideForce = trueSpeedCap;
         }
 
-        float turnSoftening = movementDir.magnitude > 0 ? Mathf.Abs(Vector3.Dot(horizontalVector.normalized, movementDir)): 1;
-        _rigidbody.AddForce(transform.forward * slideForce * turnSoftening, ForceMode.VelocityChange);
+        //float turnSoftening = movementDir.magnitude > 0 ? Mathf.Abs(Vector3.Dot(horizontalVector.normalized, movementDir)): 1;
+        _rigidbody.AddForce(transform.forward * slideForce, ForceMode.VelocityChange);
         SlideCooldown();
     }
     #endregion

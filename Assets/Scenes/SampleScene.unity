@@ -2598,30 +2598,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
-    - target: {fileID: 9047570048226136130, guid: f22fca66865c00042969abf561b9deac, type: 3}
-      propertyPath: slideMult
-      value: 0.45
-      objectReference: {fileID: 0}
-    - target: {fileID: 9047570048226136130, guid: f22fca66865c00042969abf561b9deac, type: 3}
-      propertyPath: jumpHeight
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 9047570048226136130, guid: f22fca66865c00042969abf561b9deac, type: 3}
-      propertyPath: divePenalty
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 9047570048226136130, guid: f22fca66865c00042969abf561b9deac, type: 3}
-      propertyPath: toggleSprint
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 9047570048226136130, guid: f22fca66865c00042969abf561b9deac, type: 3}
-      propertyPath: trueSpeedCap
-      value: 1000
-      objectReference: {fileID: 0}
-    - target: {fileID: 9047570048226136130, guid: f22fca66865c00042969abf561b9deac, type: 3}
-      propertyPath: airbourneDeceleration
-      value: 5
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
