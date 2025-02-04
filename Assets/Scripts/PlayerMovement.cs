@@ -139,8 +139,8 @@ public class PlayerMovement : MonoBehaviour
         inputActions.Player.Disable();
     }
 
-    //private void OnDrawGizmos()
-    //{
+    // private void OnDrawGizmos()
+    // {
     //    const float OFFSET = 0.01f;
     //    float radius = _collider.bounds.extents.x - OFFSET;
     //    float maxDistance = (_collider.bounds.extents.y / 2) + (OFFSET * 10);
@@ -157,7 +157,7 @@ public class PlayerMovement : MonoBehaviour
     //        Gizmos.DrawRay(_collider.bounds.center, -transform.up * maxDistance);
     //        Gizmos.DrawWireSphere(_collider.bounds.center + -transform.up * maxDistance, radius);
     //    }
-    //}
+    // }
     #endregion
 
 
@@ -170,16 +170,16 @@ public class PlayerMovement : MonoBehaviour
         _rigidbody.AddForce(Vector3.up * jumpForce, ForceMode.VelocityChange);
 
         if (!sliding) return;
-        //sliding = false;
+        sliding = false;
         transform.localScale = new Vector3(1, 1, 1);
     }
 
     private void OnJumpReleased(InputAction.CallbackContext context)
     {
-        if (sliding){
-            sliding = false;
-            return;
-        }
+        // if (sliding){
+        //     sliding = false;
+        //     return;
+        // }
         falling = !grounded;
     }
 
