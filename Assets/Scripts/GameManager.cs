@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Device;
 
 public class GameManager : MonoBehaviour
 {
@@ -22,11 +23,5 @@ public class GameManager : MonoBehaviour
         _instance = this;
         DontDestroyOnLoad(this);
     }
-
-    private void Start()
-    {
-        TimeManager.Instance.StopwatchStart();
-
-    }
-    
+        
 }

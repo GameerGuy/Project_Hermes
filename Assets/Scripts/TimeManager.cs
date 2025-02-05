@@ -19,23 +19,31 @@ public class TimeManager : MonoBehaviour
 
     }
 
-    private float stopwatchTimer;
+    private float _stopwatchTimer;
+    public float stopwatchTimer => _stopwatchTimer;
     private bool stopwatchActive = false;
+
+    private Action timerCallback;
+    private float timer;
 
     private void Awake()
     {
         _instance = this;
-
-
     }
 
     private void Update()
     {
         if (stopwatchActive){
-            stopwatchTimer += Time.deltaTime;
+            _stopwatchTimer += Time.deltaTime;
         }
-        print(stopwatchTimer);
 
+        if (timer > 0){
+            timer -= Time.deltaTime;
+
+            if (timer <= 0){
+                timerCallback();
+            }
+        }
     }
 
     public void StopwatchStart()
@@ -43,15 +51,21 @@ public class TimeManager : MonoBehaviour
         stopwatchActive = true;
     }
 
-    public void StopwatchPuase()
+    public float StopwatchPuase()
     {
         stopwatchActive = false;
+        return _stopwatchTimer;
     }
 
     public void StopwatchClear()
     {
-        stopwatchTimer = 0;
+        _stopwatchTimer = 0;
         StopwatchPuase();
+    }
+
+    public void SetTimer(float time, Action action){
+        this.timer = time;
+        this.timerCallback = action;
     }
 
 }
