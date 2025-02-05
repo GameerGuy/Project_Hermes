@@ -1,7 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class TimeManager : MonoBehaviour
@@ -51,16 +48,15 @@ public class TimeManager : MonoBehaviour
         stopwatchActive = true;
     }
 
-    public float StopwatchPuase()
+    public void StopwatchPause()
     {
         stopwatchActive = false;
-        return _stopwatchTimer;
     }
 
     public void StopwatchClear()
     {
         _stopwatchTimer = 0;
-        StopwatchPuase();
+        StopwatchPause();
     }
 
     public void SetTimer(float time, Action action){

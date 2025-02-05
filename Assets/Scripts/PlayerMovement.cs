@@ -1,9 +1,6 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Dreamteck.Splines;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -382,6 +379,16 @@ public class PlayerMovement : MonoBehaviour
 
         sliding = false;
         if (!crouching) transform.localScale = new Vector3(1, 1, 1);
+    }
+
+    public void EnableInput()
+    {
+        inputActions.Enable();
+    }
+
+    public void DisableInput() 
+    {
+        inputActions.Disable();
     }
     #endregion
 }

@@ -1,7 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Device;
+using UnityEngine.InputSystem;
 
 public class GameManager : MonoBehaviour
 {
@@ -18,10 +16,29 @@ public class GameManager : MonoBehaviour
 
     }
 
+
+    private PlayerMovement player;
+
     private void Awake()
     {
         _instance = this;
         DontDestroyOnLoad(this);
+    }
+
+    public void DisablePlayerInput()
+    {
+        if (player == null){
+            player = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerMovement>();
+        }
+        player.DisableInput();
+    }
+
+    public void EnablePlayerInput()
+    {
+        if (player == null){
+            player = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerMovement>();
+        }
+        player.EnableInput();
     }
         
 }

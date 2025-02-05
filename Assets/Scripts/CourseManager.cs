@@ -1,9 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public class RaceUIManager : MonoBehaviour
+public class CourseManager : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI countdownDisplay;
     [SerializeField] private TextMeshProUGUI stopwatchDisplay;
@@ -13,6 +11,7 @@ public class RaceUIManager : MonoBehaviour
     {
         stopwatchDisplay.enabled = false;
         stopwatchDisplay.text = TimeManager.Instance.stopwatchTimer.ToString("F3");
+        GameManager.Instance.DisablePlayerInput();
         RaceCountdown(countdownStart);
     }
 
@@ -43,6 +42,7 @@ public class RaceUIManager : MonoBehaviour
     {
         stopwatchDisplay.enabled = true;
         TimeManager.Instance.StopwatchStart();
+        GameManager.Instance.EnablePlayerInput();
     }
 
     private void CountdownChange()
