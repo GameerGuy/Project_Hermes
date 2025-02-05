@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Dreamteck.Splines;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -67,10 +68,13 @@ public class PlayerMovement : MonoBehaviour
     [Tooltip("Does the print button need to be held or is it a toggle?")]
     [SerializeField] private bool toggleSprint;
 
+    [SerializeField] private GameObject respawnPoint;
+
     private event EventHandler OnGroundedEvent;
     private event EventHandler OnAirbourneEvent;
     private event EventHandler OnSlideEvent;
 
+    private SplineProjector respawnProjector;
     private PlayerInput inputActions;
     private Rigidbody _rigidbody;
     private Collider _collider;
@@ -91,6 +95,7 @@ public class PlayerMovement : MonoBehaviour
     #region MonoBehaviours
     private void Awake()
     {
+        respawnProjector = respawnPoint.GetComponent<SplineProjector>();
         _rigidbody = GetComponent<Rigidbody>();
         _collider = GetComponent<Collider>();
         inputActions = new PlayerInput();
@@ -101,6 +106,7 @@ public class PlayerMovement : MonoBehaviour
         inputActions.Player.Sprint.canceled += OnSprintReleased;
         inputActions.Player.Crouch.started += OnCrouchPressed;
         inputActions.Player.Crouch.canceled += OnCrouchReleased;
+        inputActions.Player.Respawn.started += OnRespawnPressed;
 
         OnGroundedEvent += OnGrounded;
         OnAirbourneEvent += OnAirbourne;
@@ -221,6 +227,11 @@ public class PlayerMovement : MonoBehaviour
         crouching = false;
         if (!sliding) transform.localScale = new Vector3(1, 1, 1);
     }
+
+    private void OnRespawnPressed(InputAction.CallbackContext context)
+    {
+        Respawn();
+    }
     #endregion
 
 
@@ -272,6 +283,13 @@ public class PlayerMovement : MonoBehaviour
     {
         _rigidbody.AddForce(Vector3.down * currentGravity, ForceMode.Acceleration);
     }
+
+
+    private void Respawn()
+    {
+        _rigidbody.velocity = Vector3.zero;
+        transform.position = respawnPoint.transform.position + new Vector3(0, 1, 0);
+    }
     #endregion
 
 
@@ -281,6 +299,7 @@ public class PlayerMovement : MonoBehaviour
     {
         currentGravity = groundedGravity;
         currentDeceleration = groundDeceleration;
+        respawnProjector.projectTarget = transform;
         falling = false;
         diving = false;
     }
@@ -288,6 +307,7 @@ public class PlayerMovement : MonoBehaviour
     private void OnAirbourne(object sender, EventArgs e)
     {
         currentDeceleration = airbourneDeceleration;
+        respawnProjector.projectTarget = respawnPoint.transform;
     }
 
     private void OnSlide(object sender, EventArgs e)
