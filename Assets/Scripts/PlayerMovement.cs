@@ -250,7 +250,7 @@ public class PlayerMovement : MonoBehaviour
         float maxSpeed = sprinting ? maxRunSpeed * sprintSpeedMult : maxRunSpeed;
         //float turningLeniency = Mathf.Sin(Vector3.Angle(movementDir, transform.forward) * Mathf.Deg2Rad);
 
-        if (movementDir.magnitude == 0 || crouching) {
+        if (movementDir.z <= 0 || crouching) {
 
             if (horizontalSpeed <= 1) {
                 _rigidbody.velocity = verticalVector;
@@ -272,9 +272,9 @@ public class PlayerMovement : MonoBehaviour
 
     private void HandleRotation()
     {
-        if (movementDir.magnitude == 0) return;
+        if (movementDir.x == 0) return;
         
-        Quaternion toRotation = Quaternion.LookRotation(movementDir.normalized, Vector3.up);
+        Quaternion toRotation = Quaternion.LookRotation(transform.right * movementDir.x, Vector3.up);
         
         float horizontalSpeed = GetHorizontalVelocity().magnitude;
         float scaledTurnSpeed = baseTurnSpeed - turnScaling * (horizontalSpeed * horizontalSpeed / (maxRunSpeed * maxRunSpeed)) + turnScaling;
