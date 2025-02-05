@@ -142,6 +142,14 @@ public class PlayerMovement : MonoBehaviour
         inputActions.Player.Disable();
     }
 
+    private void OnCollisionEnter(Collision other)
+    {
+        if (other.gameObject.CompareTag("Path")){
+            respawnProjector.spline = other.gameObject.GetComponent<SplineComputer>();
+        }
+
+    }
+
     // private void OnDrawGizmos()
     // {
     //    const float OFFSET = 0.01f;

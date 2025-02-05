@@ -3,15 +3,22 @@ using UnityEngine;
 
 public class CourseManager : MonoBehaviour
 {
+    [SerializeField] private Transform spawnPoint;
+    [SerializeField] private GameObject playerPrefab;
+    [SerializeField] private CustomCamera customCamera;
     [SerializeField] private TextMeshProUGUI countdownDisplay;
     [SerializeField] private TextMeshProUGUI stopwatchDisplay;
     private int countdownStart = 3;
 
     private void Start()
     {
+        GameManager.Instance.SetPlayer(Instantiate(playerPrefab, spawnPoint.position, Quaternion.identity).GetComponentInChildren<PlayerMovement>());
+        GameManager.Instance.DisablePlayerInput();
+
+        customCamera.SetTarget(GameManager.Instance.Player.transform);
+
         stopwatchDisplay.enabled = false;
         stopwatchDisplay.text = TimeManager.Instance.stopwatchTimer.ToString("F3");
-        GameManager.Instance.DisablePlayerInput();
         RaceCountdown(countdownStart);
     }
 

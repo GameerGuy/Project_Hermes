@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -17,7 +18,8 @@ public class GameManager : MonoBehaviour
     }
 
 
-    private PlayerMovement player;
+    private PlayerMovement _player;
+    public PlayerMovement Player => _player;
 
     private void Awake()
     {
@@ -25,20 +27,21 @@ public class GameManager : MonoBehaviour
         DontDestroyOnLoad(this);
     }
 
+    public void SetPlayer(PlayerMovement p)
+    {
+        _player = p;
+    }
+
     public void DisablePlayerInput()
     {
-        if (player == null){
-            player = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerMovement>();
-        }
-        player.DisableInput();
+        if (_player == null) return;
+        _player.DisableInput();
     }
 
     public void EnablePlayerInput()
     {
-        if (player == null){
-            player = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerMovement>();
-        }
-        player.EnableInput();
+        if (_player == null) return;
+        _player.EnableInput();
     }
         
 }
