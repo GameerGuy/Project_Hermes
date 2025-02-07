@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Dreamteck.Splines;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Cysharp.Threading.Tasks;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -123,6 +124,7 @@ public class PlayerMovement : MonoBehaviour
         AssignGravity();
         Vector2 move = inputActions.Player.Movement.ReadValue<Vector2>();
         movementDir = new Vector3(move.x, 0, move.y);
+        print(grounded + " : " + currentGravity);
     }
 
     private void FixedUpdate()
@@ -174,6 +176,15 @@ public class PlayerMovement : MonoBehaviour
 
 
     #region Input Functions
+    public void EnableInput()
+    {
+        inputActions.Enable();
+    }
+
+    public void DisableInput()
+    {
+        inputActions.Disable();
+    }
     private void OnJumpPressed(InputAction.CallbackContext context)
     {
         if (!grounded) return;
@@ -302,6 +313,7 @@ public class PlayerMovement : MonoBehaviour
     #region Event Functions
     private void OnGrounded(object sender, EventArgs e)
     {
+        grounded = true;
         currentGravity = groundedGravity;
         currentDeceleration = groundDeceleration;
         respawnProjector.projectTarget = transform;
@@ -311,6 +323,8 @@ public class PlayerMovement : MonoBehaviour
 
     private void OnAirbourne(object sender, EventArgs e)
     {
+        grounded = false;
+        //JumpLenience();
         currentDeceleration = airbourneDeceleration;
         respawnProjector.projectTarget = respawnPoint.transform;
     }
@@ -350,16 +364,16 @@ public class PlayerMovement : MonoBehaviour
         const float OFFSET = 0.01f;
         float radius = _collider.bounds.extents.x - OFFSET;
         float maxDistance = (_collider.bounds.extents.y / 2) + (OFFSET * 10);
-        grounded = Physics.SphereCast(_collider.bounds.center, radius, -transform.up, out RaycastHit hitInfo, maxDistance);
+        bool isGrounded = Physics.SphereCast(_collider.bounds.center, radius, -transform.up, out RaycastHit hitInfo, maxDistance);
 
-        if (wasGrounded == grounded) return grounded;
+        if (wasGrounded == isGrounded) return grounded = isGrounded;
 
-        if (grounded) {
+        if (isGrounded) {
             OnGroundedEvent?.Invoke(this, EventArgs.Empty);
         } else {
             OnAirbourneEvent?.Invoke(this, EventArgs.Empty);
         }
-        return grounded;
+        return isGrounded;
     }
 
     private void AssignGravity()
@@ -373,6 +387,12 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    private async void JumpLenience() 
+    { 
+        await Task.Delay(100);
+        grounded = false;
+    }
+
     private async void SlideCooldown()
     {
         sliding = true;
@@ -381,7 +401,7 @@ public class PlayerMovement : MonoBehaviour
         float horzontalSpeed = GetHorizontalVelocity().magnitude;
         while (horzontalSpeed > maxRunSpeed * sprintSpeedMult && sliding) {
             horzontalSpeed = GetHorizontalVelocity().magnitude;
-            await Task.Delay(20);
+            await UniTask.Yield();
             continue;
         }
 
@@ -389,14 +409,5 @@ public class PlayerMovement : MonoBehaviour
         if (!crouching) transform.localScale = new Vector3(1, 1, 1);
     }
 
-    public void EnableInput()
-    {
-        inputActions.Enable();
-    }
-
-    public void DisableInput() 
-    {
-        inputActions.Disable();
-    }
     #endregion
 }

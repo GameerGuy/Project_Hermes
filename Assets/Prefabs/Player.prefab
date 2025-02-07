@@ -243,9 +243,9 @@ MonoBehaviour:
   maxRunSpeed: 30
   sprintSpeedMult: 2
   trueSpeedCap: 1000
-  baseTurnSpeed: 4
-  turnScaling: 0.73
-  minTurnSpeed: 2
+  baseTurnSpeed: 3
+  turnScaling: 0.45
+  minTurnSpeed: 1
   slideMult: 0.45
   slideCooldown: 200
   diveForce: 20
