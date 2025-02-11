@@ -18,13 +18,13 @@ public class CourseManager : MonoBehaviour
         customCamera.SetTarget(GameManager.Instance.Player.transform);
 
         stopwatchDisplay.enabled = false;
-        stopwatchDisplay.text = TimeManager.Instance.stopwatchTimer.ToString("F3");
+        stopwatchDisplay.text = "Lap Time:\n" + TimeManager.Instance.stopwatchTimer.ToString("F3");
         RaceCountdown(countdownStart);
     }
 
     private void Update()
     {
-        stopwatchDisplay.text = TimeManager.Instance.stopwatchTimer.ToString("F3");
+        stopwatchDisplay.text = "Lap Time:\n" + TimeManager.Instance.stopwatchTimer.ToString("F3");
         if (stopwatchDisplay.enabled) return;
 
         CountdownChange();

@@ -147,8 +147,14 @@ public class PlayerMovement : MonoBehaviour
 
     private void OnCollisionEnter(Collision other)
     {
-        if (other.gameObject.CompareTag("Path")){
+        if (other.gameObject.CompareTag("Path")) {
             respawnProjector.spline = other.gameObject.GetComponent<SplineComputer>();
+            return;
+        }
+
+        if (other.gameObject.CompareTag("Respawner")) {
+            Respawn();
+            return;
         }
 
     }
