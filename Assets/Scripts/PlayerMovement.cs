@@ -125,6 +125,7 @@ public class PlayerMovement : MonoBehaviour
         AssignGravity();
         Vector2 move = inputActions.Player.Movement.ReadValue<Vector2>();
         movementDir = new Vector3(move.x, 0, move.y);
+        print(canJump);
     }
 
     private void FixedUpdate()
@@ -262,7 +263,7 @@ public class PlayerMovement : MonoBehaviour
         float maxSpeed = sprinting ? maxRunSpeed * sprintSpeedMult : maxRunSpeed;
         //float turningLeniency = Mathf.Sin(Vector3.Angle(movementDir, transform.forward) * Mathf.Deg2Rad);
 
-        if (movementDir.z <= 0 || crouching) {
+        if (movementDir.z == 0 || crouching) {
 
             if (horizontalSpeed <= 1) {
                 _rigidbody.velocity = verticalVector;
@@ -274,7 +275,7 @@ public class PlayerMovement : MonoBehaviour
         }
 
         if (horizontalSpeed < maxSpeed) {
-            _rigidbody.AddForce(movementDir.magnitude * transform.forward * runAcceleration, ForceMode.Acceleration);
+            _rigidbody.AddForce(movementDir.z * transform.forward * runAcceleration, ForceMode.Acceleration);
         } else if (horizontalSpeed > maxSpeed) {
             _rigidbody.AddForce(horizontalVector.normalized * -1 * currentDeceleration, ForceMode.Acceleration);
         } else {
@@ -306,6 +307,7 @@ public class PlayerMovement : MonoBehaviour
     {
         _rigidbody.velocity = Vector3.zero;
         transform.position = respawnPoint.transform.position + new Vector3(0, 1, 0);
+        transform.rotation = respawnPoint.transform.rotation;
     }
     #endregion
 
@@ -392,7 +394,7 @@ public class PlayerMovement : MonoBehaviour
     private async void JumpLenience() 
     { 
         await Task.Delay(300);
-        canJump = false;
+        canJump = grounded;
     }
 
     private async void SlideCooldown()
