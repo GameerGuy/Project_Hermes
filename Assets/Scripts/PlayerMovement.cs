@@ -83,6 +83,7 @@ public class PlayerMovement : MonoBehaviour
     private bool sprinting;
     private bool crouching;
     private bool grounded;
+    private bool canJump;
     private bool falling;
     private bool sliding;
     private bool diving;
@@ -124,7 +125,6 @@ public class PlayerMovement : MonoBehaviour
         AssignGravity();
         Vector2 move = inputActions.Player.Movement.ReadValue<Vector2>();
         movementDir = new Vector3(move.x, 0, move.y);
-        print(grounded + " : " + currentGravity);
     }
 
     private void FixedUpdate()
@@ -187,9 +187,10 @@ public class PlayerMovement : MonoBehaviour
     }
     private void OnJumpPressed(InputAction.CallbackContext context)
     {
-        if (!grounded) return;
+        if (!canJump) return;
         float jumpForce = Mathf.Sqrt(2 * airbourneGravity * jumpHeight);
         _rigidbody.AddForce(Vector3.up * jumpForce, ForceMode.VelocityChange);
+        canJump = false;
 
         if (!sliding) return;
         sliding = false;
@@ -314,6 +315,7 @@ public class PlayerMovement : MonoBehaviour
     private void OnGrounded(object sender, EventArgs e)
     {
         grounded = true;
+        canJump = true;
         currentGravity = groundedGravity;
         currentDeceleration = groundDeceleration;
         respawnProjector.projectTarget = transform;
@@ -324,7 +326,7 @@ public class PlayerMovement : MonoBehaviour
     private void OnAirbourne(object sender, EventArgs e)
     {
         grounded = false;
-        //JumpLenience();
+        JumpLenience();
         currentDeceleration = airbourneDeceleration;
         respawnProjector.projectTarget = respawnPoint.transform;
     }
@@ -389,8 +391,8 @@ public class PlayerMovement : MonoBehaviour
 
     private async void JumpLenience() 
     { 
-        await Task.Delay(100);
-        grounded = false;
+        await Task.Delay(300);
+        canJump = false;
     }
 
     private async void SlideCooldown()
