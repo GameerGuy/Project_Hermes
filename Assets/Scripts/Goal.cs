@@ -7,8 +7,11 @@ public class Goal : MonoBehaviour
     {  
         if (collider.gameObject.CompareTag("Player")) {
             TimeManager.Instance.StopwatchPause();
-            SaveObject save = new SaveObject(TimeManager.Instance.stopwatchTimer);
-            GameManager.Instance.SaveTime(save);
+            SaveObject save = new SaveObject{
+                lapTime = TimeManager.Instance.stopwatchTimer, 
+                date = DateTime.Today.ToShortDateString()
+            };
+            SaveSystem.Save(save);
         }
 
     }

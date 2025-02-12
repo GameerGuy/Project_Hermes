@@ -31,17 +31,12 @@ public class GameManager : MonoBehaviour
             Destroy(this);
         }
         DontDestroyOnLoad(this);
+        SaveSystem.Init();
     }
 
     public void StartRace()
     {
         SceneManager.LoadScene(1);
-    }
-
-    public void SaveTime(SaveObject s) {
-        string json = JsonUtility.ToJson(s);
-        File.WriteAllText(Application.dataPath + "/save.txt", json);
-        print("Saved");
     }
 
     public void SetPlayer(PlayerMovement p)
