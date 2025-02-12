@@ -5,6 +5,11 @@ using UnityEngine.SceneManagement;
 
 public class MenuManager : MonoBehaviour
 {
+
+    public void OpenOptionsMenu()
+    {
+        print("options");
+    }
     public void QuitGame()
     {
         Application.Quit();

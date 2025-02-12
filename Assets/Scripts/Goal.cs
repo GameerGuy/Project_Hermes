@@ -10,7 +10,8 @@ public class Goal : MonoBehaviour
             TimeManager.Instance.StopwatchPause();
             SaveObject save = new SaveObject{
                 lapTime = TimeManager.Instance.stopwatchTimer, 
-                date = DateTime.Today.ToShortDateString()
+                date = DateTime.Today.ToShortDateString(),
+                time = DateTime.Now.ToShortTimeString()
             };
             SaveSystem.Save(save);
             SceneManager.LoadScene(0);

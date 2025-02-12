@@ -17,8 +17,9 @@ public static class SaveSystem
 
     public static void Save(string saveString)
     {
-        File.WriteAllText(SAVE_FOLDER + "/save.txt", saveString);
+        File.AppendAllText(SAVE_FOLDER + "/record.txt", saveString + "\n");
     }
+
     public static void Save(SaveObject saveObject){
         string saveString = JsonUtility.ToJson(saveObject);
         Save(saveString);
