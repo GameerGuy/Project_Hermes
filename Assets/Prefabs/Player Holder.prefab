@@ -214,40 +214,8 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5395796936343414745, guid: f22fca66865c00042969abf561b9deac, type: 3}
-      propertyPath: m_Radius
-      value: 0.51
-      objectReference: {fileID: 0}
-    - target: {fileID: 6440861779163360897, guid: f22fca66865c00042969abf561b9deac, type: 3}
-      propertyPath: m_UseGravity
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6440861779163360897, guid: f22fca66865c00042969abf561b9deac, type: 3}
-      propertyPath: m_AngularDrag
-      value: 0.05
-      objectReference: {fileID: 0}
-    - target: {fileID: 6440861779163360897, guid: f22fca66865c00042969abf561b9deac, type: 3}
-      propertyPath: m_Interpolate
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6440861779163360897, guid: f22fca66865c00042969abf561b9deac, type: 3}
-      propertyPath: m_IsKinematic
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6440861779163360897, guid: f22fca66865c00042969abf561b9deac, type: 3}
-      propertyPath: m_ImplicitTensor
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6440861779163360897, guid: f22fca66865c00042969abf561b9deac, type: 3}
-      propertyPath: m_CollisionDetection
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 6549462106068090882, guid: f22fca66865c00042969abf561b9deac, type: 3}
       propertyPath: m_Name
-      value: Player
-      objectReference: {fileID: 0}
-    - target: {fileID: 6549462106068090882, guid: f22fca66865c00042969abf561b9deac, type: 3}
-      propertyPath: m_TagString
       value: Player
       objectReference: {fileID: 0}
     - target: {fileID: 9047570048226136130, guid: f22fca66865c00042969abf561b9deac, type: 3}

@@ -1,9 +1,9 @@
 using System;
 
 public class SaveObject {
-        public float _lapTime;
+        public float lapTime;
 
         public SaveObject(float lapTime){
-            _lapTime = lapTime;
+            this.lapTime = lapTime;
         }
     }

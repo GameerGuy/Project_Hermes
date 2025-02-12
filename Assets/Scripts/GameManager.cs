@@ -19,12 +19,7 @@ public class GameManager : MonoBehaviour
 
     }
 
-    public void SaveTime(SaveObject s) {
-        string json = JsonUtility.ToJson(s);
-        File.WriteAllText(Application.dataPath + "/save.txt", json);
-        print("Saved");
-    }
-
+    
     private PlayerMovement _player;
     public PlayerMovement Player => _player;
 
@@ -43,6 +38,11 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene(1);
     }
 
+    public void SaveTime(SaveObject s) {
+        string json = JsonUtility.ToJson(s);
+        File.WriteAllText(Application.dataPath + "/save.txt", json);
+        print("Saved");
+    }
 
     public void SetPlayer(PlayerMovement p)
     {
