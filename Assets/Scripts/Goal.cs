@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Goal : MonoBehaviour
 {
@@ -12,6 +13,7 @@ public class Goal : MonoBehaviour
                 date = DateTime.Today.ToShortDateString()
             };
             SaveSystem.Save(save);
+            SceneManager.LoadScene(0);
         }
 
     }

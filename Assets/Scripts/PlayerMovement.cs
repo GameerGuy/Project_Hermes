@@ -125,7 +125,6 @@ public class PlayerMovement : MonoBehaviour
         AssignGravity();
         Vector2 move = inputActions.Player.Movement.ReadValue<Vector2>();
         movementDir = new Vector3(move.x, 0, move.y);
-        print(canJump);
     }
 
     private void FixedUpdate()

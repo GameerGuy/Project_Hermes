@@ -28,15 +28,11 @@ public class GameManager : MonoBehaviour
         if (_instance == null){
             _instance = this;
         } else {
-            Destroy(this);
+            Destroy(gameObject);
         }
         DontDestroyOnLoad(this);
         SaveSystem.Init();
-    }
-
-    public void StartRace()
-    {
-        SceneManager.LoadScene(1);
+        Application.targetFrameRate = -1;
     }
 
     public void SetPlayer(PlayerMovement p)
