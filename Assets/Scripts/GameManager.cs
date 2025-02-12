@@ -1,3 +1,5 @@
+using System;
+using System.IO;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
@@ -17,15 +19,30 @@ public class GameManager : MonoBehaviour
 
     }
 
+    public void SaveTime(SaveObject s) {
+        string json = JsonUtility.ToJson(s);
+        File.WriteAllText(Application.dataPath + "/save.txt", json);
+        print("Saved");
+    }
 
     private PlayerMovement _player;
     public PlayerMovement Player => _player;
 
     private void Awake()
     {
-        _instance = this;
+        if (_instance == null){
+            _instance = this;
+        } else {
+            Destroy(this);
+        }
         DontDestroyOnLoad(this);
     }
+
+    public void StartRace()
+    {
+        SceneManager.LoadScene(1);
+    }
+
 
     public void SetPlayer(PlayerMovement p)
     {

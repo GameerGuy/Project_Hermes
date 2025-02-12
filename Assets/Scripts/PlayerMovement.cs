@@ -285,7 +285,7 @@ public class PlayerMovement : MonoBehaviour
         } else if (horizontalSpeed > maxSpeed) {
             _rigidbody.AddForce(horizontalVector.normalized * -1 * currentDeceleration, ForceMode.Acceleration);
         } else {
-            _rigidbody.velocity = transform.forward * maxSpeed + verticalVector;
+            _rigidbody.velocity = transform.forward * movementDir.normalized.x * maxSpeed + verticalVector;
         }
     }
 
