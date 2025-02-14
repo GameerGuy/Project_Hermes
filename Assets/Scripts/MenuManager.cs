@@ -7,6 +7,7 @@ using UnityEngine.SceneManagement;
 
 public class MenuManager : MonoBehaviour
 {
+    private const float TRANSITION_SPEED = 0.5f;
     private Camera mainCamera;
 
     private void Awake()
@@ -23,22 +24,19 @@ public class MenuManager : MonoBehaviour
         Application.Quit();
     }
 
-    public async void StartRace()
+    public async void StartRace(CourseData data)
     {
-        await ChangeBackgroundColour(new Color(236, 184, 127));
-        SceneManager.LoadScene(1);
+        await ChangeBackgroundColour(data.backgroundColour);
+        SceneManager.LoadScene(data.courseName);
     }
 
     private async Task ChangeBackgroundColour(Color target)
     {
-        target /= 255;
-        print(target);
         while (mainCamera.backgroundColor != target)
         {
-            mainCamera.backgroundColor = Color.Lerp(mainCamera.backgroundColor, target, 0.5f);
+            mainCamera.backgroundColor = Color.Lerp(mainCamera.backgroundColor, target, TRANSITION_SPEED);
             print(mainCamera.backgroundColor);
             await Task.Delay(100);
         }
-        print("Change complete");
     }
 }
