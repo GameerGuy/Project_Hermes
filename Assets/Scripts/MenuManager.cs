@@ -7,8 +7,10 @@ using UnityEngine.SceneManagement;
 
 public class MenuManager : MonoBehaviour
 {
-    private const float TRANSITION_SPEED = 0.5f;
+    private const float TRANSITION_TIME = 3f;
+    [SerializeField] private AnimationCurve curve;
     private Camera mainCamera;
+
 
     private void Awake()
     {
@@ -32,11 +34,13 @@ public class MenuManager : MonoBehaviour
 
     private async Task ChangeBackgroundColour(Color target)
     {
-        while (mainCamera.backgroundColor != target)
-        {
-            mainCamera.backgroundColor = Color.Lerp(mainCamera.backgroundColor, target, TRANSITION_SPEED);
-            print(mainCamera.backgroundColor);
-            await Task.Delay(100);
+        float time = 0;
+        Color startColour = mainCamera.backgroundColor;
+        while (time < TRANSITION_TIME) {
+            mainCamera.backgroundColor = Color.Lerp(startColour, target, curve.Evaluate(time/TRANSITION_TIME));
+            time += Time.deltaTime;
+            print(time);
+            await UniTask.Yield();
         }
     }
 }
