@@ -8,8 +8,9 @@ public class Goal : MonoBehaviour
     {  
         if (collider.gameObject.CompareTag("Player")) {
             TimeManager.Instance.StopwatchPause();
-            SaveObject save = new SaveObject{
-                lapTime = TimeManager.Instance.stopwatchTimer, 
+            SaveObject save = new SaveObject {
+                courseName = SceneManager.GetActiveScene().name,
+                lapTime = TimeManager.Instance.stopwatchTimer,
                 date = DateTime.Today.ToShortDateString(),
                 time = DateTime.Now.ToShortTimeString()
             };
