@@ -466,7 +466,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 254541193}
-  m_LocalRotation: {x: -0, y: -0, z: -2.3283062e-10, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -475,10 +475,10 @@ RectTransform:
   - {fileID: 682254439}
   - {fileID: 2131475595}
   m_Father: {fileID: 1355900920}
-  m_LocalEulerAnglesHint: {x: 1.284, y: -40.3, z: 0.824}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.00012207031, y: 0}
+  m_AnchoredPosition: {x: 4.14, y: -1.91}
   m_SizeDelta: {x: 300, y: 255}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!95 &254541195
@@ -1456,7 +1456,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1043828014
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2028,7 +2028,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1355900920
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2036,7 +2036,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1355900919}
-  m_LocalRotation: {x: 0.008041791, y: -0.34452417, z: 0.010609821, w: 0.9386831}
+  m_LocalRotation: {x: -0.008041794, y: 0.34452412, z: -0.010609821, w: -0.93868303}
   m_LocalPosition: {x: 0, y: 0, z: -76.033554}
   m_LocalScale: {x: 1.3128985, y: 1.3128983, z: 1.3128991}
   m_ConstrainProportionsScale: 0
@@ -2129,7 +2129,7 @@ PlayableDirector:
   m_GameObject: {fileID: 1416090628}
   m_Enabled: 1
   serializedVersion: 3
-  m_PlayableAsset: {fileID: 11400000, guid: aea8ce5675677cb498642237a0fb2ec0, type: 2}
+  m_PlayableAsset: {fileID: 11400000, guid: 3a99f183503d6ba4d9d462852d7b582e, type: 2}
   m_InitialState: 0
   m_WrapMode: 2
   m_DirectorUpdateMode: 1
@@ -2157,6 +2157,14 @@ PlayableDirector:
     value: {fileID: 1265232830}
   - key: {fileID: 6842190981239303500, guid: 3a99f183503d6ba4d9d462852d7b582e, type: 2}
     value: {fileID: 1480477320}
+  - key: {fileID: 3278956572062415779, guid: 3a99f183503d6ba4d9d462852d7b582e, type: 2}
+    value: {fileID: 1631208892}
+  - key: {fileID: -538518022892579199, guid: 3a99f183503d6ba4d9d462852d7b582e, type: 2}
+    value: {fileID: 1355900919}
+  - key: {fileID: 8347430624924805600, guid: 3a99f183503d6ba4d9d462852d7b582e, type: 2}
+    value: {fileID: 978796858}
+  - key: {fileID: -3316202758662969970, guid: 3a99f183503d6ba4d9d462852d7b582e, type: 2}
+    value: {fileID: 2142990188}
   m_ExposedReferences:
     m_References: []
 --- !u!1 &1480477315
