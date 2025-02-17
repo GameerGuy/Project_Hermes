@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.Playables;
 using UnityEngine.SceneManagement;
 
 public class MenuManager : MonoBehaviour
@@ -39,7 +40,6 @@ public class MenuManager : MonoBehaviour
         while (time < TRANSITION_TIME) {
             mainCamera.backgroundColor = Color.Lerp(startColour, target, curve.Evaluate(time/TRANSITION_TIME));
             time += Time.deltaTime;
-            print(time);
             await UniTask.Yield();
         }
     }
