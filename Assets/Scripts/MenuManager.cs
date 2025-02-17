@@ -10,12 +10,25 @@ public class MenuManager : MonoBehaviour
 {
     private const float TRANSITION_TIME = 3f;
     [SerializeField] private AnimationCurve curve;
+    [SerializeField] private PlayableAsset intro;
+    [SerializeField] private PlayableAsset openLevelSelect;
+    private PlayableDirector director;
     private Camera mainCamera;
+    
 
 
     private void Awake()
     {
         mainCamera = Camera.main;
+        director = GetComponent<PlayableDirector>();
+        director.Play(intro);
+    }
+
+    public void OpenLevelSelect()
+    {
+        director.Play(openLevelSelect);
+        //mainMenu.SetActive(false);
+        //levelSelectMenu.SetActive(true);
     }
 
     public void OpenOptionsMenu()

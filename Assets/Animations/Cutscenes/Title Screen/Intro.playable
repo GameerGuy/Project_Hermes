@@ -384,7 +384,7 @@ MonoBehaviour:
     m_PreExtrapolationMode: 1
     m_PostExtrapolationTime: Infinity
     m_PreExtrapolationTime: 0.2
-    m_DisplayName: Button Entrance
+    m_DisplayName: Button Entrance(south)ff
   m_Markers:
     m_Objects: []
   m_InfiniteClipPreExtrapolation: 1
@@ -543,7 +543,7 @@ AnimationClip:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Button Entrance
+  m_Name: Button Entrance(south)
   serializedVersion: 7
   m_Legacy: 0
   m_Compressed: 0
@@ -570,12 +570,12 @@ AnimationClip:
       - serializedVersion: 3
         time: 1.1666666
         value: 0
-        inSlope: 6.3120666
-        outSlope: 6.3120666
+        inSlope: 24.502634
+        outSlope: 24.502634
         tangentMode: 0
         weightedMode: 0
         inWeight: 0.15826827
-        outWeight: 0.33333334
+        outWeight: 0.14193448
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
@@ -639,12 +639,12 @@ AnimationClip:
       - serializedVersion: 3
         time: 1.1666666
         value: 0
-        inSlope: 6.3120666
-        outSlope: 6.3120666
+        inSlope: 24.502634
+        outSlope: 24.502634
         tangentMode: 0
         weightedMode: 0
         inWeight: 0.15826827
-        outWeight: 0.33333334
+        outWeight: 0.14193448
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
@@ -675,8 +675,8 @@ MonoBehaviour:
   m_UseTrackMatchFields: 1
   m_MatchTargetFields: 63
   m_RemoveStartOffset: 0
-  m_ApplyFootIK: 1
-  m_Loop: 0
+  m_ApplyFootIK: 0
+  m_Loop: 2
   m_Version: 1
   m_Rotation: {x: 0, y: 0, z: 0, w: 1}
 --- !u!114 &11400000
@@ -939,8 +939,8 @@ MonoBehaviour:
   m_UseTrackMatchFields: 1
   m_MatchTargetFields: 63
   m_RemoveStartOffset: 1
-  m_ApplyFootIK: 1
-  m_Loop: 0
+  m_ApplyFootIK: 0
+  m_Loop: 2
   m_Version: 1
   m_Rotation: {x: 0, y: 0, z: 0, w: 1}
 --- !u!114 &6168760597247809695
@@ -961,8 +961,8 @@ MonoBehaviour:
   m_UseTrackMatchFields: 1
   m_MatchTargetFields: 63
   m_RemoveStartOffset: 0
-  m_ApplyFootIK: 1
-  m_Loop: 0
+  m_ApplyFootIK: 0
+  m_Loop: 2
   m_Version: 1
   m_Rotation: {x: 0, y: 0, z: 0, w: 1}
 --- !u!114 &6297877889405644491
@@ -983,8 +983,8 @@ MonoBehaviour:
   m_UseTrackMatchFields: 1
   m_MatchTargetFields: 63
   m_RemoveStartOffset: 1
-  m_ApplyFootIK: 1
-  m_Loop: 0
+  m_ApplyFootIK: 0
+  m_Loop: 2
   m_Version: 1
   m_Rotation: {x: 0, y: 0, z: 0, w: 1}
 --- !u!114 &7006035598125066673

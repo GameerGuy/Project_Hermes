@@ -1910,7 +1910,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 218.59906}
+  m_AnchoredPosition: {x: 0, y: 700}
   m_SizeDelta: {x: 1024, y: 512}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1342916154
@@ -2103,6 +2103,8 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  intro: {fileID: 11400000, guid: aea8ce5675677cb498642237a0fb2ec0, type: 2}
+  openLevelSelect: {fileID: 11400000, guid: 3a99f183503d6ba4d9d462852d7b582e, type: 2}
 --- !u!4 &1416090630
 Transform:
   m_ObjectHideFlags: 0
@@ -2128,7 +2130,7 @@ PlayableDirector:
   m_Enabled: 1
   serializedVersion: 3
   m_PlayableAsset: {fileID: 11400000, guid: aea8ce5675677cb498642237a0fb2ec0, type: 2}
-  m_InitialState: 1
+  m_InitialState: 0
   m_WrapMode: 2
   m_DirectorUpdateMode: 1
   m_InitialTime: 0
@@ -2147,6 +2149,14 @@ PlayableDirector:
     value: {fileID: 978796858}
   - key: {fileID: 7006035598125066673, guid: aea8ce5675677cb498642237a0fb2ec0, type: 2}
     value: {fileID: 2142990188}
+  - key: {fileID: -1452172131356450590, guid: 3a99f183503d6ba4d9d462852d7b582e, type: 2}
+    value: {fileID: 254541195}
+  - key: {fileID: 2239338434103640152, guid: 3a99f183503d6ba4d9d462852d7b582e, type: 2}
+    value: {fileID: 1771472388}
+  - key: {fileID: -4234496183743596366, guid: 3a99f183503d6ba4d9d462852d7b582e, type: 2}
+    value: {fileID: 1265232830}
+  - key: {fileID: 6842190981239303500, guid: 3a99f183503d6ba4d9d462852d7b582e, type: 2}
+    value: {fileID: 1480477320}
   m_ExposedReferences:
     m_References: []
 --- !u!1 &1480477315
@@ -2428,11 +2438,11 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1416090629}
         m_TargetAssemblyTypeName: MenuManager, Assembly-CSharp
-        m_MethodName: StartRace
-        m_Mode: 2
+        m_MethodName: OpenLevelSelect
+        m_Mode: 1
         m_Arguments:
-          m_ObjectArgument: {fileID: 11400000, guid: febcd8e0e1ce05542a214d6902c88414, type: 2}
-          m_ObjectArgumentAssemblyTypeName: CourseData, Assembly-CSharp
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
