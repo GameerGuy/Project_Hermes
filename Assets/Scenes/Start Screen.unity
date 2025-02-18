@@ -873,7 +873,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0.23703556, g: 0.8867924, b: 0.7744021, a: 111.06815}
+  m_BackGroundColor: {r: 0.18062477, g: 0.9339623, b: 0.821763, a: 254.88327}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -1102,8 +1102,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4292471807
-  m_fontColor: {r: 1, g: 0.9200155, b: 0.8522012, a: 1}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -1379,8 +1379,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4292471807
-  m_fontColor: {r: 1, g: 0.9200155, b: 0.8522012, a: 1}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -1682,8 +1682,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4292471807
-  m_fontColor: {r: 1, g: 0.9200155, b: 0.8522012, a: 1}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -2528,7 +2528,7 @@ PlayableDirector:
   m_GameObject: {fileID: 1416090628}
   m_Enabled: 1
   serializedVersion: 3
-  m_PlayableAsset: {fileID: 11400000, guid: 7a65970de29e18f4881b3f9fc4a403d3, type: 2}
+  m_PlayableAsset: {fileID: 11400000, guid: aea8ce5675677cb498642237a0fb2ec0, type: 2}
   m_InitialState: 0
   m_WrapMode: 2
   m_DirectorUpdateMode: 1
