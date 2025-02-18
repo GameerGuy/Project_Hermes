@@ -12,6 +12,7 @@ public class MenuManager : MonoBehaviour
     [SerializeField] private AnimationCurve curve;
     [SerializeField] private PlayableAsset intro;
     [SerializeField] private PlayableAsset openLevelSelect;
+    [SerializeField] private PlayableAsset closeLevelSelect;
     private PlayableDirector director;
     private Camera mainCamera;
     
@@ -27,8 +28,11 @@ public class MenuManager : MonoBehaviour
     public void OpenLevelSelect()
     {
         director.Play(openLevelSelect);
-        //mainMenu.SetActive(false);
-        //levelSelectMenu.SetActive(true);
+    }
+
+    public void CloseLevelSelect()
+    {
+        director.Play(closeLevelSelect);
     }
 
     public void OpenOptionsMenu()

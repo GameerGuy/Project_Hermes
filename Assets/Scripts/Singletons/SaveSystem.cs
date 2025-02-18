@@ -31,7 +31,7 @@ public static class SaveSystem
     {
         SaveObject saveObject = CreateSaveObject();
         BinaryFormatter bf = new BinaryFormatter();
-        FileStream fileStream = new FileStream(SAVE_FOLDER + "/record.txt", FileMode.CreateNew);
+        FileStream fileStream = new FileStream(SAVE_FOLDER + "/record.txt", FileMode.Append);
 
         bf.Serialize(fileStream, saveObject);
         fileStream.Close();
