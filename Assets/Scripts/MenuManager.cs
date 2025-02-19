@@ -1,6 +1,8 @@
 using Cysharp.Threading.Tasks;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Playables;
@@ -13,16 +15,17 @@ public class MenuManager : MonoBehaviour
     [SerializeField] private PlayableAsset intro;
     [SerializeField] private PlayableAsset openLevelSelect;
     [SerializeField] private PlayableAsset closeLevelSelect;
+    private CancellationTokenSource tokenSource = new();
     private PlayableDirector director;
     private Camera mainCamera;
-    
-
+    private bool startingRace;
 
     private void Awake()
     {
         mainCamera = Camera.main;
         director = GetComponent<PlayableDirector>();
         director.Play(intro);
+        startingRace = false;
     }
 
     public void OpenLevelSelect()
@@ -41,23 +44,32 @@ public class MenuManager : MonoBehaviour
     }
     public void QuitGame()
     {
+        tokenSource.Cancel();
         Application.Quit();
     }
 
     public async void StartRace(CourseData data)
     {
-        await ChangeBackgroundColour(data.backgroundColour);
+        if(startingRace) return;
+        startingRace = true;
+        await ChangeBackgroundColour(data.backgroundColour, tokenSource.Token);
         SceneManager.LoadScene(data.courseName);
     }
 
-    private async Task ChangeBackgroundColour(Color target)
+    private async Task ChangeBackgroundColour(Color target, CancellationToken token)
     {
-        float time = 0;
         Color startColour = mainCamera.backgroundColor;
-        while (time < TRANSITION_TIME) {
-            mainCamera.backgroundColor = Color.Lerp(startColour, target, curve.Evaluate(time/TRANSITION_TIME));
-            time += Time.deltaTime;
-            await UniTask.Yield();
+        try {
+            float time = 0;
+            while (time < TRANSITION_TIME) {
+                mainCamera.backgroundColor = Color.Lerp(startColour, target, curve.Evaluate(time/TRANSITION_TIME));
+                time += Time.deltaTime;
+                token.ThrowIfCancellationRequested();
+                await UniTask.Yield();
+            }
+        } catch (OperationCanceledException){
+            mainCamera.backgroundColor = startColour;
+            throw;
         }
     }
 }

@@ -35,6 +35,10 @@ public static class SaveSystem
 
         bf.Serialize(fileStream, saveObject);
         fileStream.Close();
+    }
+
+    public static void LoadByDesirialization()
+    {
 
     }
 
