@@ -6,10 +6,55 @@ using UnityEngine;
 public class CustomCamera : MonoBehaviour
 {
     [SerializeField] private Camera cam;
-    [SerializeField] private CinemachineVirtualCamera virtualCamera;
+    [SerializeField] private CinemachineVirtualCamera[] virtualCameras;
+    private CinemachineVirtualCamera activeCamera;
+    private int activeIndex;
+
+    void Awake()
+    {
+        SetActiveCamera(4);
+    }
+
+    public void SetActiveCamera(int index) {
+
+        int length = BoundsCheck(index);
+        if (length < 0) return;
+
+        if (index == activeIndex) return;
+
+        for (int i = 0; i < length; i++) {
+            if (i != index) {
+                virtualCameras[i].gameObject.SetActive(false);
+                continue;
+            }
+
+            virtualCameras[i].gameObject.SetActive(true);
+            activeCamera = virtualCameras[i];
+            activeIndex = i;
+         }
+        
+    }
+
+    public void CycleActiveUp() {
+        SetActiveCamera(activeIndex + 1);
+    }
+
+    public void CycleActiveDown() {
+        SetActiveCamera(activeIndex - 1);
+    }
+
+    private int BoundsCheck(int index){
+        int length = virtualCameras.GetLength(0);
+        if (index > length || index < 0){
+            Debug.LogError("camera index out of bounds");
+            return -1;
+        }
+        return length;
+
+    }
 
     public void SetTarget(Transform player)
     {
-        virtualCamera.Follow = virtualCamera.LookAt = player;
+        activeCamera.Follow = activeCamera.LookAt = player;
     }
 }
