@@ -12,15 +12,15 @@ public class CustomCamera : MonoBehaviour
 
     void Awake()
     {
-        SetActiveCamera(4);
+        SetActiveCamera(virtualCameras.GetLength(0)-1);
     }
 
     public void SetActiveCamera(int index) {
 
+        if (index == activeIndex) return;
+
         int length = BoundsCheck(index);
         if (length < 0) return;
-
-        if (index == activeIndex) return;
 
         for (int i = 0; i < length; i++) {
             if (i != index) {

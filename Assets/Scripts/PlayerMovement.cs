@@ -76,6 +76,7 @@ public class PlayerMovement : MonoBehaviour
     private PlayerInput inputActions;
     private Rigidbody _rigidbody;
     private Collider _collider;
+    private Animator animator;
     private Vector3 movementDir;
     private float currentTurnSpeed;
     private float currentDeceleration;
@@ -97,6 +98,7 @@ public class PlayerMovement : MonoBehaviour
         respawnProjector = respawnPoint.GetComponent<SplineProjector>();
         _rigidbody = GetComponent<Rigidbody>();
         _collider = GetComponent<Collider>();
+        animator = GetComponentInChildren<Animator>();
         inputActions = new PlayerInput();
 
         inputActions.Player.Jump.started += OnJumpPressed;
@@ -197,6 +199,7 @@ public class PlayerMovement : MonoBehaviour
         float jumpForce = Mathf.Sqrt(2 * airbourneGravity * jumpHeight);
         _rigidbody.AddForce(Vector3.up * jumpForce, ForceMode.VelocityChange);
         canJump = false;
+        animator.SetTrigger("Jump");
 
         if (!sliding) return;
         sliding = false;
@@ -272,12 +275,15 @@ public class PlayerMovement : MonoBehaviour
 
             if (horizontalSpeed <= 1) {
                 _rigidbody.velocity = verticalVector;
+                animator.SetBool("IsMoving", false);
                 return;
             }
 
             _rigidbody.AddForce(horizontalVector.normalized * -1 * currentDeceleration, ForceMode.Acceleration);
             return;
         }
+
+        animator.SetBool("IsMoving", true);
 
         if (horizontalSpeed < maxSpeed) {
             _rigidbody.AddForce(movementDir.z * transform.forward * runAcceleration, ForceMode.Acceleration);
@@ -373,27 +379,31 @@ public class PlayerMovement : MonoBehaviour
         const float OFFSET = 0.01f;
         float radius = _collider.bounds.extents.x - OFFSET;
         float maxDistance = (_collider.bounds.extents.y / 2) + (OFFSET * 10);
-        bool isGrounded = Physics.SphereCast(_collider.bounds.center, radius, -transform.up, out RaycastHit hitInfo, maxDistance);
+        grounded = Physics.SphereCast(_collider.bounds.center, radius, -transform.up, out RaycastHit hitInfo, maxDistance);
 
-        if (wasGrounded == isGrounded) return grounded = isGrounded;
+        if (wasGrounded == grounded) return grounded;
 
-        if (isGrounded) {
+        animator.SetBool("IsGrounded", grounded);
+        if (grounded) {
             OnGroundedEvent?.Invoke(this, EventArgs.Empty);
         } else {
             OnAirbourneEvent?.Invoke(this, EventArgs.Empty);
         }
-        return isGrounded;
+        return grounded;
     }
 
     private void AssignGravity()
     {
-        if (!grounded) {
-            falling = (_rigidbody.velocity.y <= fallingThreshold || falling);
-            currentGravity = 
-                  (!falling) ? airbourneGravity
-                : (!diving) ?  fallingGravity
-                : fallingGravity * 3;
-        }
+        if (grounded) return;
+
+        falling = (_rigidbody.velocity.y <= fallingThreshold || falling);
+
+        animator.SetBool("IsFalling", falling);
+
+        currentGravity = (!falling) ? airbourneGravity
+                       : (!diving) ?  fallingGravity
+                       : fallingGravity * 3;
+
     }
 
     private async void JumpLenience() 
