@@ -165,7 +165,7 @@ MonoBehaviour:
   _targetObject: {fileID: 9177553803023582866}
   _offset: {x: 0, y: 0}
   _rotationOffset: {x: 0, y: 0, z: 0}
-  lastPosition: {x: 0, y: 1, z: -1039}
+  lastPosition: {x: 0, y: 1, z: -1300.2686}
 --- !u!1001 &5894978086567253194
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -214,19 +214,65 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6268417667993670174, guid: f22fca66865c00042969abf561b9deac, type: 3}
+      propertyPath: m_Time
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6268417667993670174, guid: f22fca66865c00042969abf561b9deac, type: 3}
+      propertyPath: m_MinVertexDistance
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6268417667993670174, guid: f22fca66865c00042969abf561b9deac, type: 3}
+      propertyPath: m_Parameters.textureMode
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 6549462106068090882, guid: f22fca66865c00042969abf561b9deac, type: 3}
       propertyPath: m_Name
       value: Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 8023668291058234956, guid: f22fca66865c00042969abf561b9deac, type: 3}
+      propertyPath: m_Time
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8023668291058234956, guid: f22fca66865c00042969abf561b9deac, type: 3}
+      propertyPath: m_MinVertexDistance
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 9047570048226136130, guid: f22fca66865c00042969abf561b9deac, type: 3}
       propertyPath: respawnPoint
       value: 
       objectReference: {fileID: 9177553803023582866}
+    - target: {fileID: 9047570048226136130, guid: f22fca66865c00042969abf561b9deac, type: 3}
+      propertyPath: slideCooldown
+      value: 440
+      objectReference: {fileID: 0}
+    - target: {fileID: 9047570048226136130, guid: f22fca66865c00042969abf561b9deac, type: 3}
+      propertyPath: Trails.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 9047570048226136130, guid: f22fca66865c00042969abf561b9deac, type: 3}
+      propertyPath: Trails.Array.data[0]
+      value: 
+      objectReference: {fileID: 4510039031380894342}
+    - target: {fileID: 9047570048226136130, guid: f22fca66865c00042969abf561b9deac, type: 3}
+      propertyPath: Trails.Array.data[1]
+      value: 
+      objectReference: {fileID: 518705598742005460}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f22fca66865c00042969abf561b9deac, type: 3}
+--- !u!96 &518705598742005460 stripped
+TrailRenderer:
+  m_CorrespondingSourceObject: {fileID: 6268417667993670174, guid: f22fca66865c00042969abf561b9deac, type: 3}
+  m_PrefabInstance: {fileID: 5894978086567253194}
+  m_PrefabAsset: {fileID: 0}
+--- !u!96 &4510039031380894342 stripped
+TrailRenderer:
+  m_CorrespondingSourceObject: {fileID: 8023668291058234956, guid: f22fca66865c00042969abf561b9deac, type: 3}
+  m_PrefabInstance: {fileID: 5894978086567253194}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &7965720711333111842 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4558988205742292200, guid: f22fca66865c00042969abf561b9deac, type: 3}

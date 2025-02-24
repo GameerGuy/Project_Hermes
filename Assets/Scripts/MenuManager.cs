@@ -10,11 +10,12 @@ using UnityEngine.SceneManagement;
 
 public class MenuManager : MonoBehaviour
 {
-    private const float TRANSITION_TIME = 3f;
+    private const float TRANSITION_TIME = 1f;
     [SerializeField] private AnimationCurve curve;
     [SerializeField] private PlayableAsset intro;
     [SerializeField] private PlayableAsset openLevelSelect;
     [SerializeField] private PlayableAsset closeLevelSelect;
+    [SerializeField] private PlayableAsset EnterLevel;
     private CancellationTokenSource tokenSource = new();
     private PlayableDirector director;
     private Camera mainCamera;
@@ -51,6 +52,7 @@ public class MenuManager : MonoBehaviour
     public async void StartRace(CourseData data)
     {
         if(startingRace) return;
+        director.Play(EnterLevel);
         startingRace = true;
         await ChangeBackgroundColour(data.backgroundColour, tokenSource.Token);
         SceneManager.LoadScene(data.courseName);

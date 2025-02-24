@@ -67,6 +67,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private bool toggleSprint;
 
     [SerializeField] private GameObject respawnPoint;
+    [SerializeField] private TrailRenderer[] Trails;
 
     private event EventHandler OnGroundedEvent;
     private event EventHandler OnAirbourneEvent;
@@ -75,7 +76,7 @@ public class PlayerMovement : MonoBehaviour
     private SplineProjector respawnProjector;
     private PlayerInput inputActions;
     private Rigidbody _rigidbody;
-    private Collider _collider;
+    private CapsuleCollider _collider;
     private Animator animator;
     private Vector3 movementDir;
     private float currentTurnSpeed;
@@ -97,7 +98,7 @@ public class PlayerMovement : MonoBehaviour
     {
         respawnProjector = respawnPoint.GetComponent<SplineProjector>();
         _rigidbody = GetComponent<Rigidbody>();
-        _collider = GetComponent<Collider>();
+        _collider = GetComponent<CapsuleCollider>();
         animator = GetComponentInChildren<Animator>();
         inputActions = new PlayerInput();
 
@@ -119,6 +120,7 @@ public class PlayerMovement : MonoBehaviour
         currentGravity = fallingGravity;
         currentDeceleration = airbourneDeceleration;
         currentTurnSpeed = baseTurnSpeed;
+        DisableTrails();
     }
 
     private void Update()
@@ -199,11 +201,14 @@ public class PlayerMovement : MonoBehaviour
         float jumpForce = Mathf.Sqrt(2 * airbourneGravity * jumpHeight);
         _rigidbody.AddForce(Vector3.up * jumpForce, ForceMode.VelocityChange);
         canJump = false;
-        animator.SetTrigger("Jump");
 
-        if (!sliding) return;
+        if (!sliding) {
+            animator.SetTrigger("Jump");
+            return;
+        }
+        animator.SetTrigger("SlideJump");
         sliding = false;
-        transform.localScale = new Vector3(1, 1, 1);
+        SetColliderToStand();
     }
 
     private void OnJumpReleased(InputAction.CallbackContext context)
@@ -217,20 +222,35 @@ public class PlayerMovement : MonoBehaviour
 
     private void OnSprintPressed(InputAction.CallbackContext context)
     {
-        sprinting = (!toggleSprint) ? true : !sprinting;
+        if (!toggleSprint) {
+            sprinting = true;
+            EnableTrails();
+            return;
+        }
+
+        sprinting = !sprinting;
+        if (sprinting) { EnableTrails(); }
+        else { DisableTrails(); }
     }
 
     private void OnSprintReleased(InputAction.CallbackContext context)
     {
-        sprinting = (!toggleSprint) ? false : sprinting;
+        if (!toggleSprint)
+        {
+            sprinting = false;
+            DisableTrails();
+            return;
+        }
     }
 
     private void OnCrouchPressed(InputAction.CallbackContext context)
     {
         crouching = true;
+        animator.SetBool("IsCrouching", true);
+
         Vector3 horizontalVector = GetHorizontalVelocity();
         if (grounded) {
-            transform.localScale = new Vector3(1, .5f, 1);
+            SetColliderToCrounch();
 
             float horizontalSpeed = horizontalVector.magnitude;
             if (horizontalSpeed < maxRunSpeed - 1 || sliding) return;
@@ -251,7 +271,8 @@ public class PlayerMovement : MonoBehaviour
     private void OnCrouchReleased(InputAction.CallbackContext context)
     {
         crouching = false;
-        if (!sliding) transform.localScale = new Vector3(1, 1, 1);
+        animator.SetBool("IsCrouching", false);
+        if (!sliding) SetColliderToStand();
     }
 
     private void OnRespawnPressed(InputAction.CallbackContext context)
@@ -284,6 +305,7 @@ public class PlayerMovement : MonoBehaviour
         }
 
         animator.SetBool("IsMoving", true);
+        animator.SetFloat("runAnimSpeed", (sprinting) ? 2 : 1);
 
         if (horizontalSpeed < maxSpeed) {
             _rigidbody.AddForce(movementDir.z * transform.forward * runAcceleration, ForceMode.Acceleration);
@@ -329,11 +351,15 @@ public class PlayerMovement : MonoBehaviour
     {
         grounded = true;
         canJump = true;
+
         currentGravity = groundedGravity;
         currentDeceleration = groundDeceleration;
         respawnProjector.projectTarget = transform;
+
         falling = false;
         diving = false;
+        animator.SetBool("IsFalling", false);
+
     }
 
     private void OnAirbourne(object sender, EventArgs e)
@@ -348,6 +374,7 @@ public class PlayerMovement : MonoBehaviour
     {
         Vector3 horizontalVector = GetHorizontalVelocity();
         float slideForce = horizontalVector.magnitude * slideMult;
+        animator.SetTrigger("Slide");
 
         if (slideForce + horizontalVector.magnitude >= trueSpeedCap) {
             _rigidbody.velocity -= horizontalVector;
@@ -371,6 +398,33 @@ public class PlayerMovement : MonoBehaviour
     private Vector3 GetVerticalVelocity()
     {
         return new Vector3(0, _rigidbody.velocity.y, 0);
+    }
+
+    private void SetColliderToStand()
+    {
+        _collider.center = Vector3.zero;
+        _collider.height = 2;
+    }
+
+    private void SetColliderToCrounch()
+    {
+        _collider.center = new Vector3(0, -0.5f, 0);
+        _collider.height = 1;
+    }
+
+    private void EnableTrails()
+    {
+        foreach (TrailRenderer t in Trails) {
+            t.enabled = true;
+        }
+    }
+
+    private void DisableTrails()
+    {
+        foreach(TrailRenderer t in Trails) {
+            t.Clear();
+            t.enabled = false;
+        }
     }
 
     private bool IsGrounded() {
@@ -415,7 +469,10 @@ public class PlayerMovement : MonoBehaviour
     private async void SlideCooldown()
     {
         sliding = true;
+        animator.SetBool("IsSliding", true);
         await Task.Delay(slideCooldown);
+
+        animator.speed = 0;
 
         float horzontalSpeed = GetHorizontalVelocity().magnitude;
         while (horzontalSpeed > maxRunSpeed * sprintSpeedMult && sliding) {
@@ -424,8 +481,11 @@ public class PlayerMovement : MonoBehaviour
             continue;
         }
 
+        animator.speed = 1;
+
         sliding = false;
-        if (!crouching) transform.localScale = new Vector3(1, 1, 1);
+        animator.SetBool("IsSliding", false);
+        if (!crouching) SetColliderToStand();
     }
 
     #endregion
