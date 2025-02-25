@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -8,8 +9,8 @@ public class Goal : MonoBehaviour
     {  
         if (collider.gameObject.CompareTag("Player")) {
             TimeManager.Instance.StopwatchPause();
-            SaveSystem.SaveBySerialization();
-            SceneManager.LoadScene(0);
+            //SaveSystem.SaveBySerialization();
+            //SceneManager.LoadScene(0);
         }
 
     }

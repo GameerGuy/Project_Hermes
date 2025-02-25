@@ -71,7 +71,10 @@ public class PlayerMovement : MonoBehaviour
 
     private event EventHandler OnGroundedEvent;
     private event EventHandler OnAirbourneEvent;
-    private event EventHandler OnSlideEvent;
+    private event EventHandler<SlideEventArgs> OnSlideEvent;
+    private class SlideEventArgs : EventArgs {
+        public bool powerSlide;
+    }
 
     private SplineProjector respawnProjector;
     private PlayerInput inputActions;
@@ -246,16 +249,16 @@ public class PlayerMovement : MonoBehaviour
     private void OnCrouchPressed(InputAction.CallbackContext context)
     {
         crouching = true;
-        animator.SetBool("IsCrouching", true);
+        animator.SetBool("IsCrouching", true);  
 
         Vector3 horizontalVector = GetHorizontalVelocity();
         if (grounded) {
             SetColliderToCrounch();
 
             float horizontalSpeed = horizontalVector.magnitude;
-            if (horizontalSpeed < maxRunSpeed - 1 || sliding) return;
+            if (horizontalSpeed < maxRunSpeed / 2 || sliding) return;
 
-            OnSlideEvent?.Invoke(this, EventArgs.Empty);
+            OnSlideEvent?.Invoke(this, new SlideEventArgs {powerSlide =  horizontalSpeed >= maxRunSpeed / 2} );
             return;
         } 
         if (diving) return;
@@ -290,7 +293,7 @@ public class PlayerMovement : MonoBehaviour
         Vector3 horizontalVector = GetHorizontalVelocity();
         float horizontalSpeed = horizontalVector.magnitude;
         float maxSpeed = sprinting ? maxRunSpeed * sprintSpeedMult : maxRunSpeed;
-        //float turningLeniency = Mathf.Sin(Vector3.Angle(movementDir, transform.forward) * Mathf.Deg2Rad);
+        //float turningLeniency = Mathf.Sin(Vector3.Angle(horizontalVector, transform.forward) * Mathf.Deg2Rad);
 
         if (movementDir.z == 0 || crouching) {
 
@@ -305,7 +308,7 @@ public class PlayerMovement : MonoBehaviour
         }
 
         animator.SetBool("IsMoving", true);
-        animator.SetFloat("runAnimSpeed", (sprinting) ? 2 : 1);
+        animator.SetFloat("runAnimSpeed",(sprinting) ? 2 : 1);
 
         if (horizontalSpeed < maxSpeed) {
             _rigidbody.AddForce(movementDir.z * transform.forward * runAcceleration, ForceMode.Acceleration);
@@ -370,19 +373,21 @@ public class PlayerMovement : MonoBehaviour
         respawnProjector.projectTarget = respawnPoint.transform;
     }
 
-    private void OnSlide(object sender, EventArgs e)
+    private void OnSlide(object sender, SlideEventArgs e)
     {
-        Vector3 horizontalVector = GetHorizontalVelocity();
-        float slideForce = horizontalVector.magnitude * slideMult;
         animator.SetTrigger("Slide");
+        if (e.powerSlide)   {
+            Vector3 horizontalVector = GetHorizontalVelocity();
+            float slideForce = horizontalVector.magnitude * slideMult;
 
-        if (slideForce + horizontalVector.magnitude >= trueSpeedCap) {
-            _rigidbody.velocity -= horizontalVector;
-            slideForce = trueSpeedCap;
+            if (slideForce + horizontalVector.magnitude >= trueSpeedCap) {
+                _rigidbody.velocity -= horizontalVector;
+                slideForce = trueSpeedCap;
+            }
+
+            //float turnSoftening = movementDir.magnitude > 0 ? Mathf.Abs(Vector3.Dot(horizontalVector.normalized, movementDir)): 1;
+            _rigidbody.AddForce(transform.forward * slideForce, ForceMode.VelocityChange);
         }
-
-        //float turnSoftening = movementDir.magnitude > 0 ? Mathf.Abs(Vector3.Dot(horizontalVector.normalized, movementDir)): 1;
-        _rigidbody.AddForce(transform.forward * slideForce, ForceMode.VelocityChange);
         SlideCooldown();
     }
     #endregion
