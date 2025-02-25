@@ -12,7 +12,7 @@ public class CustomCamera : MonoBehaviour
 
     void Awake()
     {
-        SetActiveCamera(virtualCameras.GetLength(0)-1);
+        SetActiveCamera(virtualCameras.Length -1);
     }
 
     public void SetActiveCamera(int index) {
@@ -31,7 +31,8 @@ public class CustomCamera : MonoBehaviour
             virtualCameras[i].gameObject.SetActive(true);
             activeCamera = virtualCameras[i];
             activeIndex = i;
-         }
+        }
+        print(activeIndex);
         
     }
 
@@ -44,7 +45,7 @@ public class CustomCamera : MonoBehaviour
     }
 
     private int BoundsCheck(int index){
-        int length = virtualCameras.GetLength(0);
+        int length = virtualCameras.Length;
         if (index > length || index < 0){
             Debug.LogError("camera index out of bounds");
             return -1;

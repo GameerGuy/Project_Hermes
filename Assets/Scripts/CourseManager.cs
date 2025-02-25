@@ -48,11 +48,11 @@ public class CourseManager : MonoBehaviour
         countdownDisplay.color = new Color(countdownDisplay.color.r, countdownDisplay.color.g, countdownDisplay.color.b, 1);
         if (time > 0) {
             countdownDisplay.text = time.ToString();
-            TimeManager.Instance.SetTimer(1, () => RaceCountdown(time-1));
             customCamera.CycleActiveDown();
             customCamera.SetTarget(GameManager.Instance.Player.transform);
+            TimeManager.Instance.SetTimer(1, () => RaceCountdown(time-1));
         } else {
-            customCamera.SetActiveCamera(0);
+            customCamera.SetActiveCamera(1);
             countdownDisplay.text = "Go!";
             TimeManager.Instance.SetTimer(1, () => { countdownDisplay.enabled = false; });
             
@@ -74,6 +74,13 @@ public class CourseManager : MonoBehaviour
     {
         countdownDisplay.fontSize -= 100 * Time.deltaTime;
         countdownDisplay.color += new Color(0, 0.66f * Time.deltaTime, 0.33f * Time.deltaTime, -Time.deltaTime);
+    }
+
+    public void EndRace()
+    {
+        GameManager.Instance.DisablePlayerInput();
+        customCamera.CycleActiveDown();
+        customCamera.SetTarget(GameManager.Instance.Player.transform);
     }
 
     
