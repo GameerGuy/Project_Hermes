@@ -101,7 +101,7 @@ public class PlayerMovement : NetworkBehaviour
     #region MonoBehaviours
     private void Awake()
     {
-        Instantiate(respawnPoint, transform.position, quaternion.identity);
+        respawnPoint = Instantiate(respawnPoint, transform.position, quaternion.identity);
         respawnProjector = respawnPoint.GetComponent<SplineProjector>();
         _rigidbody = GetComponent<Rigidbody>();
         _collider = GetComponent<CapsuleCollider>();
@@ -123,7 +123,6 @@ public class PlayerMovement : NetworkBehaviour
 
     private void Start()
     {
-        print(NetworkBehaviourId + " , " + IsOwner);
         currentGravity = fallingGravity;
         currentDeceleration = airbourneDeceleration;
         currentTurnSpeed = baseTurnSpeed;
@@ -163,6 +162,7 @@ public class PlayerMovement : NetworkBehaviour
     {
         if (other.gameObject.CompareTag("Path")) {
             respawnProjector.spline = other.gameObject.GetComponent<SplineComputer>();
+            respawnProjector.projectTarget = transform;
             return;
         }
 

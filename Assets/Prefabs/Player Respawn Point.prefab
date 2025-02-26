@@ -26,8 +26,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3171612123517201662}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0.37127888, z: 0, w: 0.9285214}
-  m_LocalPosition: {x: 10.445558, y: 24.12314, z: -682.9763}
+  m_LocalRotation: {x: 0, y: 0.0014196135, z: 0, w: 0.999999}
+  m_LocalPosition: {x: -0.17888205, y: 0.00000005828909, z: -1038.9994}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -119,12 +119,12 @@ MonoBehaviour:
   targetRigidbody2D: {fileID: 0}
   targetTransform: {fileID: 8464711035366351501}
   _result:
-    position: {x: 10.445558, y: 24.12314, z: -682.9763}
-    up: {x: 0.000013738329, y: 1.0000483, z: 0.000012529863}
-    forward: {x: 0.67677677, y: 0.19107918, z: 0.7109584}
+    position: {x: -0.17888205, y: 0.00000005828909, z: -1038.9994}
+    up: {x: -0.00004426765, y: 1.0001065, z: 0.0000006743694}
+    forward: {x: 0.0028392235, y: 0.0000000070052977, z: 0.9999959}
     color: {r: 1, g: 1, b: 1, a: 1}
-    size: 0.9999991
-    percent: 0.3035526822010676
+    size: 1
+    percent: 0.014657425383726757
   _mode: 1
   _autoProject: 1
   _subdivide: 4
@@ -133,7 +133,7 @@ MonoBehaviour:
   _targetObject: {fileID: 3171612123517201662}
   _offset: {x: 0, y: 0}
   _rotationOffset: {x: 0, y: 0, z: 0}
-  lastPosition: {x: -1.0805905, y: 1.025385, z: -1013.5716}
+  lastPosition: {x: 0.11045079, y: 1.0065794, z: -974.86316}
 --- !u!114 &741658668496566136
 MonoBehaviour:
   m_ObjectHideFlags: 0

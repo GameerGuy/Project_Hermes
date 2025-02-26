@@ -16,8 +16,13 @@ public class CourseManager : MonoBehaviour
 
     private void Start()
     {
-        GameManager.Instance.SetPlayer(Instantiate(playerPrefab, spawnPoint.position, Quaternion.identity).GetComponentInChildren<PlayerMovement>());
-        GameManager.Instance.DisablePlayerInput();
+
+        /* TODO:
+        * Get 
+        *
+        */
+        // GameManager.Instance.SetPlayer(Instantiate(playerPrefab, spawnPoint.position, Quaternion.identity).GetComponentInChildren<PlayerMovement>());
+        // GameManager.Instance.DisablePlayerInput();
 
         TimeManager.Instance.StopwatchClear();
 
