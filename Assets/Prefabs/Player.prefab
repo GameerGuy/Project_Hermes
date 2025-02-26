@@ -74,7 +74,7 @@ TrailRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Time: 1.1
+  m_Time: 0.5
   m_PreviewTimeScale: 1
   m_Parameters:
     serializedVersion: 3
@@ -140,7 +140,7 @@ TrailRenderer:
     textureScale: {x: 1, y: 1}
     shadowBias: 0.5
     generateLightingData: 0
-  m_MinVertexDistance: 0.1
+  m_MinVertexDistance: 0.5
   m_MaskInteraction: 0
   m_Autodestruct: 0
   m_Emitting: 1
@@ -219,7 +219,7 @@ TrailRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Time: 1.1
+  m_Time: 0.5
   m_PreviewTimeScale: 1
   m_Parameters:
     serializedVersion: 3
@@ -285,7 +285,7 @@ TrailRenderer:
     textureScale: {x: 1, y: 1}
     shadowBias: 0.5
     generateLightingData: 0
-  m_MinVertexDistance: 0.1
+  m_MinVertexDistance: 0.5
   m_MaskInteraction: 0
   m_Autodestruct: 0
   m_Emitting: 1
@@ -304,6 +304,7 @@ GameObject:
   - component: {fileID: 5395796936343414745}
   - component: {fileID: 6440861779163360897}
   - component: {fileID: 9047570048226136130}
+  - component: {fileID: -6056894635149032569}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -454,11 +455,30 @@ MonoBehaviour:
   turnScaling: 0.45
   minTurnSpeed: 1
   slideMult: 0.45
-  slideCooldown: 200
+  slideCooldown: 440
   diveForce: 20
   divePenalty: 0.5
   toggleSprint: 1
-  respawnPoint: {fileID: 0}
+  respawnPoint: {fileID: 3171612123517201662, guid: c9c650eb7ddff954ab827184456443b1, type: 3}
+  Trails:
+  - {fileID: 8023668291058234956}
+  - {fileID: 6268417667993670174}
+--- !u!114 &-6056894635149032569
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6549462106068090882}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 951099334
+  AlwaysReplicateAsRoot: 0
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
 --- !u!1001 &5218255916758997709
 PrefabInstance:
   m_ObjectHideFlags: 0

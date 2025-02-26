@@ -543,6 +543,17 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1200402610}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &306135751 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8746833894506705989, guid: 7c95f6d2a249b8a41b50d6f55a24a549, type: 3}
+  m_PrefabInstance: {fileID: 3502219307270534957}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 45e653bab7fb20e499bda25e1b646fea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &447541900
 GameObject:
   m_ObjectHideFlags: 0
@@ -2627,9 +2638,13 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7443295739311508055, guid: 7c95f6d2a249b8a41b50d6f55a24a549, type: 3}
+      propertyPath: virtualCameras.Array.data[0]
+      value: 
+      objectReference: {fileID: 306135751}
+    - target: {fileID: 7443295739311508055, guid: 7c95f6d2a249b8a41b50d6f55a24a549, type: 3}
       propertyPath: virtualCameras.Array.data[1]
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 306135751}
     - target: {fileID: 7443295739311508055, guid: 7c95f6d2a249b8a41b50d6f55a24a549, type: 3}
       propertyPath: virtualCameras.Array.data[2]
       value: 
@@ -2656,6 +2671,7 @@ PrefabInstance:
     - {fileID: 778695945341981420, guid: 7c95f6d2a249b8a41b50d6f55a24a549, type: 3}
     - {fileID: 8672254766056112053, guid: 7c95f6d2a249b8a41b50d6f55a24a549, type: 3}
     - {fileID: 22054544751082961, guid: 7c95f6d2a249b8a41b50d6f55a24a549, type: 3}
+    - {fileID: 2960925063282659904, guid: 7c95f6d2a249b8a41b50d6f55a24a549, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7c95f6d2a249b8a41b50d6f55a24a549, type: 3}

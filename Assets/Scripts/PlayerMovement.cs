@@ -1,11 +1,13 @@
 using System;
 using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using Dreamteck.Splines;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using Cysharp.Threading.Tasks;
+using Unity.Netcode;
+using Unity.Mathematics;
 
-public class PlayerMovement : MonoBehaviour
+public class PlayerMovement : NetworkBehaviour
 {
     #region Variables
 
@@ -99,6 +101,7 @@ public class PlayerMovement : MonoBehaviour
     #region MonoBehaviours
     private void Awake()
     {
+        Instantiate(respawnPoint, transform.position, quaternion.identity);
         respawnProjector = respawnPoint.GetComponent<SplineProjector>();
         _rigidbody = GetComponent<Rigidbody>();
         _collider = GetComponent<CapsuleCollider>();
@@ -120,6 +123,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void Start()
     {
+        print(NetworkBehaviourId + " , " + IsOwner);
         currentGravity = fallingGravity;
         currentDeceleration = airbourneDeceleration;
         currentTurnSpeed = baseTurnSpeed;
@@ -128,6 +132,8 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
+        if (!IsOwner) return;
+
         IsGrounded();
         AssignGravity();
         Vector2 move = inputActions.Player.Movement.ReadValue<Vector2>();
@@ -136,6 +142,8 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {   
+        if (!IsOwner) return;
+
         HandleRotation();
         HandleMovement();
         HandleGravity();
