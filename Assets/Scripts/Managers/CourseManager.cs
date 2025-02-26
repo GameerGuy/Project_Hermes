@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class CourseManager : MonoBehaviour
 {
@@ -8,6 +9,8 @@ public class CourseManager : MonoBehaviour
     [SerializeField] private CustomCamera customCamera;
     [SerializeField] private TextMeshProUGUI countdownDisplay;
     [SerializeField] private TextMeshProUGUI stopwatchDisplay;
+    [SerializeField] private GameObject levelClearMenu;
+    
     private int countdownStart = 3;
     private bool countdownActive = false;
 
@@ -16,13 +19,17 @@ public class CourseManager : MonoBehaviour
         GameManager.Instance.SetPlayer(Instantiate(playerPrefab, spawnPoint.position, Quaternion.identity).GetComponentInChildren<PlayerMovement>());
         GameManager.Instance.DisablePlayerInput();
 
+        TimeManager.Instance.StopwatchClear();
+
         stopwatchDisplay.enabled = false;
         stopwatchDisplay.text = "Lap Time:\n" + TimeManager.Instance.stopwatchTimer.ToString("F3");
 
         countdownDisplay.enabled = false;
         countdownDisplay.text = "3";
+
+        levelClearMenu.SetActive(false);
         
-        TimeManager.Instance.SetTimer( 0.5f, () =>{
+        TimeManager.Instance.SetTimer( 0.5f, () => {
             customCamera.CycleActiveDown();
             customCamera.SetTarget(GameManager.Instance.Player.transform);
         
@@ -79,8 +86,28 @@ public class CourseManager : MonoBehaviour
     public void EndRace()
     {
         GameManager.Instance.DisablePlayerInput();
-        customCamera.CycleActiveDown();
+        customCamera.SetActiveCamera(0);
         customCamera.SetTarget(GameManager.Instance.Player.transform);
+
+        countdownDisplay.text = "Finish!"; 
+        countdownDisplay.enabled = true;
+
+        TimeManager.Instance.SetTimer( 1f, () => {
+            countdownDisplay.enabled = false;
+            levelClearMenu.SetActive(true);
+        });
+    }
+
+    public void ReplayLevel()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    public async void ReturnToMenu(CourseData data)
+    {
+        customCamera.ActivateEnd();
+        await GameManager.Instance.ChangeBackgroundColour(customCamera.GetCamera(), data.backgroundColour, GameManager.Instance.tokenSource.Token);
+        SceneManager.LoadScene("Start Screen");
     }
 
     

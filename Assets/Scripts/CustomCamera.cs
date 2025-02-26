@@ -12,7 +12,12 @@ public class CustomCamera : MonoBehaviour
 
     void Awake()
     {
-        SetActiveCamera(virtualCameras.Length -1);
+        ActivateEnd();
+    }
+
+    public Camera GetCamera()
+    {
+        return cam;
     }
 
     public void SetActiveCamera(int index) {
@@ -42,6 +47,11 @@ public class CustomCamera : MonoBehaviour
 
     public void CycleActiveDown() {
         SetActiveCamera(activeIndex - 1);
+    }
+
+    public void ActivateEnd()
+    {
+        SetActiveCamera(virtualCameras.Length -1);
     }
 
     private int BoundsCheck(int index){
