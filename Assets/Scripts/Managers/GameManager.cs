@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -7,9 +8,12 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     private const float TRANSITION_TIME = 1f;
+
     [SerializeField] private AnimationCurve curve;
-    private PlayerMovement _player;
-    public PlayerMovement Player => _player;
+
+    private Dictionary<ulong, PlayerMovement> _players = new Dictionary<ulong, PlayerMovement>();
+    public Dictionary<ulong, PlayerMovement> Players => _players;
+
     public CancellationTokenSource tokenSource = new();
 
     private static GameManager _instance;
@@ -37,21 +41,36 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void SetPlayer(PlayerMovement p)
+    public void RegisterPlayer(ulong id, PlayerMovement player)
     {
-        _player = p;
+        _players.Add(id, player);
+        print(_players[id]);
     }
 
-    public void DisablePlayerInput()
+    public void EnableAllPlayersInput()
     {
-        if (_player == null) return;
-        _player.DisableInput();
+        foreach(PlayerMovement pm in _players.Values) {
+            pm.EnableInput();
+        }
     }
 
-    public void EnablePlayerInput()
+    public void DisableAllPlayersInput()
     {
-        if (_player == null) return;
-        _player.EnableInput();
+        foreach (PlayerMovement pm in _players.Values) {
+            pm.DisableInput();
+        }
+    }
+
+    public void EnablePlayerInput(ulong id)
+    {
+        if (_players == null) return;
+        _players[id].EnableInput();
+    }
+
+    public void DisablePlayerInput(ulong id)
+    {
+        if (_players == null) return;
+        _players[id].DisableInput();
     }
 
     public async Task ChangeBackgroundColour(Camera mainCamera , Color target, CancellationToken token)

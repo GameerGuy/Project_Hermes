@@ -8,6 +8,8 @@ public class MenuManager : MonoBehaviour
     [SerializeField] private PlayableAsset intro;
     [SerializeField] private PlayableAsset openLevelSelect;
     [SerializeField] private PlayableAsset closeLevelSelect;
+    [SerializeField] private PlayableAsset openNetworkModeMenu;
+    [SerializeField] private PlayableAsset closeNetworkModeMenu;
     [SerializeField] private PlayableAsset EnterLevel;
     private PlayableDirector director;
     private Camera mainCamera;
@@ -19,6 +21,16 @@ public class MenuManager : MonoBehaviour
         director = GetComponent<PlayableDirector>();
         director.Play(intro);
         startingRace = false;
+    }
+
+    public void OpenNetworkModeMenu()
+    {
+        director.Play(openNetworkModeMenu);
+    }
+
+    public void CloseNetworkModeMenu()
+    {
+        director.Play(closeNetworkModeMenu);
     }
 
     public void OpenLevelSelect()

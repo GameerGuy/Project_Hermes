@@ -127,6 +127,7 @@ public class PlayerMovement : NetworkBehaviour
         currentDeceleration = airbourneDeceleration;
         currentTurnSpeed = baseTurnSpeed;
         DisableTrails();
+        print(OwnerClientId);
     }
 
     private void Update()
@@ -192,6 +193,13 @@ public class PlayerMovement : NetworkBehaviour
     //        Gizmos.DrawWireSphere(_collider.bounds.center + -transform.up * maxDistance, radius);
     //    }
     // }
+    #endregion
+
+    #region NetworkBehaviours
+    public override void OnNetworkSpawn()
+    {
+        GameManager.Instance.RegisterPlayer(OwnerClientId, this);
+    }
     #endregion
 
 

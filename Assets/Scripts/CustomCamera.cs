@@ -36,9 +36,7 @@ public class CustomCamera : MonoBehaviour
             virtualCameras[i].gameObject.SetActive(true);
             activeCamera = virtualCameras[i];
             activeIndex = i;
-        }
-        print(activeIndex);
-        
+        }        
     }
 
     public void CycleActiveUp() {

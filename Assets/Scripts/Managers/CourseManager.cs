@@ -16,13 +16,8 @@ public class CourseManager : MonoBehaviour
 
     private void Start()
     {
-
-        /* TODO:
-        * Get 
-        *
-        */
-        // GameManager.Instance.SetPlayer(Instantiate(playerPrefab, spawnPoint.position, Quaternion.identity).GetComponentInChildren<PlayerMovement>());
-        // GameManager.Instance.DisablePlayerInput();
+        //GameManager.Instance.SetPlayer(Instantiate(playerPrefab, spawnPoint.position, Quaternion.identity).GetComponentInChildren<PlayerMovement>());
+        //GameManager.Instance.DisablePlayerInput();
 
         TimeManager.Instance.StopwatchClear();
 
@@ -36,7 +31,7 @@ public class CourseManager : MonoBehaviour
         
         TimeManager.Instance.SetTimer( 0.5f, () => {
             customCamera.CycleActiveDown();
-            customCamera.SetTarget(GameManager.Instance.Player.transform);
+            //customCamera.SetTarget(GameManager.Instance.Players.transform);
         
             TimeManager.Instance.SetTimer( 1f, () => {
                 countdownDisplay.enabled = true;
@@ -61,14 +56,14 @@ public class CourseManager : MonoBehaviour
         if (time > 0) {
             countdownDisplay.text = time.ToString();
             customCamera.CycleActiveDown();
-            customCamera.SetTarget(GameManager.Instance.Player.transform);
+            //customCamera.SetTarget(GameManager.Instance.Players.transform);
             TimeManager.Instance.SetTimer(1, () => RaceCountdown(time-1));
         } else {
-            customCamera.SetActiveCamera(1);
+            customCamera.SetActiveCamera(0);
             countdownDisplay.text = "Go!";
             TimeManager.Instance.SetTimer(1, () => { countdownDisplay.enabled = false; });
             
-            customCamera.SetTarget(GameManager.Instance.Player.transform);
+            //customCamera.SetTarget(GameManager.Instance.Players.transform);
             RaceStartTimer();
             countdownActive = false;
         }
@@ -79,7 +74,7 @@ public class CourseManager : MonoBehaviour
     {
         stopwatchDisplay.enabled = true;
         TimeManager.Instance.StopwatchStart();
-        GameManager.Instance.EnablePlayerInput();
+        //GameManager.Instance.EnablePlayerInput();
     }
 
     private void CountdownChange()
@@ -90,9 +85,9 @@ public class CourseManager : MonoBehaviour
 
     public void EndRace()
     {
-        GameManager.Instance.DisablePlayerInput();
-        customCamera.SetActiveCamera(0);
-        customCamera.SetTarget(GameManager.Instance.Player.transform);
+        //GameManager.Instance.DisablePlayerInput();
+        customCamera.SetActiveCamera(1);
+        //customCamera.SetTarget(GameManager.Instance.Players.transform);
 
         countdownDisplay.text = "Finish!"; 
         countdownDisplay.enabled = true;
