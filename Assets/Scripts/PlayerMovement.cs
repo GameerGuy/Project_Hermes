@@ -5,6 +5,7 @@ using Dreamteck.Splines;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Unity.Netcode;
+using Unity.Netcode.Components;
 using Unity.Mathematics;
 
 public class PlayerMovement : NetworkBehaviour
@@ -78,10 +79,11 @@ public class PlayerMovement : NetworkBehaviour
         public bool powerSlide;
     }
 
+    private OwnerNetworkAnimator networkAnimator;
     private SplineProjector respawnProjector;
+    private CapsuleCollider _collider;
     private PlayerInput inputActions;
     private Rigidbody _rigidbody;
-    private CapsuleCollider _collider;
     private Animator animator;
     private Vector3 movementDir;
     private float currentTurnSpeed;
@@ -106,19 +108,10 @@ public class PlayerMovement : NetworkBehaviour
         _rigidbody = GetComponent<Rigidbody>();
         _collider = GetComponent<CapsuleCollider>();
         animator = GetComponentInChildren<Animator>();
+        networkAnimator = GetComponentInChildren<OwnerNetworkAnimator>();
         inputActions = new PlayerInput();
 
-        inputActions.Player.Jump.started += OnJumpPressed;
-        inputActions.Player.Jump.canceled += OnJumpReleased;
-        inputActions.Player.Sprint.started += OnSprintPressed;
-        inputActions.Player.Sprint.canceled += OnSprintReleased;
-        inputActions.Player.Crouch.started += OnCrouchPressed;
-        inputActions.Player.Crouch.canceled += OnCrouchReleased;
-        inputActions.Player.Respawn.started += OnRespawnPressed;
-
-        OnGroundedEvent += OnGrounded;
-        OnAirbourneEvent += OnAirbourne;
-        OnSlideEvent += OnSlide;
+        print(IsLocalPlayer + " : " + OwnerClientId);
     }
 
     private void Start()
@@ -131,8 +124,12 @@ public class PlayerMovement : NetworkBehaviour
 
     private void Update()
     {
-        if (!IsOwner) return;
-
+        if (!IsOwner)
+        {
+            if (sprinting) { EnableTrails(); }
+            else { DisableTrails(); }
+            return;
+        }
         IsGrounded();
         AssignGravity();
         Vector2 move = inputActions.Player.Movement.ReadValue<Vector2>();
@@ -198,6 +195,20 @@ public class PlayerMovement : NetworkBehaviour
     public override void OnNetworkSpawn()
     {
         GameManager.Instance.RegisterPlayer(OwnerClientId, this);
+
+        if (!IsOwner) return;
+        
+        inputActions.Player.Jump.started += OnJumpPressed;
+        inputActions.Player.Jump.canceled += OnJumpReleased;
+        inputActions.Player.Sprint.started += OnSprintPressed;
+        inputActions.Player.Sprint.canceled += OnSprintReleased;
+        inputActions.Player.Crouch.started += OnCrouchPressed;
+        inputActions.Player.Crouch.canceled += OnCrouchReleased;
+        inputActions.Player.Respawn.started += OnRespawnPressed;
+
+        OnGroundedEvent += OnGrounded;
+        OnAirbourneEvent += OnAirbourne;
+        OnSlideEvent += OnSlide;
     }
     #endregion
 
@@ -221,10 +232,10 @@ public class PlayerMovement : NetworkBehaviour
         canJump = false;
 
         if (!sliding) {
-            animator.SetTrigger("Jump");
+            networkAnimator.SetTrigger("Jump");
             return;
         }
-        animator.SetTrigger("SlideJump");
+        networkAnimator.SetTrigger("SlideJump");
         sliding = false;
         SetColliderToStand();
     }
@@ -390,7 +401,7 @@ public class PlayerMovement : NetworkBehaviour
 
     private void OnSlide(object sender, SlideEventArgs e)
     {
-        animator.SetTrigger("Slide");
+        networkAnimator.SetTrigger("Slide");
         if (e.powerSlide)   {
             Vector3 horizontalVector = GetHorizontalVelocity();
             float slideForce = horizontalVector.magnitude * slideMult;

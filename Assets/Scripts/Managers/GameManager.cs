@@ -46,7 +46,6 @@ public class GameManager : MonoBehaviour
     public void RegisterPlayer(ulong id, PlayerMovement player)
     {
         _players.Add(id, player);
-        print(_players[id]);
     }
 
     public void EnableAllPlayersInput()
