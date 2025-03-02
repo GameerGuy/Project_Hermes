@@ -127,7 +127,6 @@ public class PlayerMovement : NetworkBehaviour
         currentDeceleration = airbourneDeceleration;
         currentTurnSpeed = baseTurnSpeed;
         DisableTrails();
-        print(OwnerClientId);
     }
 
     private void Update()

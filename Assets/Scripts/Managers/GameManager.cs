@@ -16,6 +16,8 @@ public class GameManager : MonoBehaviour
 
     public CancellationTokenSource tokenSource = new();
 
+    public bool isOnline;
+
     private static GameManager _instance;
     public static GameManager Instance
     {
