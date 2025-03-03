@@ -16,6 +16,7 @@ public class GameManager : MonoBehaviour
 
     public CancellationTokenSource tokenSource = new();
 
+    public int playerCount = 1;
     public bool isOnline;
 
     private static GameManager _instance;
@@ -46,18 +47,21 @@ public class GameManager : MonoBehaviour
     public void RegisterPlayer(ulong id, PlayerMovement player)
     {
         _players.Add(id, player);
+        print(id);
     }
 
     public void EnableAllPlayersInput()
     {
-        foreach(PlayerMovement pm in _players.Values) {
+        foreach (PlayerMovement pm in _players.Values)
+        {
             pm.EnableInput();
         }
     }
 
     public void DisableAllPlayersInput()
     {
-        foreach (PlayerMovement pm in _players.Values) {
+        foreach (PlayerMovement pm in _players.Values)
+        {
             pm.DisableInput();
         }
     }

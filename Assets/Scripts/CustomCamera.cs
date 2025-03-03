@@ -13,6 +13,10 @@ public class CustomCamera : MonoBehaviour
     void Awake()
     {
         ActivateEnd();
+        Canvas[] canvas = FindObjectsOfType<Canvas>();
+        foreach (Canvas c in canvas) {
+            c.worldCamera = cam;
+        }
     }
 
     public Camera GetCamera()
@@ -60,6 +64,14 @@ public class CustomCamera : MonoBehaviour
         }
         return length;
 
+    }
+
+
+    public void SetTargetForAll(Transform player)
+    {
+        for (int i = 0; i < virtualCameras.Length; i++) {
+            virtualCameras[i].Follow = virtualCameras[i].LookAt = player;
+        }
     }
 
     public void SetTarget(Transform player)

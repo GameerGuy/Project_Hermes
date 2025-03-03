@@ -463,6 +463,7 @@ MonoBehaviour:
   diveForce: 20
   divePenalty: 0.5
   toggleSprint: 1
+  _customCamera: {fileID: 7443295739311508055, guid: 7c95f6d2a249b8a41b50d6f55a24a549, type: 3}
   respawnPoint: {fileID: 3171612123517201662, guid: c9c650eb7ddff954ab827184456443b1, type: 3}
   Trails:
   - {fileID: 8023668291058234956}

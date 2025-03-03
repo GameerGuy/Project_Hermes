@@ -1,23 +1,24 @@
+using System.Collections.Generic;
 using TMPro;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class CourseManager : MonoBehaviour
+public class CourseManager : NetworkBehaviour
 {
     [SerializeField] private Transform spawnPoint;
     [SerializeField] private GameObject playerPrefab;
-    [SerializeField] private CustomCamera customCamera;
     [SerializeField] private TextMeshProUGUI countdownDisplay;
     [SerializeField] private TextMeshProUGUI stopwatchDisplay;
     [SerializeField] private GameObject levelClearMenu;
-    
+
+    private List<CustomCamera> playerCams = new List<CustomCamera>();
     private int countdownStart = 3;
     private bool countdownActive = false;
 
     private void Start()
     {
-        //GameManager.Instance.SetPlayer(Instantiate(playerPrefab, spawnPoint.position, Quaternion.identity).GetComponentInChildren<PlayerMovement>());
-        //GameManager.Instance.DisablePlayerInput();
+        SpawnPlayers(GameManager.Instance.isOnline);
 
         TimeManager.Instance.StopwatchClear();
 
@@ -30,8 +31,7 @@ public class CourseManager : MonoBehaviour
         levelClearMenu.SetActive(false);
         
         TimeManager.Instance.SetTimer( 0.5f, () => {
-            customCamera.CycleActiveDown();
-            //customCamera.SetTarget(GameManager.Instance.Players.transform);
+            playerCams[0].CycleActiveDown();
         
             TimeManager.Instance.SetTimer( 1f, () => {
                 countdownDisplay.enabled = true;
@@ -48,6 +48,17 @@ public class CourseManager : MonoBehaviour
         CountdownChange();
     }
 
+    private void SpawnPlayers(bool isOnline)
+    {
+        if (!isOnline) {
+            NetworkManager.Singleton.StartHost();
+            PlayerMovement p = Instantiate(playerPrefab, spawnPoint.position, Quaternion.identity).GetComponent<PlayerMovement>();
+            p.GetComponent<NetworkObject>().SpawnAsPlayerObject(OwnerClientId);
+            p.DisableInput();
+            playerCams.Add(p.customCamera);
+        }
+    }
+
     private void RaceCountdown(int time)
     {   
         countdownActive = true;
@@ -55,15 +66,13 @@ public class CourseManager : MonoBehaviour
         countdownDisplay.color = new Color(countdownDisplay.color.r, countdownDisplay.color.g, countdownDisplay.color.b, 1);
         if (time > 0) {
             countdownDisplay.text = time.ToString();
-            customCamera.CycleActiveDown();
-            //customCamera.SetTarget(GameManager.Instance.Players.transform);
+            playerCams[0].CycleActiveDown();
             TimeManager.Instance.SetTimer(1, () => RaceCountdown(time-1));
         } else {
-            customCamera.SetActiveCamera(0);
+            playerCams[0].SetActiveCamera(1);
             countdownDisplay.text = "Go!";
             TimeManager.Instance.SetTimer(1, () => { countdownDisplay.enabled = false; });
             
-            //customCamera.SetTarget(GameManager.Instance.Players.transform);
             RaceStartTimer();
             countdownActive = false;
         }
@@ -74,7 +83,7 @@ public class CourseManager : MonoBehaviour
     {
         stopwatchDisplay.enabled = true;
         TimeManager.Instance.StopwatchStart();
-        //GameManager.Instance.EnablePlayerInput();
+        GameManager.Instance.EnableAllPlayersInput();
     }
 
     private void CountdownChange()
@@ -85,9 +94,8 @@ public class CourseManager : MonoBehaviour
 
     public void EndRace()
     {
-        //GameManager.Instance.DisablePlayerInput();
-        customCamera.SetActiveCamera(1);
-        //customCamera.SetTarget(GameManager.Instance.Players.transform);
+        GameManager.Instance.DisableAllPlayersInput();
+        playerCams[0].SetActiveCamera(0);
 
         countdownDisplay.text = "Finish!"; 
         countdownDisplay.enabled = true;
@@ -105,10 +113,10 @@ public class CourseManager : MonoBehaviour
 
     public async void ReturnToMenu(CourseData data)
     {
-        customCamera.ActivateEnd();
-        await GameManager.Instance.ChangeBackgroundColour(customCamera.GetCamera(), data.backgroundColour, GameManager.Instance.tokenSource.Token);
+        playerCams[0].ActivateEnd();
+        await GameManager.Instance.ChangeBackgroundColour(playerCams[0].GetCamera(), data.backgroundColour, GameManager.Instance.tokenSource.Token);
         SceneManager.LoadScene("Start Screen");
     }
 
-    
+
 }

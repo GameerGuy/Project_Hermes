@@ -69,6 +69,8 @@ public class PlayerMovement : NetworkBehaviour
     [Tooltip("Does the print button need to be held or is it a toggle?")]
     [SerializeField] private bool toggleSprint;
 
+    [SerializeField] private CustomCamera _customCamera;
+    public CustomCamera customCamera => _customCamera;
     [SerializeField] private GameObject respawnPoint;
     [SerializeField] private TrailRenderer[] Trails;
 
@@ -105,13 +107,16 @@ public class PlayerMovement : NetworkBehaviour
     {
         respawnPoint = Instantiate(respawnPoint, transform.position, quaternion.identity);
         respawnProjector = respawnPoint.GetComponent<SplineProjector>();
+
+        _customCamera = Instantiate(customCamera, transform.position, Quaternion.identity);
+        _customCamera.SetTargetForAll(transform);
+
         _rigidbody = GetComponent<Rigidbody>();
         _collider = GetComponent<CapsuleCollider>();
+
         animator = GetComponentInChildren<Animator>();
         networkAnimator = GetComponentInChildren<OwnerNetworkAnimator>();
         inputActions = new PlayerInput();
-
-        print(IsLocalPlayer + " : " + OwnerClientId);
     }
 
     private void Start()

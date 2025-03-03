@@ -157,6 +157,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  playerCount: 1
   isOnline: 0
 --- !u!4 &21816301
 Transform:
@@ -3518,6 +3519,10 @@ PrefabInstance:
     - target: {fileID: 7491215343581541007, guid: 7c95f6d2a249b8a41b50d6f55a24a549, type: 3}
       propertyPath: m_Name
       value: Camera
+      objectReference: {fileID: 0}
+    - target: {fileID: 7491215343581541007, guid: 7c95f6d2a249b8a41b50d6f55a24a549, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8746833894506705989, guid: 7c95f6d2a249b8a41b50d6f55a24a549, type: 3}
       propertyPath: m_Follow
