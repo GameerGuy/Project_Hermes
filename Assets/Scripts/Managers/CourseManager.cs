@@ -51,7 +51,7 @@ public class CourseManager : NetworkBehaviour
     private void SpawnPlayers(bool isOnline)
     {
         if (!isOnline) {
-            NetworkManager.Singleton.StartHost();
+            //NetworkManager.Singleton.StartHost();
             PlayerMovement p = Instantiate(playerPrefab, spawnPoint.position, Quaternion.identity).GetComponent<PlayerMovement>();
             p.GetComponent<NetworkObject>().SpawnAsPlayerObject(OwnerClientId);
             p.DisableInput();

@@ -13,6 +13,7 @@ public class GameManager : MonoBehaviour
 
     private Dictionary<ulong, PlayerMovement> _players = new Dictionary<ulong, PlayerMovement>();
     public Dictionary<ulong, PlayerMovement> Players => _players;
+    public const int MAX_PLAYER_COUNT = 4;
 
     public CancellationTokenSource tokenSource = new();
 
