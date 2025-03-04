@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -91,9 +92,19 @@ public class GameManager : MonoBehaviour
                 await UniTask.Yield();
             }
         } catch (OperationCanceledException){
+            ResetCancellationToken();
             mainCamera.backgroundColor = startColour;
             throw;
         }
+    }
+
+    public void ResetCancellationToken()
+    {
+        if (tokenSource == null) return;
+
+        tokenSource.Dispose();
+        tokenSource = new CancellationTokenSource();
+
     }
         
 }

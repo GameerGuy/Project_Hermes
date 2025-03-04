@@ -51,7 +51,7 @@ public class CourseManager : NetworkBehaviour
     private void SpawnPlayers(bool isOnline)
     {
         if (!isOnline) {
-            //NetworkManager.Singleton.StartHost();
+            // NetworkManager.Singleton.StartHost();
             PlayerMovement p = Instantiate(playerPrefab, spawnPoint.position, Quaternion.identity).GetComponent<PlayerMovement>();
             p.GetComponent<NetworkObject>().SpawnAsPlayerObject(OwnerClientId);
             p.DisableInput();
@@ -101,14 +101,19 @@ public class CourseManager : NetworkBehaviour
         countdownDisplay.enabled = true;
 
         TimeManager.Instance.SetTimer( 1f, () => {
-            countdownDisplay.enabled = false;
-            levelClearMenu.SetActive(true);
+            if (countdownDisplay != null) {
+                countdownDisplay.enabled = false;
+            }
+            if (levelClearMenu != null) {                
+                levelClearMenu.SetActive(true);
+            }
         });
     }
 
     public void ReplayLevel()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        GameManager.Instance.Players.Clear();
     }
 
     public async void ReturnToMenu(CourseData data)
@@ -116,6 +121,9 @@ public class CourseManager : NetworkBehaviour
         playerCams[0].ActivateEnd();
         await GameManager.Instance.ChangeBackgroundColour(playerCams[0].GetCamera(), data.backgroundColour, GameManager.Instance.tokenSource.Token);
         SceneManager.LoadScene("Start Screen");
+        GameManager.Instance.Players.Clear();
+        GameLobby.Instance.Disconnect();
+        //GameLobby.Instance.Cleanup();
     }
 
 

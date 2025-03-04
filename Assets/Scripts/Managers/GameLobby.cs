@@ -60,4 +60,16 @@ public class GameLobby : MonoBehaviour
         }
     }
 
+    public void Disconnect()
+    {
+        NetworkManager.Singleton.Shutdown();
+    }
+
+    public void Cleanup()
+    {
+        if (NetworkManager.Singleton != null) {
+            Destroy(NetworkManager.Singleton.gameObject);
+        }
+    }
+
 }
