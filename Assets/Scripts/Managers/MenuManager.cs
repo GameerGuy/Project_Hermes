@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using TMPro;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Playables;
@@ -18,6 +19,7 @@ public class MenuManager : MonoBehaviour
     [SerializeField] private PlayableAsset openLobby;
     [SerializeField] private PlayableAsset closelobby;
     [SerializeField] private PlayableAsset EnterLevel;
+    [SerializeField] private TextMeshProUGUI WaitingForPlayersDisplay;
     private PlayableDirector director;
     private Camera mainCamera;
     private bool startingRace;
@@ -38,11 +40,16 @@ public class MenuManager : MonoBehaviour
         OpenLevelSelect();
     }
 
-    public void PlayAsClient()
+    public void ReadyUp()
     {
-        GameLobby.Instance.QuickJoin();
-        GameManager.Instance.isOnline = true;
-        OpenLevelSelect();
+        GameManager.Instance.SetPlayerReadyServerRPC();
+        if (GameManager.Instance.allPlayersReady) {
+            OpenLevelSelect();
+            WaitingForPlayersDisplay.enabled = false;
+        } else {
+            WaitingForPlayersDisplay.enabled = true;
+        }
+
     }
 
     public void OpenLobbyMenu()
@@ -55,6 +62,7 @@ public class MenuManager : MonoBehaviour
     {
         if (director.state == PlayState.Playing) return;
         director.Play(closelobby);
+        GameLobby.Instance.Disconnect();
     }
 
     public void OpenNetworkModeMenu()

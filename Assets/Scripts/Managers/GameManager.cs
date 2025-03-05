@@ -4,9 +4,10 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
+using Unity.Netcode;
 using UnityEngine;
 
-public class GameManager : MonoBehaviour
+public class GameManager : NetworkBehaviour
 {
     private const float TRANSITION_TIME = 1f;
 
@@ -14,13 +15,14 @@ public class GameManager : MonoBehaviour
 
     private Dictionary<ulong, PlayerMovement> _players;
     public Dictionary<ulong, PlayerMovement> Players => _players;
+    private Dictionary<ulong, bool> playerReady;
 
     public CancellationTokenSource tokenSource = new();
 
     public const int MAX_PLAYER_COUNT = 4;
     public int playerCount = 1;
     public bool isOnline;
-    private bool isLocalPlayerReady;
+    public bool allPlayersReady {get; private set;}
 
 
     private static GameManager _instance;
@@ -47,6 +49,22 @@ public class GameManager : MonoBehaviour
             Destroy(gameObject);
         }
         _players = new Dictionary<ulong, PlayerMovement>();
+        playerReady = new Dictionary<ulong, bool>();
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void SetPlayerReadyServerRPC(ServerRpcParams serverRpcParams = default)
+    {
+        playerReady[serverRpcParams.Receive.SenderClientId] = true;
+
+        bool _allPlayersReady = true;
+        foreach(ulong clientId in NetworkManager.Singleton.ConnectedClientsIds) {
+            if (!playerReady.ContainsKey(clientId) || !playerReady[clientId]){
+                _allPlayersReady = false;
+                break;
+            }
+        }
+        allPlayersReady = _allPlayersReady;
     }
 
     public void RegisterPlayer(ulong id, PlayerMovement player)

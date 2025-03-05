@@ -8,13 +8,13 @@ using UnityEngine.UI;
 
 public class CreateLobbyUI : MonoBehaviour
 {
-    [SerializeField] private TMP_InputField lobbyNameInputField;
-    [SerializeField] private Toggle privacyToggle;
-    [SerializeField] private GameObject createButton;
-    [SerializeField] private TextMeshProUGUI lobbyData;
+    [SerializeField] protected TMP_InputField lobbyNameInputField;
+    [SerializeField] protected Toggle privacyToggle;
+    [SerializeField] protected GameObject createButton;
+    [SerializeField] protected TextMeshProUGUI lobbyData;
     // [SerializeField] private GameObject passwordRequest;
     // [SerializeField] private TMP_InputField passwordInputField;
-    [SerializeField] private MenuManager menuManager;
+    [SerializeField] protected MenuManager menuManager;
 
 
     private void Awake()

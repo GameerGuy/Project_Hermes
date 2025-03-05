@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using System.Threading.Tasks;
+using Unity.Services.Lobbies.Models;
 
 public class JoinLobbyUI : CreateLobbyUI
 {
@@ -13,6 +15,7 @@ public class JoinLobbyUI : CreateLobbyUI
     {
         Hide(this.gameObject);
         ToggleJoinButton();
+        
     }
 
     public void ToggleJoinButton()
@@ -24,8 +27,28 @@ public class JoinLobbyUI : CreateLobbyUI
         }
     }
 
-    public void JoinWithCode()
+    public async void JoinWithCode()
     {
-        GameLobby.Instance.JoinWithCode(lobbyCodeInputField.text);
+        await GameLobby.Instance.JoinWithCode(lobbyCodeInputField.text);
+
+        menuManager.OpenLobbyMenu();
+        GameManager.Instance.isOnline = true;
+        Hide(this.gameObject);
+
+        Lobby lobby = GameLobby.Instance.GetLobby();
+        lobbyData.text = "Lobby: " + lobby.Name + "\nCode: " + lobby.LobbyCode;
+    }
+
+    public async void PlayAsClient()
+    {
+        await GameLobby.Instance.QuickJoin();
+
+        menuManager.OpenLobbyMenu();
+        GameManager.Instance.isOnline = true;
+        Hide(this.gameObject);
+
+        Lobby lobby = GameLobby.Instance.GetLobby();
+        print(lobby.ToString());
+        lobbyData.text = "Lobby: " + lobby.Name + "\nCode: " + lobby.LobbyCode;
     }
 }

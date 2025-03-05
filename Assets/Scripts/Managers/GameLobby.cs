@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using JetBrains.Annotations;
 using Unity.Netcode;
 using Unity.Services.Authentication;
 using Unity.Services.Core;
@@ -73,25 +74,39 @@ public class GameLobby : MonoBehaviour
 
         } catch(LobbyServiceException e) {
             Debug.Log(e);
-        }
+        } 
+        
     }
 
-    public async void QuickJoin()
+    public async Task QuickJoin()
     {
         try {
-            await LobbyService.Instance.QuickJoinLobbyAsync();
+            joinedLobby = await LobbyService.Instance.QuickJoinLobbyAsync();
             NetworkManager.Singleton.StartClient();
         } catch(LobbyServiceException e) {
             Debug.Log(e);
         }
     }
 
-    public async void JoinWithCode(string lobbyCode)
+    public async Task JoinWithCode(string lobbyCode)
     {
         try {
             joinedLobby = await LobbyService.Instance.JoinLobbyByCodeAsync(lobbyCode);
             NetworkManager.Singleton.StartClient();
         } catch(LobbyServiceException e) {
+            Debug.Log(e);
+        }
+    }
+
+    public async void ListLobbies()
+    {
+        try{
+            QueryResponse queryResponse = await Lobbies.Instance.QueryLobbiesAsync();
+            print("Lobbies: " + queryResponse.Results.Count);
+            foreach(Lobby lobby in queryResponse.Results){
+                print(lobby.Name + " " + lobby.LobbyCode);
+            }
+        } catch(LobbyServiceException e){
             Debug.Log(e);
         }
     }
