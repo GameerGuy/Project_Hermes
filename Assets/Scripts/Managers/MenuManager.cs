@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Unity.Netcode;
@@ -10,8 +11,12 @@ public class MenuManager : MonoBehaviour
     [SerializeField] private PlayableAsset intro;
     [SerializeField] private PlayableAsset openLevelSelect;
     [SerializeField] private PlayableAsset closeLevelSelect;
+    [SerializeField] private PlayableAsset openLevelSelect_Lobby;
+    [SerializeField] private PlayableAsset closeLevelSelect_Lobby;
     [SerializeField] private PlayableAsset openNetworkModeMenu;
     [SerializeField] private PlayableAsset closeNetworkModeMenu;
+    [SerializeField] private PlayableAsset openLobby;
+    [SerializeField] private PlayableAsset closelobby;
     [SerializeField] private PlayableAsset EnterLevel;
     private PlayableDirector director;
     private Camera mainCamera;
@@ -33,18 +38,23 @@ public class MenuManager : MonoBehaviour
         OpenLevelSelect();
     }
 
-    public async void PlayAsHost()
+    public void PlayAsClient()
     {
-        await GameLobby.Instance.CreateLobby("Lobby Name", false);
+        GameLobby.Instance.QuickJoin();
         GameManager.Instance.isOnline = true;
         OpenLevelSelect();
     }
 
-    public async void PlayAsClient()
+    public void OpenLobbyMenu()
     {
-        await GameLobby.Instance.QuickJoin();
-        GameManager.Instance.isOnline = true;
-        OpenLevelSelect();
+        if (director.state == PlayState.Playing) return;
+        director.Play(openLobby);
+    }
+
+    public void CloseLobbyMenu()
+    {
+        if (director.state == PlayState.Playing) return;
+        director.Play(closelobby);
     }
 
     public void OpenNetworkModeMenu()
@@ -62,13 +72,21 @@ public class MenuManager : MonoBehaviour
     public void OpenLevelSelect()
     {
         if (director.state == PlayState.Playing) return;
-        director.Play(openLevelSelect);
+        if (GameManager.Instance.isOnline){
+            director.Play(openLevelSelect_Lobby);
+        } else {            
+            director.Play(openLevelSelect);
+        }
     }
 
     public void CloseLevelSelect()
     {
         if (director.state == PlayState.Playing) return;
-        director.Play(closeLevelSelect);
+        if (GameManager.Instance.isOnline){
+            director.Play(closeLevelSelect_Lobby);
+        } else {            
+            director.Play(closeLevelSelect);
+        }
         GameLobby.Instance.Disconnect();
     }
 

@@ -1,0 +1,65 @@
+using System.Collections;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using TMPro;
+using Unity.Services.Lobbies.Models;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class CreateLobbyUI : MonoBehaviour
+{
+    [SerializeField] private TMP_InputField lobbyNameInputField;
+    [SerializeField] private Toggle privacyToggle;
+    [SerializeField] private GameObject createButton;
+    [SerializeField] private TextMeshProUGUI lobbyData;
+    // [SerializeField] private GameObject passwordRequest;
+    // [SerializeField] private TMP_InputField passwordInputField;
+    [SerializeField] private MenuManager menuManager;
+
+
+    private void Awake()
+    {
+        ToggleCreateButton();
+        Hide(this.gameObject);
+    }
+
+    // public void TogglePasswordRequest()
+    // {
+    //     if (privacyToggle.isOn) {
+    //         Show(passwordRequest);
+    //     } else {
+    //         Hide(passwordRequest);
+    //     }
+    // }
+
+    
+    public void ToggleCreateButton()
+    {
+        if (lobbyNameInputField.text != "") {
+            Show(createButton);
+        } else {
+            Hide(createButton);
+        }
+    }
+
+    public async void PlayAsHost()
+    {
+        menuManager.OpenLobbyMenu();
+        GameManager.Instance.isOnline = true;
+        Hide(this.gameObject);
+
+        await GameLobby.Instance.CreateLobby(lobbyNameInputField.text, privacyToggle.isOn);
+        Lobby lobby = GameLobby.Instance.GetLobby();
+        lobbyData.text = "Lobby: " + lobby.Name + "\nCode: " + lobby.LobbyCode;
+    }
+
+    public void Show(GameObject gameObject)
+    {
+        gameObject.SetActive(true);
+    }
+
+    public void Hide(GameObject gameObject)
+    {
+        gameObject.SetActive(false);
+    }
+}

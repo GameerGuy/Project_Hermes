@@ -12,14 +12,16 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private AnimationCurve curve;
 
-    private Dictionary<ulong, PlayerMovement> _players = new Dictionary<ulong, PlayerMovement>();
+    private Dictionary<ulong, PlayerMovement> _players;
     public Dictionary<ulong, PlayerMovement> Players => _players;
-    public const int MAX_PLAYER_COUNT = 4;
 
     public CancellationTokenSource tokenSource = new();
 
+    public const int MAX_PLAYER_COUNT = 4;
     public int playerCount = 1;
     public bool isOnline;
+    private bool isLocalPlayerReady;
+
 
     private static GameManager _instance;
     public static GameManager Instance
@@ -44,6 +46,7 @@ public class GameManager : MonoBehaviour
         } else {
             Destroy(gameObject);
         }
+        _players = new Dictionary<ulong, PlayerMovement>();
     }
 
     public void RegisterPlayer(ulong id, PlayerMovement player)

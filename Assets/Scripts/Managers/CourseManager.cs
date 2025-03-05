@@ -4,7 +4,7 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class CourseManager : NetworkBehaviour
+public class CourseManager : MonoBehaviour
 {
     [SerializeField] private Transform spawnPoint;
     [SerializeField] private GameObject playerPrefab;
@@ -53,7 +53,7 @@ public class CourseManager : NetworkBehaviour
         if (!isOnline) {
             // NetworkManager.Singleton.StartHost();
             PlayerMovement p = Instantiate(playerPrefab, spawnPoint.position, Quaternion.identity).GetComponent<PlayerMovement>();
-            p.GetComponent<NetworkObject>().SpawnAsPlayerObject(OwnerClientId);
+            p.GetComponent<NetworkObject>().SpawnAsPlayerObject(p.OwnerClientId);
             p.DisableInput();
             playerCams.Add(p.customCamera);
         }
