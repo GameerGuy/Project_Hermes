@@ -12,7 +12,7 @@ public class TestingNetworkUi : MonoBehaviour
     {
         Host.onClick.AddListener(() => { 
             print("HOST");
-            // NetworkManager.Singleton.StartHost();
+            NetworkManager.Singleton.StartHost();
             Hide();
         });
         Join.onClick.AddListener(() => { 

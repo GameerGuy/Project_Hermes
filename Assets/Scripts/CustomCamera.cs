@@ -1,7 +1,9 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Cinemachine;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class CustomCamera : MonoBehaviour
 {
@@ -54,6 +56,11 @@ public class CustomCamera : MonoBehaviour
     public void ActivateEnd()
     {
         SetActiveCamera(virtualCameras.Length -1);
+    }
+
+    public void Deactivate()
+    {
+        cam.enabled = false;
     }
 
     private int BoundsCheck(int index){

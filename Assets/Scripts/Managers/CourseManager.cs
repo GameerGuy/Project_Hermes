@@ -56,6 +56,13 @@ public class CourseManager : MonoBehaviour
             p.GetComponent<NetworkObject>().SpawnAsPlayerObject(p.OwnerClientId);
             p.DisableInput();
             playerCams.Add(p.customCamera);
+        } else {
+            for (int i = 0; i < GameManager.Instance.playerCount; i++) {
+                PlayerMovement p = Instantiate(playerPrefab, spawnPoint.position, Quaternion.identity).GetComponent<PlayerMovement>();
+                p.GetComponent<NetworkObject>().SpawnAsPlayerObject(p.OwnerClientId);
+                p.DisableInput();
+                playerCams.Add(p.customCamera);
+            }
         }
     }
 
@@ -125,6 +132,8 @@ public class CourseManager : MonoBehaviour
         GameLobby.Instance.Disconnect();
         //GameLobby.Instance.Cleanup();
     }
+
+
 
 
 }

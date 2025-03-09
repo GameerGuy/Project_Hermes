@@ -105,12 +105,6 @@ public class PlayerMovement : NetworkBehaviour
     #region MonoBehaviours
     private void Awake()
     {
-        respawnPoint = Instantiate(respawnPoint, transform.position, quaternion.identity);
-        respawnProjector = respawnPoint.GetComponent<SplineProjector>();
-
-        _customCamera = Instantiate(customCamera, transform.position, Quaternion.identity);
-        _customCamera.SetTargetForAll(transform);
-
         _rigidbody = GetComponent<Rigidbody>();
         _collider = GetComponent<CapsuleCollider>();
 
@@ -201,8 +195,16 @@ public class PlayerMovement : NetworkBehaviour
     {
         GameManager.Instance.RegisterPlayer(OwnerClientId, this);
 
-        if (!IsOwner) return;
-        
+        if (!IsOwner) {
+            return; 
+        }
+
+        respawnPoint = Instantiate(respawnPoint, transform.position, quaternion.identity);
+        respawnProjector = respawnPoint.GetComponent<SplineProjector>();
+
+        _customCamera = Instantiate(customCamera, transform.position, Quaternion.identity);
+        _customCamera.SetTargetForAll(transform);
+
         inputActions.Player.Jump.started += OnJumpPressed;
         inputActions.Player.Jump.canceled += OnJumpReleased;
         inputActions.Player.Sprint.started += OnSprintPressed;
