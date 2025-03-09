@@ -1,7 +1,7 @@
 using System;
 
 [System.Serializable]
-public class SaveObject {
+public class LevelClearRecord {
         public string courseName;
         public float lapTime;
         public string date;

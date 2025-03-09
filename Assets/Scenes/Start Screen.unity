@@ -7316,6 +7316,7 @@ GameObject:
   - component: {fileID: 1416090630}
   - component: {fileID: 1416090629}
   - component: {fileID: 1416090631}
+  - component: {fileID: 1416090632}
   m_Layer: 0
   m_Name: Menu Manager
   m_TagString: Untagged
@@ -7370,7 +7371,7 @@ PlayableDirector:
   m_GameObject: {fileID: 1416090628}
   m_Enabled: 1
   serializedVersion: 3
-  m_PlayableAsset: {fileID: 11400000, guid: aea8ce5675677cb498642237a0fb2ec0, type: 2}
+  m_PlayableAsset: {fileID: 11400000, guid: ba8d56e1a955d4142b507f547b7619e7, type: 2}
   m_InitialState: 0
   m_WrapMode: 2
   m_DirectorUpdateMode: 1
@@ -7594,8 +7595,30 @@ PlayableDirector:
     value: {fileID: 1165901557}
   - key: {fileID: -1960379310170456079, guid: 74984c81d78ca8a488ac8b09a8884cd6, type: 2}
     value: {fileID: 265965759}
+  - key: {fileID: 1631501340800351329, guid: ba8d56e1a955d4142b507f547b7619e7, type: 2}
+    value: {fileID: 1342916152}
+  - key: {fileID: 4269754404123749748, guid: ba8d56e1a955d4142b507f547b7619e7, type: 2}
+    value: {fileID: 1355900919}
+  - key: {fileID: 3679084221988250243, guid: ba8d56e1a955d4142b507f547b7619e7, type: 2}
+    value: {fileID: 1917661717}
   m_ExposedReferences:
     m_References: []
+--- !u!114 &1416090632
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1416090628}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 745933534
+  AlwaysReplicateAsRoot: 0
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
 --- !u!1 &1460485210
 GameObject:
   m_ObjectHideFlags: 0
@@ -9993,12 +10016,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   RunInBackground: 1
-  LogLevel: 1
+  LogLevel: 0
   NetworkConfig:
     ProtocolVersion: 0
     NetworkTransport: {fileID: 1915662947}
     PlayerPrefab: {fileID: 0}
-    NetworkPrefabs: []
+    NetworkPrefabs:
+    - Override: 0
+      Prefab: {fileID: 6549462106068090882, guid: f22fca66865c00042969abf561b9deac, type: 3}
+      SourcePrefabToOverride: {fileID: 0}
+      SourceHashToOverride: 0
+      OverridingTargetPrefab: {fileID: 0}
     TickRate: 30
     ClientConnectionBufferTimeout: 10
     ConnectionApproval: 0

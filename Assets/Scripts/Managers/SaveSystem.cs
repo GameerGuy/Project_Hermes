@@ -16,9 +16,9 @@ public static class SaveSystem
         }
     }
 
-    public static SaveObject CreateSaveObject()
+    public static LevelClearRecord CreateSaveObject()
     {
-        SaveObject save = new SaveObject {
+        LevelClearRecord save = new LevelClearRecord {
             courseName = SceneManager.GetActiveScene().name,
             lapTime = TimeManager.Instance.stopwatchTimer,
             date = DateTime.Today.ToShortDateString(),
@@ -29,7 +29,7 @@ public static class SaveSystem
 
     public static void SaveBySerialization()
     {
-        SaveObject saveObject = CreateSaveObject();
+        LevelClearRecord saveObject = CreateSaveObject();
         BinaryFormatter bf = new BinaryFormatter();
         FileStream fileStream = new FileStream(SAVE_FOLDER + "/record.txt", FileMode.Append);
 
@@ -50,7 +50,7 @@ public static class SaveSystem
     }
 
     public static void SaveAsJSON(){
-        SaveObject saveObject = CreateSaveObject();
+        LevelClearRecord saveObject = CreateSaveObject();
         string saveString = JsonUtility.ToJson(saveObject);
         SaveAsJSON(saveString);
     }

@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -7,7 +8,7 @@ using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.SceneManagement;
 
-public class MenuManager : MonoBehaviour
+public class MenuManager : NetworkBehaviour
 {
     [SerializeField] private PlayableAsset intro;
     [SerializeField] private PlayableAsset openLevelSelect;
@@ -37,14 +38,14 @@ public class MenuManager : MonoBehaviour
         if (director.state == PlayState.Playing) return;
         NetworkManager.Singleton.StartHost();
         GameManager.Instance.isOnline = false;
-        OpenLevelSelect();
+        OpenLevelSelectClientRpc();
     }
 
     public void ReadyUp()
     {
         GameManager.Instance.SetPlayerReadyServerRPC();
         if (GameManager.Instance.allPlayersReady) {
-            OpenLevelSelect();
+            OpenLevelSelectClientRpc();
             WaitingForPlayersDisplay.enabled = false;
         } else {
             WaitingForPlayersDisplay.enabled = true;
@@ -62,7 +63,8 @@ public class MenuManager : MonoBehaviour
     {
         if (director.state == PlayState.Playing) return;
         director.Play(closelobby);
-        GameLobby.Instance.Disconnect();
+        NetworkManager.Singleton.Shutdown();
+        GameLobby.Instance.LeaveLobby();
     }
 
     public void OpenNetworkModeMenu()
@@ -77,7 +79,8 @@ public class MenuManager : MonoBehaviour
         director.Play(closeNetworkModeMenu);
     }
 
-    public void OpenLevelSelect()
+    [ClientRpc]
+    public void OpenLevelSelectClientRpc()
     {
         if (director.state == PlayState.Playing) return;
         if (GameManager.Instance.isOnline){
@@ -87,7 +90,8 @@ public class MenuManager : MonoBehaviour
         }
     }
 
-    public void CloseLevelSelect()
+    [ClientRpc]
+    public void CloseLevelSelectClientRpc()
     {
         if (director.state == PlayState.Playing) return;
         if (GameManager.Instance.isOnline){
@@ -95,7 +99,7 @@ public class MenuManager : MonoBehaviour
         } else {            
             director.Play(closeLevelSelect);
         }
-        GameLobby.Instance.Disconnect();
+        NetworkManager.Singleton.Shutdown();
     }
 
     public void OpenOptionsMenu()
@@ -109,13 +113,32 @@ public class MenuManager : MonoBehaviour
         Application.Quit();
     }
 
-    public async void StartRace(CourseData data)
+    public void StartRace(CourseData data)
     {
         if(startingRace) return;
-        director.Play(EnterLevel);
         startingRace = true;
-        await GameManager.Instance.ChangeBackgroundColour(mainCamera, data.backgroundColour, GameManager.Instance.tokenSource.Token);
-        SceneManager.LoadScene(data.courseName);
+
+        GameManager.Instance.playerCount = NetworkManager.Singleton.ConnectedClientsList.Count;
+
+        data.UnpackColour(out float r, out float g, out float b, out float a);
+        StartRaceClientRpc(data.courseName, r, g, b, a);
+        GameManager.Instance.PlayerReady.Clear();
+        GameLobby.Instance.DeleteLobby();
+        GameLobby.Instance.Cleanup();
+    }
+
+    [ClientRpc]
+    public void StartRaceClientRpc(string courseName, float r, float g, float b, float a)
+    {
+        Color backgroundColour = new Color(r, g, b, a);
+        SceneTransition(courseName, backgroundColour);
+    }
+
+    public async void SceneTransition(string courseName, Color backgroundColour)
+    {
+        director.Play(EnterLevel);
+        await GameManager.Instance.ChangeBackgroundColour(mainCamera, backgroundColour, GameManager.Instance.tokenSource.Token);
+        await SceneManager.LoadSceneAsync(courseName);
     }
 
     

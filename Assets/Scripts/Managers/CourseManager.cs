@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
 using TMPro;
 using Unity.Netcode;
@@ -127,10 +128,10 @@ public class CourseManager : MonoBehaviour
     {
         playerCams[0].ActivateEnd();
         await GameManager.Instance.ChangeBackgroundColour(playerCams[0].GetCamera(), data.backgroundColour, GameManager.Instance.tokenSource.Token);
-        SceneManager.LoadScene("Start Screen");
+        await SceneManager.LoadSceneAsync(data.courseName);
         GameManager.Instance.Players.Clear();
-        GameLobby.Instance.Disconnect();
-        //GameLobby.Instance.Cleanup();
+        NetworkManager.Singleton.Shutdown();
+        GameLobby.Instance.Cleanup();
     }
 
 

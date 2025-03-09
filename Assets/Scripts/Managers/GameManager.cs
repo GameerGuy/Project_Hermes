@@ -15,7 +15,9 @@ public class GameManager : NetworkBehaviour
 
     private Dictionary<ulong, PlayerMovement> _players;
     public Dictionary<ulong, PlayerMovement> Players => _players;
-    private Dictionary<ulong, bool> playerReady;
+    private Dictionary<ulong, bool> _playerReady;
+    public Dictionary<ulong, bool> PlayerReady => _playerReady;
+
 
     public CancellationTokenSource tokenSource = new();
 
@@ -49,17 +51,17 @@ public class GameManager : NetworkBehaviour
             Destroy(gameObject);
         }
         _players = new Dictionary<ulong, PlayerMovement>();
-        playerReady = new Dictionary<ulong, bool>();
+        _playerReady = new Dictionary<ulong, bool>();
     }
 
     [ServerRpc(RequireOwnership = false)]
     public void SetPlayerReadyServerRPC(ServerRpcParams serverRpcParams = default)
     {
-        playerReady[serverRpcParams.Receive.SenderClientId] = true;
+        _playerReady[serverRpcParams.Receive.SenderClientId] = true;
 
         bool _allPlayersReady = true;
         foreach(ulong clientId in NetworkManager.Singleton.ConnectedClientsIds) {
-            if (!playerReady.ContainsKey(clientId) || !playerReady[clientId]){
+            if (!_playerReady.ContainsKey(clientId) || !_playerReady[clientId]){
                 _allPlayersReady = false;
                 break;
             }

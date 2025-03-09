@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Net.WebSockets;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Unity.Netcode;
@@ -111,21 +112,41 @@ public class GameLobby : MonoBehaviour
         }
     }
 
+    public async void DeleteLobby()
+    {
+        if (joinedLobby != null) {
+            try {
+                await LobbyService.Instance.DeleteLobbyAsync(joinedLobby.Id);
+                joinedLobby = null;
+            } catch (LobbyServiceException e) {
+                Debug.Log(e);
+            }
+        }
+    }
+
+    public async void LeaveLobby()
+    {
+        if (joinedLobby != null) {
+            try {
+                await LobbyService.Instance.RemovePlayerAsync(joinedLobby.Id, AuthenticationService.Instance.PlayerId);
+                joinedLobby = null;
+            } catch (LobbyServiceException e) {
+                Debug.Log(e);
+            }
+        }
+    }
+
     public Lobby GetLobby()
     {
         return joinedLobby;
     }
 
-
-    public void Disconnect()
-    {
-        NetworkManager.Singleton.Shutdown();
-    }
-
     public void Cleanup()
     {
-        if (NetworkManager.Singleton != null) {
-            Destroy(NetworkManager.Singleton.gameObject);
+        var networkManagers = FindObjectsByType<NetworkManager>(FindObjectsSortMode.InstanceID);
+        for(int i = networkManagers.Length - 1; i > 0 ; i--)
+        {
+            Destroy(networkManagers[i].gameObject);
         }
     }
 
