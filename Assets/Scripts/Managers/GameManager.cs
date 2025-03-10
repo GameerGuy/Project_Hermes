@@ -10,11 +10,13 @@ using UnityEngine;
 public class GameManager : NetworkBehaviour
 {
     private const float TRANSITION_TIME = 1f;
-
     [SerializeField] private AnimationCurve curve;
+
 
     private Dictionary<ulong, PlayerMovement> _players;
     public Dictionary<ulong, PlayerMovement> Players => _players;
+
+
     private Dictionary<ulong, bool> _playerReady;
     public Dictionary<ulong, bool> PlayerReady => _playerReady;
 
@@ -55,9 +57,9 @@ public class GameManager : NetworkBehaviour
     }
 
     [ServerRpc(RequireOwnership = false)]
-    public void SetPlayerReadyServerRPC(ServerRpcParams serverRpcParams = default)
+    public void SetPlayerReadyServerRPC(bool isReady, ServerRpcParams serverRpcParams = default)
     {
-        _playerReady[serverRpcParams.Receive.SenderClientId] = true;
+        _playerReady[serverRpcParams.Receive.SenderClientId] = isReady;
 
         bool _allPlayersReady = true;
         foreach(ulong clientId in NetworkManager.Singleton.ConnectedClientsIds) {

@@ -19,7 +19,7 @@ public class CourseManager : MonoBehaviour
 
     private void Start()
     {
-        SpawnPlayers(GameManager.Instance.isOnline);
+        SpawnPlayersClientRpc(GameManager.Instance.isOnline);
 
         TimeManager.Instance.StopwatchClear();
 
@@ -32,7 +32,9 @@ public class CourseManager : MonoBehaviour
         levelClearMenu.SetActive(false);
         
         TimeManager.Instance.SetTimer( 0.5f, () => {
-            playerCams[0].CycleActiveDown();
+            foreach (CustomCamera c in playerCams) {
+                c.CycleActiveDown();
+            }
         
             TimeManager.Instance.SetTimer( 1f, () => {
                 countdownDisplay.enabled = true;
@@ -49,10 +51,10 @@ public class CourseManager : MonoBehaviour
         CountdownChange();
     }
 
-    private void SpawnPlayers(bool isOnline)
+    [ClientRpc]
+    private void SpawnPlayersClientRpc(bool isOnline)
     {
         if (!isOnline) {
-            // NetworkManager.Singleton.StartHost();
             PlayerMovement p = Instantiate(playerPrefab, spawnPoint.position, Quaternion.identity).GetComponent<PlayerMovement>();
             p.GetComponent<NetworkObject>().SpawnAsPlayerObject(p.OwnerClientId);
             p.DisableInput();
@@ -72,13 +74,20 @@ public class CourseManager : MonoBehaviour
         countdownActive = true;
         countdownDisplay.fontSize = 200;
         countdownDisplay.color = new Color(countdownDisplay.color.r, countdownDisplay.color.g, countdownDisplay.color.b, 1);
+
         if (time > 0) {
             countdownDisplay.text = time.ToString();
-            playerCams[0].CycleActiveDown();
+            foreach (CustomCamera c in playerCams) {
+                c.CycleActiveDown();
+            }
+
             TimeManager.Instance.SetTimer(1, () => RaceCountdown(time-1));
         } else {
-            playerCams[0].SetActiveCamera(1);
             countdownDisplay.text = "Go!";
+            foreach (CustomCamera c in playerCams) {
+                c.SetActiveCamera(1);
+            }
+
             TimeManager.Instance.SetTimer(1, () => { countdownDisplay.enabled = false; });
             
             RaceStartTimer();

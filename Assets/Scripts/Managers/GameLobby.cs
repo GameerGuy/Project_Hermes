@@ -48,7 +48,7 @@ public class GameLobby : MonoBehaviour
 
     }
 
-    private bool IsLobbyHost()
+    public bool IsLobbyHost()
     {
         return joinedLobby != null && joinedLobby.HostId == AuthenticationService.Instance.PlayerId;
     }
