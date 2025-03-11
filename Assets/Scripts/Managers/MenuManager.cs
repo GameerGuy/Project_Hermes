@@ -36,7 +36,7 @@ public class MenuManager : NetworkBehaviour
     public void PlayOffline()
     {
         if (director.state == PlayState.Playing) return;
-        NetworkManager.Singleton.StartHost();
+        GameManager.Instance.StartHost();
         GameManager.Instance.isOnline = false;
         OpenLevelSelectClientRpc();
     }
@@ -46,7 +46,6 @@ public class MenuManager : NetworkBehaviour
         GameManager.Instance.SetPlayerReadyServerRPC(true);
         if (GameManager.Instance.allPlayersReady) {
             OpenLevelSelectClientRpc();
-            WaitingForPlayersDisplay.enabled = false;
         } else {
             WaitingForPlayersDisplay.enabled = true;
         }
@@ -102,6 +101,7 @@ public class MenuManager : NetworkBehaviour
     public void OpenLevelSelectClientRpc()
     {
         if (director.state == PlayState.Playing) return;
+        WaitingForPlayersDisplay.enabled = false;
         if (GameManager.Instance.isOnline){
             director.Play(openLevelSelect_Lobby);
         } else {            
@@ -140,11 +140,9 @@ public class MenuManager : NetworkBehaviour
         if(startingRace) return;
         startingRace = true;
 
-        GameManager.Instance.playerCount = NetworkManager.Singleton.ConnectedClientsList.Count;
 
         data.UnpackColour(out float r, out float g, out float b, out float a);
         StartRaceClientRpc(data.courseName, r, g, b, a);
-        GameManager.Instance.PlayerReady.Clear();
         GameLobby.Instance.DeleteLobby();
         GameLobby.Instance.Cleanup();
     }

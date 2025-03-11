@@ -1964,8 +1964,13 @@ MonoBehaviour:
   NetworkConfig:
     ProtocolVersion: 0
     NetworkTransport: {fileID: 860559206}
-    PlayerPrefab: {fileID: 6549462106068090882, guid: f22fca66865c00042969abf561b9deac, type: 3}
-    NetworkPrefabs: []
+    PlayerPrefab: {fileID: 0}
+    NetworkPrefabs:
+    - Override: 0
+      Prefab: {fileID: 6549462106068090882, guid: f22fca66865c00042969abf561b9deac, type: 3}
+      SourcePrefabToOverride: {fileID: 0}
+      SourceHashToOverride: 0
+      OverridingTargetPrefab: {fileID: 0}
     TickRate: 30
     ClientConnectionBufferTimeout: 10
     ConnectionApproval: 0
@@ -3080,6 +3085,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Host: {fileID: 486647521}
   Join: {fileID: 450471537}
+  spawnPoint: {fileID: 860559208}
+  playerPrefab: {fileID: 6549462106068090882, guid: f22fca66865c00042969abf561b9deac, type: 3}
 --- !u!114 &1693859661
 MonoBehaviour:
   m_ObjectHideFlags: 0

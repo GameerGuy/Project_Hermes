@@ -71,7 +71,7 @@ public class GameLobby : MonoBehaviour
             joinedLobby = await LobbyService.Instance.CreateLobbyAsync(lobbyName, GameManager.MAX_PLAYER_COUNT, new CreateLobbyOptions{
                 IsPrivate = isPrivate,
             });
-            NetworkManager.Singleton.StartHost();
+            GameManager.Instance.StartHost();
 
         } catch(LobbyServiceException e) {
             Debug.Log(e);
@@ -79,23 +79,31 @@ public class GameLobby : MonoBehaviour
         
     }
 
-    public async Task QuickJoin()
+    public async Task<bool> QuickJoin()
     {
         try {
             joinedLobby = await LobbyService.Instance.QuickJoinLobbyAsync();
+            if (joinedLobby == null) return false;
+
             NetworkManager.Singleton.StartClient();
+            return true;
         } catch(LobbyServiceException e) {
             Debug.Log(e);
+            return false;
         }
     }
 
-    public async Task JoinWithCode(string lobbyCode)
+    public async Task<bool> JoinWithCode(string lobbyCode)
     {
         try {
             joinedLobby = await LobbyService.Instance.JoinLobbyByCodeAsync(lobbyCode);
+            if (joinedLobby == null) return false;
+
             NetworkManager.Singleton.StartClient();
+            return true;
         } catch(LobbyServiceException e) {
             Debug.Log(e);
+            return false;
         }
     }
 

@@ -29,8 +29,11 @@ public class JoinLobbyUI : CreateLobbyUI
 
     public async void JoinWithCode()
     {
-        await GameLobby.Instance.JoinWithCode(lobbyCodeInputField.text);
-
+        bool joined = await GameLobby.Instance.JoinWithCode(lobbyCodeInputField.text);
+        if (!joined) {
+            Debug.LogError("failed to join lobby");    
+            return;
+        }
         menuManager.OpenLobbyMenu();
         GameManager.Instance.isOnline = true;
         Hide(this.gameObject);
@@ -41,14 +44,17 @@ public class JoinLobbyUI : CreateLobbyUI
 
     public async void PlayAsClient()
     {
-        await GameLobby.Instance.QuickJoin();
+        bool joined = await GameLobby.Instance.QuickJoin();
+        if (!joined) {
+            Debug.LogError("failed to join lobby");    
+            return;
+        }
 
         menuManager.OpenLobbyMenu();
         GameManager.Instance.isOnline = true;
         Hide(this.gameObject);
 
         Lobby lobby = GameLobby.Instance.GetLobby();
-        print(lobby.ToString());
         lobbyData.text = "Lobby: " + lobby.Name + "\nCode: " + lobby.LobbyCode;
     }
 }

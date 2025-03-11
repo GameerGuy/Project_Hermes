@@ -2,15 +2,18 @@ using Cysharp.Threading.Tasks;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : NetworkBehaviour
 {
     private const float TRANSITION_TIME = 1f;
     [SerializeField] private AnimationCurve curve;
+    [SerializeField] private GameObject playerPrefab;
 
 
     private Dictionary<ulong, PlayerMovement> _players;
@@ -54,6 +57,21 @@ public class GameManager : NetworkBehaviour
         }
         _players = new Dictionary<ulong, PlayerMovement>();
         _playerReady = new Dictionary<ulong, bool>();
+        
+    }
+    public void StartHost()
+    {
+        NetworkManager.Singleton.StartHost();
+        NetworkManager.Singleton.SceneManager.OnLoadEventCompleted += AuthoriseCourseManager;
+    }
+
+    private void AuthoriseCourseManager(string sceneName, LoadSceneMode loadSceneMode, List<ulong> clientsCompleted, List<ulong> clientsTimedOut)
+    {
+        print("dsd");
+        CourseManager cm = FindObjectOfType<CourseManager>();
+        if (cm = null) return;
+
+        cm.GetComponent<NetworkObject>().ChangeOwnership(OwnerClientId);
     }
 
     [ServerRpc(RequireOwnership = false)]
@@ -62,8 +80,8 @@ public class GameManager : NetworkBehaviour
         _playerReady[serverRpcParams.Receive.SenderClientId] = isReady;
 
         bool _allPlayersReady = true;
-        foreach(ulong clientId in NetworkManager.Singleton.ConnectedClientsIds) {
-            if (!_playerReady.ContainsKey(clientId) || !_playerReady[clientId]){
+        foreach (ulong clientId in NetworkManager.Singleton.ConnectedClientsIds) {
+            if (!_playerReady.ContainsKey(clientId) || !_playerReady[clientId]) {
                 _allPlayersReady = false;
                 break;
             }
@@ -71,10 +89,33 @@ public class GameManager : NetworkBehaviour
         allPlayersReady = _allPlayersReady;
     }
 
+    public void SpawnPlayers(Transform spawnPoint)
+    {
+        foreach (ulong clientId in NetworkManager.Singleton.ConnectedClientsIds){
+            PlayerMovement p = Instantiate(playerPrefab, spawnPoint.position, Quaternion.identity).GetComponent<PlayerMovement>();
+            p.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId);
+        }
+
+    }
+
+    // [ClientRpc]
+    // private void SpawnPlayersClientRpc()
+    // {
+    //     if (!isOnline) {
+    //         PlayerMovement p = Instantiate(playerPrefab, spawnPoint, Quaternion.identity).GetComponent<PlayerMovement>();
+    //         p.GetComponent<NetworkObject>().SpawnAsPlayerObject(OwnerClientId);
+    //         return;
+    //     }
+
+    //     foreach (ulong clientId in _playerReady.Keys){
+    //         PlayerMovement p = Instantiate(playerPrefab, spawnPoint, Quaternion.identity).GetComponent<PlayerMovement>();
+    //         p.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId);
+    //     }
+    // }
+
     public void RegisterPlayer(ulong id, PlayerMovement player)
     {
         _players.Add(id, player);
-        print(id);
     }
 
     public void EnableAllPlayersInput()

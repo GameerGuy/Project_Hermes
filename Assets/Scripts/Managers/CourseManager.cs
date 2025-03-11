@@ -5,21 +5,23 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class CourseManager : MonoBehaviour
+public class CourseManager : NetworkBehaviour
 {
     [SerializeField] private Transform spawnPoint;
-    [SerializeField] private GameObject playerPrefab;
     [SerializeField] private TextMeshProUGUI countdownDisplay;
     [SerializeField] private TextMeshProUGUI stopwatchDisplay;
     [SerializeField] private GameObject levelClearMenu;
 
-    private List<CustomCamera> playerCams = new List<CustomCamera>();
+    private CustomCamera playerCam;
     private int countdownStart = 3;
     private bool countdownActive = false;
 
     private void Start()
     {
-        SpawnPlayersClientRpc(GameManager.Instance.isOnline);
+        print(IsOwnedByServer);
+        GameManager.Instance.SpawnPlayers(spawnPoint);
+        GameManager.Instance.DisableAllPlayersInput();
+        playerCam = FindObjectOfType<CustomCamera>();
 
         TimeManager.Instance.StopwatchClear();
 
@@ -32,10 +34,8 @@ public class CourseManager : MonoBehaviour
         levelClearMenu.SetActive(false);
         
         TimeManager.Instance.SetTimer( 0.5f, () => {
-            foreach (CustomCamera c in playerCams) {
-                c.CycleActiveDown();
-            }
-        
+            playerCam.CycleActiveDown();
+            
             TimeManager.Instance.SetTimer( 1f, () => {
                 countdownDisplay.enabled = true;
                 RaceCountdown(countdownStart);
@@ -50,24 +50,7 @@ public class CourseManager : MonoBehaviour
 
         CountdownChange();
     }
-
-    [ClientRpc]
-    private void SpawnPlayersClientRpc(bool isOnline)
-    {
-        if (!isOnline) {
-            PlayerMovement p = Instantiate(playerPrefab, spawnPoint.position, Quaternion.identity).GetComponent<PlayerMovement>();
-            p.GetComponent<NetworkObject>().SpawnAsPlayerObject(p.OwnerClientId);
-            p.DisableInput();
-            playerCams.Add(p.customCamera);
-        } else {
-            for (int i = 0; i < GameManager.Instance.playerCount; i++) {
-                PlayerMovement p = Instantiate(playerPrefab, spawnPoint.position, Quaternion.identity).GetComponent<PlayerMovement>();
-                p.GetComponent<NetworkObject>().SpawnAsPlayerObject(p.OwnerClientId);
-                p.DisableInput();
-                playerCams.Add(p.customCamera);
-            }
-        }
-    }
+    
 
     private void RaceCountdown(int time)
     {   
@@ -77,17 +60,11 @@ public class CourseManager : MonoBehaviour
 
         if (time > 0) {
             countdownDisplay.text = time.ToString();
-            foreach (CustomCamera c in playerCams) {
-                c.CycleActiveDown();
-            }
-
+            playerCam.CycleActiveDown();
             TimeManager.Instance.SetTimer(1, () => RaceCountdown(time-1));
         } else {
             countdownDisplay.text = "Go!";
-            foreach (CustomCamera c in playerCams) {
-                c.SetActiveCamera(1);
-            }
-
+            playerCam.SetActiveCamera(1);
             TimeManager.Instance.SetTimer(1, () => { countdownDisplay.enabled = false; });
             
             RaceStartTimer();
@@ -112,7 +89,7 @@ public class CourseManager : MonoBehaviour
     public void EndRace()
     {
         GameManager.Instance.DisableAllPlayersInput();
-        playerCams[0].SetActiveCamera(0);
+        playerCam.SetActiveCamera(0);
 
         countdownDisplay.text = "Finish!"; 
         countdownDisplay.enabled = true;
@@ -135,10 +112,11 @@ public class CourseManager : MonoBehaviour
 
     public async void ReturnToMenu(CourseData data)
     {
-        playerCams[0].ActivateEnd();
-        await GameManager.Instance.ChangeBackgroundColour(playerCams[0].GetCamera(), data.backgroundColour, GameManager.Instance.tokenSource.Token);
+        playerCam.ActivateEnd();
+        await GameManager.Instance.ChangeBackgroundColour(playerCam.GetCamera(), data.backgroundColour, GameManager.Instance.tokenSource.Token);
         await SceneManager.LoadSceneAsync(data.courseName);
         GameManager.Instance.Players.Clear();
+        GameManager.Instance.PlayerReady.Clear();
         NetworkManager.Singleton.Shutdown();
         GameLobby.Instance.Cleanup();
     }

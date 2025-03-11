@@ -7,6 +7,7 @@ using UnityEngine.InputSystem;
 using Unity.Netcode;
 using Unity.Netcode.Components;
 using Unity.Mathematics;
+using System.Runtime.InteropServices;
 
 public class PlayerMovement : NetworkBehaviour
 {
@@ -111,6 +112,7 @@ public class PlayerMovement : NetworkBehaviour
         animator = GetComponentInChildren<Animator>();
         networkAnimator = GetComponentInChildren<OwnerNetworkAnimator>();
         inputActions = new PlayerInput();
+        
     }
 
     private void Start()
@@ -194,16 +196,12 @@ public class PlayerMovement : NetworkBehaviour
     public override void OnNetworkSpawn()
     {
         GameManager.Instance.RegisterPlayer(OwnerClientId, this);
-
+        print(IsServer);
         if (!IsOwner) {
             return; 
         }
 
-        respawnPoint = Instantiate(respawnPoint, transform.position, quaternion.identity);
-        respawnProjector = respawnPoint.GetComponent<SplineProjector>();
-
-        _customCamera = Instantiate(customCamera, transform.position, Quaternion.identity);
-        _customCamera.SetTargetForAll(transform);
+        SpawnDependents();
 
         inputActions.Player.Jump.started += OnJumpPressed;
         inputActions.Player.Jump.canceled += OnJumpReleased;
@@ -216,6 +214,15 @@ public class PlayerMovement : NetworkBehaviour
         OnGroundedEvent += OnGrounded;
         OnAirbourneEvent += OnAirbourne;
         OnSlideEvent += OnSlide;
+    }
+
+    private void SpawnDependents()
+    {
+        respawnPoint = Instantiate(respawnPoint, transform.position, quaternion.identity);
+        respawnProjector = respawnPoint.GetComponent<SplineProjector>();
+
+        _customCamera = Instantiate(customCamera, transform.position, Quaternion.identity);
+        _customCamera.SetTargetForAll(transform);
     }
     #endregion
 

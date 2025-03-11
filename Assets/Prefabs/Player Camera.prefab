@@ -16,7 +16,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &6170521882165320026
 Transform:
   m_ObjectHideFlags: 0
@@ -88,7 +88,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &6254798553285672021
 Transform:
   m_ObjectHideFlags: 0
@@ -327,7 +327,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &6167003390939106343
 Transform:
   m_ObjectHideFlags: 0
@@ -773,6 +773,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5896610994222435325}
   - component: {fileID: 7443295739311508055}
+  - component: {fileID: 6924049917915003952}
   m_Layer: 0
   m_Name: Player Camera
   m_TagString: Untagged
@@ -822,6 +823,22 @@ MonoBehaviour:
   - {fileID: 3871508717486605951}
   - {fileID: 8057473614701885611}
   - {fileID: 5438038287358692211}
+--- !u!114 &6924049917915003952
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7491215343581541007}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 951099334
+  AlwaysReplicateAsRoot: 0
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
 --- !u!1 &7685718872949278767
 GameObject:
   m_ObjectHideFlags: 0
@@ -838,7 +855,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &8746839734870459253
 Transform:
   m_ObjectHideFlags: 0
@@ -910,7 +927,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &7083062243159857864
 Transform:
   m_ObjectHideFlags: 0
@@ -1088,7 +1105,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9173596092608727590}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.31316373, y: 0, z: 0, w: 0.94969916}
+  m_LocalRotation: {x: 0.18910755, y: -1.849507e-39, z: -9.603716e-39, w: 0.9819564}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
