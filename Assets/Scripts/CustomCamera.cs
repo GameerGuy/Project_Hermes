@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Cinemachine;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -9,8 +10,8 @@ public class CustomCamera : MonoBehaviour
 {
     [SerializeField] private Camera cam;
     [SerializeField] private CinemachineVirtualCamera[] virtualCameras;
-    private CinemachineVirtualCamera activeCamera;
-    private int activeIndex;
+    public CinemachineVirtualCamera activeCamera { get; private set;}
+    public int activeIndex { get; private set;}
 
     void Awake()
     {
@@ -26,8 +27,15 @@ public class CustomCamera : MonoBehaviour
         return cam;
     }
 
-    public void SetActiveCamera(int index) {
 
+    [ServerRpc(RequireOwnership = false)]
+    public void SetActiveCameraServerRpc(int index, ServerRpcParams serverRpcParams = default) 
+    {
+        SetActiveCameraClientRpc(index, new ClientRpcParams { Send = new ClientRpcSendParams { TargetClientIds = new List<ulong> {serverRpcParams.Receive.SenderClientId} } });        
+    }
+
+    [ClientRpc]
+    public void SetActiveCameraClientRpc(int index, ClientRpcParams clientRpcParams) {
         if (index == activeIndex) return;
 
         int length = BoundsCheck(index);
@@ -46,16 +54,16 @@ public class CustomCamera : MonoBehaviour
     }
 
     public void CycleActiveUp() {
-        SetActiveCamera(activeIndex + 1);
+        SetActiveCameraServerRpc(activeIndex + 1);
     }
 
     public void CycleActiveDown() {
-        SetActiveCamera(activeIndex - 1);
+        SetActiveCameraServerRpc(activeIndex - 1);
     }
 
     public void ActivateEnd()
     {
-        SetActiveCamera(virtualCameras.Length -1);
+        SetActiveCameraServerRpc(virtualCameras.Length -1);
     }
 
     public void Deactivate()

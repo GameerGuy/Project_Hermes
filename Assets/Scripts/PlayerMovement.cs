@@ -193,10 +193,10 @@ public class PlayerMovement : NetworkBehaviour
     #endregion
 
     #region NetworkBehaviours
+
     public override void OnNetworkSpawn()
     {
         GameManager.Instance.RegisterPlayer(OwnerClientId, this);
-        print(IsServer);
         if (!IsOwner) {
             return; 
         }
@@ -475,7 +475,7 @@ public class PlayerMovement : NetworkBehaviour
     private bool IsGrounded() {
         bool wasGrounded = grounded;
 
-        const float OFFSET = 0.01f;
+        const float OFFSET = 0.03f;
         float radius = _collider.bounds.extents.x - OFFSET;
         float maxDistance = (_collider.bounds.extents.y / 2) + (OFFSET * 10);
         grounded = Physics.SphereCast(_collider.bounds.center, radius, -transform.up, out RaycastHit hitInfo, maxDistance);
@@ -532,6 +532,8 @@ public class PlayerMovement : NetworkBehaviour
         animator.SetBool("IsSliding", false);
         if (!crouching) SetColliderToStand();
     }
+
+    
 
     #endregion
 }

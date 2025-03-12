@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using TMPro;
 using Unity.Services.Lobbies.Models;
 using UnityEngine;
+using UnityEngine.Playables;
 using UnityEngine.UI;
 
 public class CreateLobbyUI : MonoBehaviour
@@ -55,6 +56,7 @@ public class CreateLobbyUI : MonoBehaviour
 
     public void Show(GameObject gameObject)
     {
+        if (menuManager.director.state == PlayState.Playing) return;
         gameObject.SetActive(true);
     }
 

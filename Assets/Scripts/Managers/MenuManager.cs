@@ -21,7 +21,7 @@ public class MenuManager : NetworkBehaviour
     [SerializeField] private PlayableAsset closelobby;
     [SerializeField] private PlayableAsset EnterLevel;
     [SerializeField] private TextMeshProUGUI WaitingForPlayersDisplay;
-    private PlayableDirector director;
+    public PlayableDirector director {get; private set;}
     private Camera mainCamera;
     private bool startingRace;
 

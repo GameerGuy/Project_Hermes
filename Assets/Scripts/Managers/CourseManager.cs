@@ -11,32 +11,41 @@ public class CourseManager : NetworkBehaviour
     [SerializeField] private TextMeshProUGUI countdownDisplay;
     [SerializeField] private TextMeshProUGUI stopwatchDisplay;
     [SerializeField] private GameObject levelClearMenu;
-
+    [SerializeField] private CourseData courseData;
+ 
+    public TimeManager timeManager{get; private set;}
     private CustomCamera playerCam;
     private int countdownStart = 3;
     private bool countdownActive = false;
 
+
+    void Awake()
+    {
+        timeManager = GetComponent<TimeManager>();
+        Vector3 pos =  spawnPoint.position;
+        GameManager.Instance.SpawnPlayersServerRpc(pos.x, pos.y, pos.z);
+        GameManager.Instance.DisableAllPlayersInput();
+    }
+
     private void Start()
     {
-        print(IsOwnedByServer);
-        GameManager.Instance.SpawnPlayers(spawnPoint);
-        GameManager.Instance.DisableAllPlayersInput();
-        playerCam = FindObjectOfType<CustomCamera>();
-
-        TimeManager.Instance.StopwatchClear();
+        timeManager.StopwatchClear();
 
         stopwatchDisplay.enabled = false;
-        stopwatchDisplay.text = "Lap Time:\n" + TimeManager.Instance.stopwatchTimer.ToString("F3");
+        stopwatchDisplay.text = "Lap Time:\n" + timeManager.stopwatchTimer.ToString("F3");
 
         countdownDisplay.enabled = false;
         countdownDisplay.text = "3";
 
         levelClearMenu.SetActive(false);
         
-        TimeManager.Instance.SetTimer( 0.5f, () => {
+        timeManager.SetTimer( 1f, () => {
+            playerCam = GameManager.Instance.Players[OwnerClientId].customCamera;
+            playerCam.GetCamera().backgroundColor = courseData.backgroundColour;
+            GameManager.Instance.PrintServerRpc(playerCam.activeCamera.name + playerCam.activeIndex);
             playerCam.CycleActiveDown();
             
-            TimeManager.Instance.SetTimer( 1f, () => {
+            timeManager.SetTimer( 1f, () => {
                 countdownDisplay.enabled = true;
                 RaceCountdown(countdownStart);
             });
@@ -45,7 +54,7 @@ public class CourseManager : NetworkBehaviour
 
     private void Update()
     {
-        stopwatchDisplay.text = "Lap Time:\n" + TimeManager.Instance.stopwatchTimer.ToString("F3");
+        stopwatchDisplay.text = "Lap Time:\n" + timeManager.stopwatchTimer.ToString("F3");
         if (!countdownActive) return;
 
         CountdownChange();
@@ -57,26 +66,25 @@ public class CourseManager : NetworkBehaviour
         countdownActive = true;
         countdownDisplay.fontSize = 200;
         countdownDisplay.color = new Color(countdownDisplay.color.r, countdownDisplay.color.g, countdownDisplay.color.b, 1);
-
         if (time > 0) {
             countdownDisplay.text = time.ToString();
             playerCam.CycleActiveDown();
-            TimeManager.Instance.SetTimer(1, () => RaceCountdown(time-1));
+            timeManager.SetTimer(1, () => RaceCountdown(time-1));
         } else {
             countdownDisplay.text = "Go!";
-            playerCam.SetActiveCamera(1);
-            TimeManager.Instance.SetTimer(1, () => { countdownDisplay.enabled = false; });
+            playerCam.SetActiveCameraServerRpc(1);
+            timeManager.SetTimer(1, () => { countdownDisplay.enabled = false; });
             
             RaceStartTimer();
             countdownActive = false;
         }
-
+        GameManager.Instance.PrintServerRpc(playerCam.activeCamera.name + playerCam.activeIndex);
     }
 
     private void RaceStartTimer()
     {
         stopwatchDisplay.enabled = true;
-        TimeManager.Instance.StopwatchStart();
+        timeManager.StopwatchStart();
         GameManager.Instance.EnableAllPlayersInput();
     }
 
@@ -89,12 +97,12 @@ public class CourseManager : NetworkBehaviour
     public void EndRace()
     {
         GameManager.Instance.DisableAllPlayersInput();
-        playerCam.SetActiveCamera(0);
+        playerCam.SetActiveCameraServerRpc(0);
 
         countdownDisplay.text = "Finish!"; 
         countdownDisplay.enabled = true;
 
-        TimeManager.Instance.SetTimer( 1f, () => {
+        timeManager.SetTimer( 1f, () => {
             if (countdownDisplay != null) {
                 countdownDisplay.enabled = false;
             }

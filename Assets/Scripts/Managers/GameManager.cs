@@ -59,19 +59,10 @@ public class GameManager : NetworkBehaviour
         _playerReady = new Dictionary<ulong, bool>();
         
     }
+
     public void StartHost()
     {
         NetworkManager.Singleton.StartHost();
-        NetworkManager.Singleton.SceneManager.OnLoadEventCompleted += AuthoriseCourseManager;
-    }
-
-    private void AuthoriseCourseManager(string sceneName, LoadSceneMode loadSceneMode, List<ulong> clientsCompleted, List<ulong> clientsTimedOut)
-    {
-        print("dsd");
-        CourseManager cm = FindObjectOfType<CourseManager>();
-        if (cm = null) return;
-
-        cm.GetComponent<NetworkObject>().ChangeOwnership(OwnerClientId);
     }
 
     [ServerRpc(RequireOwnership = false)]
@@ -89,10 +80,26 @@ public class GameManager : NetworkBehaviour
         allPlayersReady = _allPlayersReady;
     }
 
-    public void SpawnPlayers(Transform spawnPoint)
+    [ServerRpc(RequireOwnership = false)]
+    public void PrintServerRpc(string text, ServerRpcParams serverRpcParams = default)
+    {  
+        PrintClientRpc(serverRpcParams.Receive.SenderClientId.ToString() +": "+ text);
+
+    }
+
+    [ClientRpc]
+    private void PrintClientRpc(string text)
     {
+        print(text);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void SpawnPlayersServerRpc(float x, float y, float z, ServerRpcParams serverRpcParams = default)
+    {
+        Vector3 spawnPosition = new Vector3(x, y, z);
         foreach (ulong clientId in NetworkManager.Singleton.ConnectedClientsIds){
-            PlayerMovement p = Instantiate(playerPrefab, spawnPoint.position, Quaternion.identity).GetComponent<PlayerMovement>();
+            if (serverRpcParams.Receive.SenderClientId != clientId) continue;
+            PlayerMovement p = Instantiate(playerPrefab, spawnPosition, Quaternion.identity).GetComponent<PlayerMovement>();
             p.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId);
         }
 
@@ -116,7 +123,9 @@ public class GameManager : NetworkBehaviour
     public void RegisterPlayer(ulong id, PlayerMovement player)
     {
         _players.Add(id, player);
+        //RegisterPlayerClientRpc(id);
     }
+    
 
     public void EnableAllPlayersInput()
     {

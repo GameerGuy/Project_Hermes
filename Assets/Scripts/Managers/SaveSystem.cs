@@ -20,7 +20,7 @@ public static class SaveSystem
     {
         LevelClearRecord save = new LevelClearRecord {
             courseName = SceneManager.GetActiveScene().name,
-            lapTime = TimeManager.Instance.stopwatchTimer,
+            //lapTime = CourseManager.Instance.timeManager.stopwatchTimer,
             date = DateTime.Today.ToShortDateString(),
             time = DateTime.Now.ToShortTimeString()
         };

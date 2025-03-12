@@ -3,18 +3,7 @@ using UnityEngine;
 
 public class TimeManager : MonoBehaviour
 {
-    private static TimeManager _instance;
-    public static TimeManager Instance
-    {
-        get 
-        {
-            if (_instance == null){
-                Debug.LogError("Singleton null");
-            }
-            return _instance;
-        }
 
-    }
 
     private float _stopwatchTimer;
     public float stopwatchTimer => _stopwatchTimer;
@@ -22,15 +11,6 @@ public class TimeManager : MonoBehaviour
 
     private Action timerCallback;
     private float timer;
-
-    private void Awake()
-    {
-        if (_instance == null){
-            _instance = this;
-        } else {
-            Destroy(this);
-        }
-    }
 
     private void Update()
     {
