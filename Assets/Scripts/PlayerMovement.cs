@@ -8,6 +8,8 @@ using Unity.Netcode;
 using Unity.Netcode.Components;
 using Unity.Mathematics;
 using System.Runtime.InteropServices;
+using System.Collections.Generic;
+using System.Reflection;
 
 public class PlayerMovement : NetworkBehaviour
 {
@@ -127,7 +129,7 @@ public class PlayerMovement : NetworkBehaviour
     {
         if (!IsOwner)
         {
-            if (sprinting) { EnableTrails(); }
+            if (sprinting) { EnableTrailsServerRpc(); }
             else { DisableTrails(); }
             return;
         }
@@ -192,6 +194,8 @@ public class PlayerMovement : NetworkBehaviour
     // }
     #endregion
 
+
+
     #region NetworkBehaviours
 
     public override void OnNetworkSpawn()
@@ -221,7 +225,7 @@ public class PlayerMovement : NetworkBehaviour
         respawnPoint = Instantiate(respawnPoint, transform.position, quaternion.identity);
         respawnProjector = respawnPoint.GetComponent<SplineProjector>();
 
-        _customCamera = Instantiate(customCamera, transform.position, Quaternion.identity);
+        _customCamera = Instantiate(customCamera, transform.position, Quaternion.identity).GetComponent<CustomCamera>();
         _customCamera.SetTargetForAll(transform);
     }
     #endregion
@@ -267,12 +271,12 @@ public class PlayerMovement : NetworkBehaviour
     {
         if (!toggleSprint) {
             sprinting = true;
-            EnableTrails();
+            EnableTrailsServerRpc();
             return;
         }
 
         sprinting = !sprinting;
-        if (sprinting) { EnableTrails(); }
+        if (sprinting) { EnableTrailsServerRpc(); }
         else { DisableTrails(); }
     }
 
@@ -457,9 +461,17 @@ public class PlayerMovement : NetworkBehaviour
         _collider.height = 1;
     }
 
-    private void EnableTrails()
+    [ServerRpc(RequireOwnership = false)]
+    private void EnableTrailsServerRpc(ServerRpcParams serverRpcParams = default)
     {
-        foreach (TrailRenderer t in Trails) {
+        EnableTrailsClientRpc();
+    }
+
+    [ClientRpc]
+    private void EnableTrailsClientRpc()
+    {
+        foreach (TrailRenderer t in Trails)
+        {
             t.enabled = true;
         }
     }

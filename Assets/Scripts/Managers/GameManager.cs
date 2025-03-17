@@ -60,6 +60,19 @@ public class GameManager : NetworkBehaviour
         
     }
 
+    [ServerRpc(RequireOwnership = false)]
+    public void PrintServerRpc(string text, ServerRpcParams serverRpcParams = default)
+    {
+        PrintClientRpc(serverRpcParams.Receive.SenderClientId.ToString() + ": " + text);
+
+    }
+
+    [ClientRpc]
+    private void PrintClientRpc(string text)
+    {
+        print(text);
+    }
+
     public void StartHost()
     {
         NetworkManager.Singleton.StartHost();
@@ -81,21 +94,9 @@ public class GameManager : NetworkBehaviour
     }
 
     [ServerRpc(RequireOwnership = false)]
-    public void PrintServerRpc(string text, ServerRpcParams serverRpcParams = default)
-    {  
-        PrintClientRpc(serverRpcParams.Receive.SenderClientId.ToString() +": "+ text);
-
-    }
-
-    [ClientRpc]
-    private void PrintClientRpc(string text)
-    {
-        print(text);
-    }
-
-    [ServerRpc(RequireOwnership = false)]
     public void SpawnPlayersServerRpc(float x, float y, float z, ServerRpcParams serverRpcParams = default)
     {
+        PrintServerRpc(OwnerClientId + " " + IsHost);
         Vector3 spawnPosition = new Vector3(x, y, z);
         foreach (ulong clientId in NetworkManager.Singleton.ConnectedClientsIds){
             if (serverRpcParams.Receive.SenderClientId != clientId) continue;
@@ -104,6 +105,8 @@ public class GameManager : NetworkBehaviour
         }
 
     }
+
+    
 
     // [ClientRpc]
     // private void SpawnPlayersClientRpc()

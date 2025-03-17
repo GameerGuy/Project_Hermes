@@ -6,7 +6,7 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public class CustomCamera : MonoBehaviour
+public class CustomCamera : NetworkBehaviour
 {
     [SerializeField] private Camera cam;
     [SerializeField] private CinemachineVirtualCamera[] virtualCameras;
@@ -28,10 +28,27 @@ public class CustomCamera : MonoBehaviour
     }
 
 
-    [ServerRpc(RequireOwnership = false)]
-    public void SetActiveCameraServerRpc(int index, ServerRpcParams serverRpcParams = default) 
+    //[ServerRpc(RequireOwnership = false)]
+    public void SetActiveCamera(int index) 
     {
-        SetActiveCameraClientRpc(index, new ClientRpcParams { Send = new ClientRpcSendParams { TargetClientIds = new List<ulong> {serverRpcParams.Receive.SenderClientId} } });        
+        if (index == activeIndex) return;
+
+        int length = BoundsCheck(index);
+        if (length < 0) return;
+
+        for (int i = 0; i < length; i++)
+        {
+            if (i != index)
+            {
+                virtualCameras[i].Priority = 0;
+                continue;
+            }
+
+            virtualCameras[i].Priority = 1;
+            activeCamera = virtualCameras[i];
+            activeIndex = i;
+        }
+        //SetActiveCameraClientRpc(index, new ClientRpcParams { Send = new ClientRpcSendParams { TargetClientIds = new List<ulong> {serverRpcParams.Receive.SenderClientId} } });        
     }
 
     [ClientRpc]
@@ -43,27 +60,27 @@ public class CustomCamera : MonoBehaviour
 
         for (int i = 0; i < length; i++) {
             if (i != index) {
-                virtualCameras[i].gameObject.SetActive(false);
+                virtualCameras[i].Priority = 0;
                 continue;
             }
 
-            virtualCameras[i].gameObject.SetActive(true);
+            virtualCameras[i].Priority = 1;
             activeCamera = virtualCameras[i];
             activeIndex = i;
         }        
     }
 
     public void CycleActiveUp() {
-        SetActiveCameraServerRpc(activeIndex + 1);
+        SetActiveCamera(activeIndex + 1);
     }
 
     public void CycleActiveDown() {
-        SetActiveCameraServerRpc(activeIndex - 1);
+        SetActiveCamera(activeIndex - 1);
     }
 
     public void ActivateEnd()
     {
-        SetActiveCameraServerRpc(virtualCameras.Length -1);
+        SetActiveCamera(virtualCameras.Length -1);
     }
 
     public void Deactivate()
@@ -73,7 +90,7 @@ public class CustomCamera : MonoBehaviour
 
     private int BoundsCheck(int index){
         int length = virtualCameras.Length;
-        if (index > length || index < 0){
+        if (index >= length || index < 0){
             Debug.LogError("camera index out of bounds");
             return -1;
         }

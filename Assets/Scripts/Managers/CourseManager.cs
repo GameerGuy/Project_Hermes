@@ -12,7 +12,7 @@ public class CourseManager : NetworkBehaviour
     [SerializeField] private TextMeshProUGUI stopwatchDisplay;
     [SerializeField] private GameObject levelClearMenu;
     [SerializeField] private CourseData courseData;
- 
+    [SerializeField] private PlayerMovement player;
     public TimeManager timeManager{get; private set;}
     private CustomCamera playerCam;
     private int countdownStart = 3;
@@ -29,6 +29,7 @@ public class CourseManager : NetworkBehaviour
 
     private void Start()
     {
+        print(OwnerClientId);
         timeManager.StopwatchClear();
 
         stopwatchDisplay.enabled = false;
@@ -40,11 +41,12 @@ public class CourseManager : NetworkBehaviour
         levelClearMenu.SetActive(false);
         
         timeManager.SetTimer( 1f, () => {
-            playerCam = GameManager.Instance.Players[OwnerClientId].customCamera;
+            print(NetworkManager.LocalClientId);
+            player = GameManager.Instance.Players[NetworkManager.LocalClientId];
+            playerCam = player.customCamera;
             playerCam.GetCamera().backgroundColor = courseData.backgroundColour;
-            GameManager.Instance.PrintServerRpc(playerCam.activeCamera.name + playerCam.activeIndex);
             playerCam.CycleActiveDown();
-            
+
             timeManager.SetTimer( 1f, () => {
                 countdownDisplay.enabled = true;
                 RaceCountdown(countdownStart);
@@ -72,13 +74,12 @@ public class CourseManager : NetworkBehaviour
             timeManager.SetTimer(1, () => RaceCountdown(time-1));
         } else {
             countdownDisplay.text = "Go!";
-            playerCam.SetActiveCameraServerRpc(1);
+            playerCam.SetActiveCamera(1);
             timeManager.SetTimer(1, () => { countdownDisplay.enabled = false; });
             
             RaceStartTimer();
             countdownActive = false;
         }
-        GameManager.Instance.PrintServerRpc(playerCam.activeCamera.name + playerCam.activeIndex);
     }
 
     private void RaceStartTimer()
@@ -97,7 +98,7 @@ public class CourseManager : NetworkBehaviour
     public void EndRace()
     {
         GameManager.Instance.DisableAllPlayersInput();
-        playerCam.SetActiveCameraServerRpc(0);
+        playerCam.SetActiveCamera(0);
 
         countdownDisplay.text = "Finish!"; 
         countdownDisplay.enabled = true;
@@ -131,5 +132,13 @@ public class CourseManager : NetworkBehaviour
 
 
 
+    public void CycleUp()
+    {
+        playerCam.CycleActiveUp();
+    }
 
+    public void CycleDown()
+    {
+        playerCam.CycleActiveDown();
+    }
 }
