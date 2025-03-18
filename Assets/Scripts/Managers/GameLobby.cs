@@ -2,18 +2,21 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Net.WebSockets;
 using System.Threading.Tasks;
-using JetBrains.Annotations;
 using Unity.Netcode;
+using Unity.Netcode.Transports.UTP;
+using Unity.Networking.Transport.Relay;
 using Unity.Services.Authentication;
 using Unity.Services.Core;
 using Unity.Services.Lobbies;
 using Unity.Services.Lobbies.Models;
-using Unity.VisualScripting;
+using Unity.Services.Relay;
+using Unity.Services.Relay.Models;
 using UnityEngine;
 
 public class GameLobby : MonoBehaviour
 {
     public static GameLobby Instance {  get; private set; }
+    private const string KEY_RELAY_JOIN_CODE = "RelayJoinCode";
 
     private Lobby joinedLobby;
     private float heartBeatTimer;
@@ -65,12 +68,58 @@ public class GameLobby : MonoBehaviour
         }
     }
 
+    private async Task<Allocation> AllocateRelay()
+    {
+        try {
+            Allocation allocation = await RelayService.Instance.CreateAllocationAsync(GameManager.MAX_PLAYER_COUNT - 1);
+            return allocation;
+        } catch (RelayServiceException e){
+            Debug.Log(e);
+            return default;
+        }
+    }
+
+    private async Task<string> GetRelayJoinCode(Allocation allocation)
+    {
+        try {
+            string relayJoinCode = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
+            return relayJoinCode;
+        } catch (RelayServiceException e) {
+            Debug.Log(e);
+            return default;
+        }
+    }
+
+    private async Task<JoinAllocation> JoinRelay(string relayJoinCode)
+    {
+        try {
+            JoinAllocation joinAllocation = await RelayService.Instance.JoinAllocationAsync(relayJoinCode);
+            return joinAllocation;
+        } catch (RelayServiceException e) {
+            Debug.Log(e);
+            return default;
+        }
+    }
+
     public async Task CreateLobby(string lobbyName, bool isPrivate)
     {
         try {
             joinedLobby = await LobbyService.Instance.CreateLobbyAsync(lobbyName, GameManager.MAX_PLAYER_COUNT, new CreateLobbyOptions{
                 IsPrivate = isPrivate,
             });
+
+            Allocation allocation = await AllocateRelay();
+
+            string relayJoinCode = await GetRelayJoinCode(allocation);
+
+            NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(new RelayServerData(allocation, "dtls"));
+
+            await LobbyService.Instance.UpdateLobbyAsync(joinedLobby.Id, new UpdateLobbyOptions{
+                Data = new Dictionary<string, DataObject>() {
+                    {KEY_RELAY_JOIN_CODE, new DataObject(DataObject.VisibilityOptions.Member, relayJoinCode) }
+                }
+            });
+
             GameManager.Instance.StartHost();
 
         } catch(LobbyServiceException e) {
@@ -81,9 +130,16 @@ public class GameLobby : MonoBehaviour
 
     public async Task<bool> QuickJoin()
     {
-        try {
+        try
+        {
             joinedLobby = await LobbyService.Instance.QuickJoinLobbyAsync();
             if (joinedLobby == null) return false;
+
+            string relayJoinCode = joinedLobby.Data[KEY_RELAY_JOIN_CODE].Value;
+
+            JoinAllocation joinAllocation = await JoinRelay(relayJoinCode);
+
+            NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(new RelayServerData(joinAllocation, "dtls"));
 
             NetworkManager.Singleton.StartClient();
             return true;
@@ -98,6 +154,12 @@ public class GameLobby : MonoBehaviour
         try {
             joinedLobby = await LobbyService.Instance.JoinLobbyByCodeAsync(lobbyCode);
             if (joinedLobby == null) return false;
+
+            string relayJoinCode = joinedLobby.Data[KEY_RELAY_JOIN_CODE].Value;
+
+            JoinAllocation joinAllocation = await JoinRelay(relayJoinCode);
+
+            NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(new RelayServerData(joinAllocation, "dtls"));
 
             NetworkManager.Singleton.StartClient();
             return true;
