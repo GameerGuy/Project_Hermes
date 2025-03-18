@@ -49,7 +49,7 @@ public class JoinLobbyUI : CreateLobbyUI
             Debug.LogError("failed to join lobby");    
             return;
         }
-
+        
         menuManager.OpenLobbyMenu();
         GameManager.Instance.isOnline = true;
         Hide(this.gameObject);

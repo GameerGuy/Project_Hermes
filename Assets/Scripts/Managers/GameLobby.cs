@@ -1,6 +1,4 @@
-using System.Collections;
 using System.Collections.Generic;
-using System.Net.WebSockets;
 using System.Threading.Tasks;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
@@ -60,7 +58,7 @@ public class GameLobby : MonoBehaviour
     {
         if (UnityServices.State != ServicesInitializationState.Initialized) {
             InitializationOptions initializationOptions = new InitializationOptions();
-            initializationOptions.SetProfile(Random.Range(0, 1000).ToString());
+            initializationOptions.SetProfile(UnityEngine.Random.Range(0, 1000).ToString());
             
             await UnityServices.InitializeAsync(initializationOptions);
 
@@ -109,16 +107,19 @@ public class GameLobby : MonoBehaviour
             });
 
             Allocation allocation = await AllocateRelay();
+            print("relay allocated");
 
             string relayJoinCode = await GetRelayJoinCode(allocation);
+            print("Got relay join code");
 
             NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(new RelayServerData(allocation, "dtls"));
-
+        
             await LobbyService.Instance.UpdateLobbyAsync(joinedLobby.Id, new UpdateLobbyOptions{
                 Data = new Dictionary<string, DataObject>() {
                     {KEY_RELAY_JOIN_CODE, new DataObject(DataObject.VisibilityOptions.Member, relayJoinCode) }
                 }
             });
+            print("lobby updated, join code: " + joinedLobby.Data[KEY_RELAY_JOIN_CODE].Value);
 
             GameManager.Instance.StartHost();
 
@@ -134,14 +135,17 @@ public class GameLobby : MonoBehaviour
         {
             joinedLobby = await LobbyService.Instance.QuickJoinLobbyAsync();
             if (joinedLobby == null) return false;
+            print("lobby found");
 
             string relayJoinCode = joinedLobby.Data[KEY_RELAY_JOIN_CODE].Value;
+            print("join code retrived");
 
             JoinAllocation joinAllocation = await JoinRelay(relayJoinCode);
+            print("relay joined");
 
             NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(new RelayServerData(joinAllocation, "dtls"));
 
-            NetworkManager.Singleton.StartClient();
+            NetworkManager.Singleton.StartClient(); 
             return true;
         } catch(LobbyServiceException e) {
             Debug.Log(e);

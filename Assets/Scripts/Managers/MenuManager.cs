@@ -45,7 +45,7 @@ public class MenuManager : NetworkBehaviour
     {
         GameManager.Instance.SetPlayerReadyServerRPC(true);
         if (GameManager.Instance.allPlayersReady) {
-            OpenLevelSelectClientRpc();
+            OpenLevelSelectServerRpc();
         } else {
             WaitingForPlayersDisplay.enabled = true;
         }
@@ -62,6 +62,7 @@ public class MenuManager : NetworkBehaviour
     {
         if (director.state == PlayState.Playing) return;
 
+        WaitingForPlayersDisplay.enabled = false;
         if (GameLobby.Instance.IsLobbyHost()) {
 
             CloseLobbyMenuClientRpc();
@@ -97,8 +98,14 @@ public class MenuManager : NetworkBehaviour
         director.Play(closeNetworkModeMenu);
     }
 
+    [ServerRpc(RequireOwnership = false)]
+    private void OpenLevelSelectServerRpc()
+    {
+        OpenLevelSelectClientRpc();
+    }
+
     [ClientRpc]
-    public void OpenLevelSelectClientRpc()
+    private void OpenLevelSelectClientRpc()
     {
         if (director.state == PlayState.Playing) return;
         WaitingForPlayersDisplay.enabled = false;
