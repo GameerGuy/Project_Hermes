@@ -11,7 +11,6 @@ public class CourseManager : NetworkBehaviour
     [SerializeField] private TextMeshProUGUI countdownDisplay;
     [SerializeField] private TextMeshProUGUI stopwatchDisplay;
     [SerializeField] private GameObject levelClearMenu;
-    [SerializeField] private CourseData courseData;
     [SerializeField] private PlayerMovement player;
     public TimeManager timeManager{get; private set;}
     private CustomCamera playerCam;
@@ -44,7 +43,6 @@ public class CourseManager : NetworkBehaviour
             print(NetworkManager.LocalClientId);
             player = GameManager.Instance.Players[NetworkManager.LocalClientId];
             playerCam = player.customCamera;
-            playerCam.GetCamera().backgroundColor = courseData.backgroundColour;
             playerCam.CycleActiveDown();
 
             timeManager.SetTimer( 1f, () => {

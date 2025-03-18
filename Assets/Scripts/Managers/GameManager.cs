@@ -30,6 +30,7 @@ public class GameManager : NetworkBehaviour
     public int playerCount = 1;
     public bool isOnline;
     public bool allPlayersReady {get; private set;}
+    public CourseData courseData {get; private set;}
 
 
     private static GameManager _instance;
@@ -156,6 +157,11 @@ public class GameManager : NetworkBehaviour
     {
         if (_players == null) return;
         _players[id].DisableInput();
+    }
+
+    public void SetCourseData(CourseData data)
+    {
+        courseData = data;
     }
 
     public async Task ChangeBackgroundColour(Camera mainCamera , Color target, CancellationToken token)

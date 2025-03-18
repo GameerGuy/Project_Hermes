@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f4b8dbf60250efe439bdeedc2d4c83f5, type: 3}
-  m_Name: Beginner Course
+  m_Name: Expert Course
   m_EditorClassIdentifier: 
-  courseName: Beginner Course
-  backgroundColour: {r: 0.49803922, g: 0.8956509, b: 0.9254902, a: 1}
+  courseName: Expert Course
+  backgroundColour: {r: 0.12732875, g: 0.22577141, b: 0.46540874, a: 1}

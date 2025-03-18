@@ -13,13 +13,18 @@ public class CustomCamera : NetworkBehaviour
     public CinemachineVirtualCamera activeCamera { get; private set;}
     public int activeIndex { get; private set;}
 
-    void Awake()
+    private void Awake()
     {
         ActivateEnd();
         Canvas[] canvas = FindObjectsOfType<Canvas>();
         foreach (Canvas c in canvas) {
             c.worldCamera = cam;
         }
+    }
+
+    private void Start()
+    {
+        cam.backgroundColor = GameManager.Instance.courseData.backgroundColour;
     }
 
     public Camera GetCamera()

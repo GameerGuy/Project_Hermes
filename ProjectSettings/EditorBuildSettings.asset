@@ -14,5 +14,11 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Beginner Course.unity
     guid: 3232b29c20d6f2147b2c2457aca723ef
+  - enabled: 1
+    path: Assets/Scenes/Intermediate Course.unity
+    guid: d9f1f3a9c205a5e4c87723a46f4150b0
+  - enabled: 1
+    path: Assets/Scenes/Expert Course.unity
+    guid: bc7290219705fda4fabee1c899ab46d8
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: c7889626efb5f984988a807d42b94e7d, type: 3}

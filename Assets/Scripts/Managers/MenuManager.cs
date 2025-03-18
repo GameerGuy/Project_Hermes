@@ -140,7 +140,7 @@ public class MenuManager : NetworkBehaviour
         if(startingRace) return;
         startingRace = true;
 
-
+        GameManager.Instance.SetCourseData(data);
         data.UnpackColour(out float r, out float g, out float b, out float a);
         StartRaceClientRpc(data.courseName, r, g, b, a);
         GameLobby.Instance.DeleteLobby();
