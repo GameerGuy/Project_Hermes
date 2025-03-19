@@ -11,8 +11,9 @@ public class CourseManager : NetworkBehaviour
     [SerializeField] private TextMeshProUGUI countdownDisplay;
     [SerializeField] private TextMeshProUGUI stopwatchDisplay;
     [SerializeField] private GameObject levelClearMenu;
+    [SerializeField] private TextMeshProUGUI waitingFoPlayersDisplay;
     [SerializeField] private PlayerMovement player;
-    public TimeManager timeManager{get; private set;}
+    public TimeManager timeManager;
     private CustomCamera playerCam;
     private int countdownStart = 3;
     private bool countdownActive = false;
@@ -93,8 +94,10 @@ public class CourseManager : NetworkBehaviour
         countdownDisplay.color += new Color(0, 0.66f * Time.deltaTime, 0.33f * Time.deltaTime, -Time.deltaTime);
     }
 
-    public void EndRace()
+    public void EndRace(ulong id)
     {
+        if (id != NetworkManager.LocalClientId) return;
+        
         GameManager.Instance.DisableAllPlayersInput();
         playerCam.SetActiveCamera(0);
 
@@ -126,17 +129,5 @@ public class CourseManager : NetworkBehaviour
         GameManager.Instance.PlayerReady.Clear();
         NetworkManager.Singleton.Shutdown();
         GameLobby.Instance.Cleanup();
-    }
-
-
-
-    public void CycleUp()
-    {
-        playerCam.CycleActiveUp();
-    }
-
-    public void CycleDown()
-    {
-        playerCam.CycleActiveDown();
     }
 }
