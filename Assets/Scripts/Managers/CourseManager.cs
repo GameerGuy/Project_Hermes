@@ -1,8 +1,8 @@
 using Cysharp.Threading.Tasks;
-using System.Collections.Generic;
 using TMPro;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.Playables;
 using UnityEngine.SceneManagement;
 
 public class CourseManager : NetworkBehaviour
@@ -12,8 +12,10 @@ public class CourseManager : NetworkBehaviour
     [SerializeField] private TextMeshProUGUI stopwatchDisplay;
     [SerializeField] private GameObject levelClearMenu;
     [SerializeField] private TextMeshProUGUI waitingFoPlayersDisplay;
-    [SerializeField] private PlayerMovement player;
-    public TimeManager timeManager;
+
+    [SerializeField] private PlayableAsset returnToMenu;
+    public TimeManager timeManager { get; private set; }
+    private PlayableDirector director;
     private CustomCamera playerCam;
     private int countdownStart = 3;
     private bool countdownActive = false;
@@ -22,6 +24,7 @@ public class CourseManager : NetworkBehaviour
     void Awake()
     {
         timeManager = GetComponent<TimeManager>();
+        director = GetComponent<PlayableDirector>();
         Vector3 pos =  spawnPoint.position;
         GameManager.Instance.SpawnPlayersServerRpc(pos.x, pos.y, pos.z);
         GameManager.Instance.DisableAllPlayersInput();
@@ -41,9 +44,7 @@ public class CourseManager : NetworkBehaviour
         levelClearMenu.SetActive(false);
         
         timeManager.SetTimer( 1f, () => {
-            print(NetworkManager.LocalClientId);
-            player = GameManager.Instance.Players[NetworkManager.LocalClientId];
-            playerCam = player.customCamera;
+            playerCam = GameManager.Instance.Players[NetworkManager.LocalClientId].customCamera;
             playerCam.CycleActiveDown();
 
             timeManager.SetTimer( 1f, () => {
@@ -104,6 +105,8 @@ public class CourseManager : NetworkBehaviour
         countdownDisplay.text = "Finish!"; 
         countdownDisplay.enabled = true;
 
+        waitingFoPlayersDisplay.enabled = false;
+
         timeManager.SetTimer( 1f, () => {
             if (countdownDisplay != null) {
                 countdownDisplay.enabled = false;
@@ -123,6 +126,7 @@ public class CourseManager : NetworkBehaviour
     public async void ReturnToMenu(CourseData data)
     {
         playerCam.ActivateEnd();
+        director.Play(returnToMenu);
         await GameManager.Instance.ChangeBackgroundColour(playerCam.GetCamera(), data.backgroundColour, GameManager.Instance.tokenSource.Token);
         await SceneManager.LoadSceneAsync(data.courseName);
         GameManager.Instance.Players.Clear();
