@@ -30,7 +30,7 @@ public class GameManager : NetworkBehaviour
     public int playerCount = 1;
     public bool isOnline;
     public bool allPlayersReady {get; private set;}
-    public CourseData courseData {get; private set;}
+    [SerializeField] public CourseData courseData;
 
 
     private static GameManager _instance;
@@ -97,7 +97,6 @@ public class GameManager : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     public void SpawnPlayersServerRpc(float x, float y, float z, ServerRpcParams serverRpcParams = default)
     {
-        PrintServerRpc(OwnerClientId + " " + IsHost);
         Vector3 spawnPosition = new Vector3(x, y, z);
         foreach (ulong clientId in NetworkManager.Singleton.ConnectedClientsIds){
             if (serverRpcParams.Receive.SenderClientId != clientId) continue;
@@ -176,13 +175,13 @@ public class GameManager : NetworkBehaviour
                 await UniTask.Yield();
             }
         } catch (OperationCanceledException){
-            ResetCancellationToken();
+            ResetCancellationToken(tokenSource);
             mainCamera.backgroundColor = startColour;
             throw;
         }
     }
 
-    public void ResetCancellationToken()
+    public void ResetCancellationToken(CancellationTokenSource tokenSource)
     {
         if (tokenSource == null) return;
 

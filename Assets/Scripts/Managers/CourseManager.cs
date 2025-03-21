@@ -1,4 +1,7 @@
 using Cysharp.Threading.Tasks;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 using TMPro;
 using Unity.Netcode;
 using UnityEngine;
@@ -15,10 +18,13 @@ public class CourseManager : NetworkBehaviour
 
     [SerializeField] private PlayableAsset returnToMenu;
     public TimeManager timeManager { get; private set; }
+    private CancellationTokenSource tokenSource = new();
     private PlayableDirector director;
     private CustomCamera playerCam;
     private int countdownStart = 3;
     private bool countdownActive = false;
+    private bool dnfTimerActive = false;
+    private bool raceEnded = false;
 
 
     void Awake()
@@ -32,7 +38,6 @@ public class CourseManager : NetworkBehaviour
 
     private void Start()
     {
-        print(OwnerClientId);
         timeManager.StopwatchClear();
 
         stopwatchDisplay.enabled = false;
@@ -97,15 +102,25 @@ public class CourseManager : NetworkBehaviour
 
     public void EndRace(ulong id)
     {
-        if (id != NetworkManager.LocalClientId) return;
+        if (id != NetworkManager.LocalClientId) {
+            timeManager.SetTimer(5f, () => {
+                DNFTimer(5, tokenSource.Token);
+            });
+            return;
+        }
         
         GameManager.Instance.DisableAllPlayersInput();
         playerCam.SetActiveCamera(0);
+        raceEnded = true;
 
         countdownDisplay.text = "Finish!"; 
         countdownDisplay.enabled = true;
 
         waitingFoPlayersDisplay.enabled = false;
+
+        if (dnfTimerActive) {
+            tokenSource.Cancel();
+        }
 
         timeManager.SetTimer( 1f, () => {
             if (countdownDisplay != null) {
@@ -117,6 +132,51 @@ public class CourseManager : NetworkBehaviour
         });
     }
 
+    private async void DNFTimer(float duration, CancellationToken token)
+    {
+        try {
+
+            if (dnfTimerActive || raceEnded) return;
+            dnfTimerActive = true;
+
+            countdownDisplay.color = Color.red;
+            countdownDisplay.text = duration.ToString("F0");
+            countdownDisplay.enabled = true;
+        
+            while (duration > 0) {
+                token.ThrowIfCancellationRequested();
+
+                countdownDisplay.text = duration.ToString("F0");
+                await UniTask.Yield();
+                duration -= Time.deltaTime;
+            }
+
+            raceEnded = true;
+
+            GameManager.Instance.DisableAllPlayersInput();
+            playerCam.SetActiveCamera(0);
+
+            countdownDisplay.text = "DNF!";
+            waitingFoPlayersDisplay.enabled = false;
+
+            await Task.Delay(1000, token);
+
+            if (countdownDisplay != null) {
+                countdownDisplay.enabled = false;
+            }
+            if (levelClearMenu != null) {
+                levelClearMenu.SetActive(true);
+            }
+
+
+        } catch (OperationCanceledException e)
+        {
+            print(e);
+            countdownDisplay.enabled = false;
+            GameManager.Instance.ResetCancellationToken(tokenSource);
+        }
+    }
+
     public void ReplayLevel()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
@@ -125,13 +185,19 @@ public class CourseManager : NetworkBehaviour
 
     public async void ReturnToMenu(CourseData data)
     {
-        playerCam.ActivateEnd();
-        director.Play(returnToMenu);
-        await GameManager.Instance.ChangeBackgroundColour(playerCam.GetCamera(), data.backgroundColour, GameManager.Instance.tokenSource.Token);
-        await SceneManager.LoadSceneAsync(data.courseName);
-        GameManager.Instance.Players.Clear();
-        GameManager.Instance.PlayerReady.Clear();
-        NetworkManager.Singleton.Shutdown();
-        GameLobby.Instance.Cleanup();
+        try {
+            playerCam.ActivateEnd();
+            director.Play(returnToMenu);
+            await GameManager.Instance.ChangeBackgroundColour(playerCam.GetCamera(), data.backgroundColour, tokenSource.Token);
+            await SceneManager.LoadSceneAsync(data.courseName);
+            GameManager.Instance.Players.Clear();
+            GameManager.Instance.PlayerReady.Clear();
+            NetworkManager.Singleton.Shutdown();
+            GameLobby.Instance.Cleanup();
+        } catch (OperationCanceledException e)
+        {
+            print(e);
+            GameManager.Instance.ResetCancellationToken(tokenSource);
+        }
     }
 }

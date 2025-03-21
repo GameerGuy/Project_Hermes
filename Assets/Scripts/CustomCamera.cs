@@ -24,14 +24,13 @@ public class CustomCamera : NetworkBehaviour
 
     private void Start()
     {
-        cam.backgroundColor = GameManager.Instance.courseData.backgroundColour;
+        SetCameraColour(GameManager.Instance.courseData.backgroundColour);
     }
 
     public Camera GetCamera()
     {
         return cam;
     }
-
 
     //[ServerRpc(RequireOwnership = false)]
     public void SetActiveCamera(int index) 
@@ -103,7 +102,6 @@ public class CustomCamera : NetworkBehaviour
 
     }
 
-
     public void SetTargetForAll(Transform player)
     {
         for (int i = 0; i < virtualCameras.Length; i++) {
@@ -114,5 +112,26 @@ public class CustomCamera : NetworkBehaviour
     public void SetTarget(Transform player)
     {
         activeCamera.Follow = activeCamera.LookAt = player;
+    }
+
+
+    public void SetCameraColour(Color backgroundColour)
+    {
+        cam.backgroundColor = backgroundColour;
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void SetCameraColourServerRpc()
+    {
+        print("server set colour");
+        GameManager.Instance.courseData.UnpackColour(out float r, out float g, out float b, out float a);   
+        SetCameraColourClientRpc(r,g,b,a);
+    }
+
+    [ClientRpc]
+    public void SetCameraColourClientRpc(float r, float g, float b, float a)
+    {
+        print("client set colour");
+        cam.backgroundColor = new Color(r, g, b, a);
     }
 }

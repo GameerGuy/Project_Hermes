@@ -147,7 +147,6 @@ public class MenuManager : NetworkBehaviour
         if(startingRace) return;
         startingRace = true;
 
-        GameManager.Instance.SetCourseData(data);
         data.UnpackColour(out float r, out float g, out float b, out float a);
         StartRaceClientRpc(data.courseName, r, g, b, a);
         GameLobby.Instance.DeleteLobby();
@@ -159,6 +158,11 @@ public class MenuManager : NetworkBehaviour
     {
         Color backgroundColour = new Color(r, g, b, a);
         SceneTransition(courseName, backgroundColour);
+
+        CourseData data = ScriptableObject.CreateInstance<CourseData>();
+        data.courseName = courseName;
+        data.backgroundColour = backgroundColour;
+        GameManager.Instance.SetCourseData(data);
     }
 
     public async void SceneTransition(string courseName, Color backgroundColour)

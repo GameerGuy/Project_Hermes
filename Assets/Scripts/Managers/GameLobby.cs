@@ -107,10 +107,8 @@ public class GameLobby : MonoBehaviour
             });
 
             Allocation allocation = await AllocateRelay();
-            print("relay allocated");
 
             string relayJoinCode = await GetRelayJoinCode(allocation);
-            print("Got relay join code");
 
             NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(new RelayServerData(allocation, "dtls"));
         
@@ -119,7 +117,6 @@ public class GameLobby : MonoBehaviour
                     {KEY_RELAY_JOIN_CODE, new DataObject(DataObject.VisibilityOptions.Member, relayJoinCode) }
                 }
             });
-            print("lobby updated, join code: " + joinedLobby.Data[KEY_RELAY_JOIN_CODE].Value);
 
             GameManager.Instance.StartHost();
 
@@ -135,13 +132,10 @@ public class GameLobby : MonoBehaviour
         {
             joinedLobby = await LobbyService.Instance.QuickJoinLobbyAsync();
             if (joinedLobby == null) return false;
-            print("lobby found");
 
             string relayJoinCode = joinedLobby.Data[KEY_RELAY_JOIN_CODE].Value;
-            print("join code retrived");
 
             JoinAllocation joinAllocation = await JoinRelay(relayJoinCode);
-            print("relay joined");
 
             NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(new RelayServerData(joinAllocation, "dtls"));
 
@@ -177,7 +171,7 @@ public class GameLobby : MonoBehaviour
     {
         try{
             QueryResponse queryResponse = await Lobbies.Instance.QueryLobbiesAsync();
-            print("Lobbies: " + queryResponse.Results.Count);
+
             foreach(Lobby lobby in queryResponse.Results){
                 print(lobby.Name + " " + lobby.LobbyCode);
             }
