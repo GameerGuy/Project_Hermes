@@ -15,10 +15,7 @@ public class Goal : MonoBehaviour
     private void OnTriggerEnter(Collider collider)
     {  
         if (collider.gameObject.CompareTag("Player")) {
-            courseManager.timeManager.StopwatchPause();
             courseManager.EndRace(collider.GetComponent<PlayerMovement>().OwnerClientId);
-            //SaveSystem.SaveBySerialization();
-            //SceneManager.LoadScene(0);
         }
 
     }

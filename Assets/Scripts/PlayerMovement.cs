@@ -123,6 +123,10 @@ public class PlayerMovement : NetworkBehaviour
         currentDeceleration = airbourneDeceleration;
         currentTurnSpeed = baseTurnSpeed;
         DisableTrails();
+
+        if (IsOwner) {
+            SpawnDependents();
+        }
     }
 
     private void Update()
@@ -204,8 +208,6 @@ public class PlayerMovement : NetworkBehaviour
         if (!IsOwner) {
             return; 
         }
-
-        SpawnDependents();
 
         inputActions.Player.Jump.started += OnJumpPressed;
         inputActions.Player.Jump.canceled += OnJumpReleased;

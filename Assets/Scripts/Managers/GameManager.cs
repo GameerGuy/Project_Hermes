@@ -94,34 +94,46 @@ public class GameManager : NetworkBehaviour
         allPlayersReady = _allPlayersReady;
     }
 
+    public void SetPlayerReadyFalse( ServerRpcParams serverRpcParams = default)
+    {
+        List<ulong> clients = (List<ulong>)NetworkManager.ConnectedClientsIds;
+        foreach (ulong client in clients) {
+            _playerReady[client] = false;
+        }
+        allPlayersReady = false;
+    }
+
     [ServerRpc(RequireOwnership = false)]
     public void SpawnPlayersServerRpc(float x, float y, float z, ServerRpcParams serverRpcParams = default)
     {
         Vector3 spawnPosition = new Vector3(x, y, z);
+        
+        Vector3 playerOffset = Vector3.zero;
+        float spawnAngle = 0, currentSpawnAngle = 0;
+
+        bool isMultiplayer = NetworkManager.ConnectedClients.Count > 1;
+        if (isMultiplayer) {
+            currentSpawnAngle = spawnAngle = 2 * Mathf.PI / NetworkManager.ConnectedClients.Count;
+        }
+
         foreach (ulong clientId in NetworkManager.Singleton.ConnectedClientsIds){
+            
+            if (isMultiplayer) {
+                playerOffset = new Vector3(Mathf.Cos(currentSpawnAngle), 0, Mathf.Sin(currentSpawnAngle)) ;
+                currentSpawnAngle += spawnAngle;
+            }
+
             if (serverRpcParams.Receive.SenderClientId != clientId) continue;
-            PlayerMovement p = Instantiate(playerPrefab, spawnPosition, Quaternion.identity).GetComponent<PlayerMovement>();
-            p.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId);
+
+            NetworkObject netObject = Instantiate(playerPrefab, spawnPosition + playerOffset, Quaternion.identity).GetComponent<NetworkObject>();
+            netObject.SpawnAsPlayerObject(clientId);
+            netObject.DestroyWithScene = true;
+
+
+
         }
 
     }
-
-    
-
-    // [ClientRpc]
-    // private void SpawnPlayersClientRpc()
-    // {
-    //     if (!isOnline) {
-    //         PlayerMovement p = Instantiate(playerPrefab, spawnPoint, Quaternion.identity).GetComponent<PlayerMovement>();
-    //         p.GetComponent<NetworkObject>().SpawnAsPlayerObject(OwnerClientId);
-    //         return;
-    //     }
-
-    //     foreach (ulong clientId in _playerReady.Keys){
-    //         PlayerMovement p = Instantiate(playerPrefab, spawnPoint, Quaternion.identity).GetComponent<PlayerMovement>();
-    //         p.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId);
-    //     }
-    // }
 
     public void RegisterPlayer(ulong id, PlayerMovement player)
     {

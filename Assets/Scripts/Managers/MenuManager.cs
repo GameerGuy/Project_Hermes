@@ -148,13 +148,14 @@ public class MenuManager : NetworkBehaviour
         startingRace = true;
 
         data.UnpackColour(out float r, out float g, out float b, out float a);
-        StartRaceClientRpc(data.courseName, r, g, b, a);
+        StartRaceListClientRpc(data.courseName, r, g, b, a);
+        GameManager.Instance.SetPlayerReadyFalse();
         GameLobby.Instance.DeleteLobby();
         GameLobby.Instance.Cleanup();
     }
 
     [ClientRpc]
-    public void StartRaceClientRpc(string courseName, float r, float g, float b, float a)
+    public void StartRaceListClientRpc(string courseName, float r, float g, float b, float a)
     {
         Color backgroundColour = new Color(r, g, b, a);
         SceneTransition(courseName, backgroundColour);
@@ -169,7 +170,9 @@ public class MenuManager : NetworkBehaviour
     {
         director.Play(EnterLevel);
         await GameManager.Instance.ChangeBackgroundColour(mainCamera, backgroundColour, GameManager.Instance.tokenSource.Token);
-        await SceneManager.LoadSceneAsync(courseName);
+        
+        if (!IsServer) return;
+        NetworkManager.SceneManager.LoadScene(courseName, LoadSceneMode.Single);
     }
 
     

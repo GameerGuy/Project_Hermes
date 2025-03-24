@@ -14,7 +14,7 @@ public class CourseManager : NetworkBehaviour
     [SerializeField] private TextMeshProUGUI countdownDisplay;
     [SerializeField] private TextMeshProUGUI stopwatchDisplay;
     [SerializeField] private GameObject levelClearMenu;
-    [SerializeField] private TextMeshProUGUI waitingFoPlayersDisplay;
+    [SerializeField] private TextMeshProUGUI waitingForPlayersDisplay;
 
     [SerializeField] private PlayableAsset returnToMenu;
     public TimeManager timeManager { get; private set; }
@@ -25,6 +25,7 @@ public class CourseManager : NetworkBehaviour
     private bool countdownActive = false;
     private bool dnfTimerActive = false;
     private bool raceEnded = false;
+    private bool returningToMenu = false;
 
 
     void Awake()
@@ -33,11 +34,12 @@ public class CourseManager : NetworkBehaviour
         director = GetComponent<PlayableDirector>();
         Vector3 pos =  spawnPoint.position;
         GameManager.Instance.SpawnPlayersServerRpc(pos.x, pos.y, pos.z);
-        GameManager.Instance.DisableAllPlayersInput();
+        GetComponent<NetworkObject>().DestroyWithScene = true;
     }
 
     private void Start()
     {
+        GameManager.Instance.DisableAllPlayersInput();
         timeManager.StopwatchClear();
 
         stopwatchDisplay.enabled = false;
@@ -107,30 +109,35 @@ public class CourseManager : NetworkBehaviour
                 DNFTimer(5, tokenSource.Token);
             });
             return;
-        }
-        
-        GameManager.Instance.DisableAllPlayersInput();
-        playerCam.SetActiveCamera(0);
+
+        } 
+
+        timeManager.StopwatchPause();
         raceEnded = true;
+
+        GameManager.Instance.DisablePlayerInput(id);
+        playerCam.SetActiveCamera(0);
 
         countdownDisplay.text = "Finish!"; 
         countdownDisplay.enabled = true;
 
-        waitingFoPlayersDisplay.enabled = false;
+        waitingForPlayersDisplay.enabled = false;
 
         if (dnfTimerActive) {
             tokenSource.Cancel();
         }
 
-        timeManager.SetTimer( 1f, () => {
+        timeManager.SetTimer(1f, () => {
             if (countdownDisplay != null) {
                 countdownDisplay.enabled = false;
             }
-            if (levelClearMenu != null) {                
+            if (levelClearMenu != null) {
                 levelClearMenu.SetActive(true);
             }
         });
     }
+
+
 
     private async void DNFTimer(float duration, CancellationToken token)
     {
@@ -157,7 +164,7 @@ public class CourseManager : NetworkBehaviour
             playerCam.SetActiveCamera(0);
 
             countdownDisplay.text = "DNF!";
-            waitingFoPlayersDisplay.enabled = false;
+            waitingForPlayersDisplay.enabled = false;
 
             await Task.Delay(1000, token);
 
@@ -179,25 +186,68 @@ public class CourseManager : NetworkBehaviour
 
     public void ReplayLevel()
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        GameManager.Instance.SetPlayerReadyServerRPC(true);
+        if (GameManager.Instance.allPlayersReady) {
+            ReplayLevelServerRpc();
+        }
+        else {
+            waitingForPlayersDisplay.enabled = true;
+        }
+        
+    }
+
+    [ServerRpc]
+    public void ReplayLevelServerRpc()
+    {
+        ReplayLevelClientRpc();
+        GameManager.Instance.SetPlayerReadyFalse();
+        NetworkManager.SceneManager.LoadScene(SceneManager.GetActiveScene().name, LoadSceneMode.Single);
+    }
+
+    [ClientRpc]
+    public void ReplayLevelClientRpc()
+    {
         GameManager.Instance.Players.Clear();
     }
 
     public async void ReturnToMenu(CourseData data)
     {
         try {
+            if (!returningToMenu && NetworkManager.LocalClientId == NetworkManager.ServerClientId) {
+                data.UnpackColour(out float r, out float g, out float b, out float a);
+                ReturnToMenuClientRpc(data.courseName, r, g, b, a);
+                return;
+            }
+
             playerCam.ActivateEnd();
             director.Play(returnToMenu);
+
             await GameManager.Instance.ChangeBackgroundColour(playerCam.GetCamera(), data.backgroundColour, tokenSource.Token);
-            await SceneManager.LoadSceneAsync(data.courseName);
+
             GameManager.Instance.Players.Clear();
             GameManager.Instance.PlayerReady.Clear();
+
             NetworkManager.Singleton.Shutdown();
+
             GameLobby.Instance.Cleanup();
+
+            await SceneManager.LoadSceneAsync(data.courseName, LoadSceneMode.Single);
         } catch (OperationCanceledException e)
         {
             print(e);
             GameManager.Instance.ResetCancellationToken(tokenSource);
         }
+    }
+
+    [ClientRpc]
+    private void ReturnToMenuClientRpc(string courseName, float r, float g, float b, float a)
+    {
+        returningToMenu = true;
+
+        Color backgroundColour = new Color(r, g, b, a);
+        CourseData data = ScriptableObject.CreateInstance<CourseData>();
+        data.courseName = courseName;
+        data.backgroundColour = backgroundColour;
+        ReturnToMenu(data);
     }
 }
