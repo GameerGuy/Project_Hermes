@@ -18,8 +18,8 @@ public class PlayerMovement : NetworkBehaviour
     [Range(1,50)][Tooltip("How high in units the player jumps with a full press")]
     [SerializeField] private float jumpHeight;
 
-    [Range(-50, 50)][Tooltip("Velocity threshold for the player to start falling faster")]
-    [SerializeField] private float fallingThreshold;
+    // [Range(-50, 50)][Tooltip("Velocity threshold for the player to start falling faster")]
+    // [SerializeField] private float fallingThreshold;
 
     [Range(1,50)][Tooltip("Force that keeps the player grounded")]
     [SerializeField] private float groundedGravity;
@@ -94,6 +94,7 @@ public class PlayerMovement : NetworkBehaviour
     private float currentTurnSpeed;
     private float currentDeceleration;
     private float currentGravity;
+    private float fallingTimer;
     private bool sprinting;
     private bool crouching;
     private bool grounded;
@@ -122,10 +123,17 @@ public class PlayerMovement : NetworkBehaviour
         currentGravity = fallingGravity;
         currentDeceleration = airbourneDeceleration;
         currentTurnSpeed = baseTurnSpeed;
+        fallingTimer = 0.5f;
         DisableTrails();
 
         if (IsOwner) {
             SpawnDependents();
+            IsGrounded();
+            if (grounded){
+                OnGroundedEvent?.Invoke(this, EventArgs.Empty);
+            } else {
+                OnAirbourneEvent?.Invoke(this, EventArgs.Empty);
+            }
         }
     }
 
@@ -164,11 +172,11 @@ public class PlayerMovement : NetworkBehaviour
 
     private void OnCollisionEnter(Collision other)
     {
-        if (other.gameObject.CompareTag("Path")) {
-            respawnProjector.spline = other.gameObject.GetComponent<SplineComputer>();
-            respawnProjector.projectTarget = transform;
-            return;
-        }
+        // if (other.gameObject.CompareTag("Path")) {
+        //     respawnProjector.spline = other.gameObject.GetComponent<SplineComputer>();
+        //     respawnProjector.projectTarget = transform;
+        //     return;
+        // }
 
         if (other.gameObject.CompareTag("Respawner")) {
             Respawn();
@@ -177,25 +185,22 @@ public class PlayerMovement : NetworkBehaviour
 
     }
 
-    // private void OnDrawGizmos()
-    // {
-    //    const float OFFSET = 0.01f;
-    //    float radius = _collider.bounds.extents.x - OFFSET;
-    //    float maxDistance = (_collider.bounds.extents.y / 2) + (OFFSET * 10);
-    //    Physics.SphereCast(_collider.bounds.center, radius, -transform.up, out RaycastHit hitInfo, maxDistance);
-    //    if (grounded)
-    //    {
-    //        Gizmos.color = Color.red;
-    //        Gizmos.DrawRay(_collider.bounds.center, -transform.up * hitInfo.distance);
-    //        Gizmos.DrawWireSphere(_collider.bounds.center + -transform.up * hitInfo.distance, radius);
-    //    }
-    //    else
-    //    {
-    //        Gizmos.color = Color.green;
-    //        Gizmos.DrawRay(_collider.bounds.center, -transform.up * maxDistance);
-    //        Gizmos.DrawWireSphere(_collider.bounds.center + -transform.up * maxDistance, radius);
-    //    }
-    // }
+    private void OnDrawGizmos()
+    {
+        const float OFFSET = 0.03f;
+        float radius = _collider.bounds.extents.x - OFFSET;
+        float maxDistance = (_collider.bounds.extents.y / 2) + (OFFSET * 10);
+        Physics.SphereCast(_collider.bounds.center, radius, -transform.up, out RaycastHit hitInfo, maxDistance);
+        if (grounded) {
+            Gizmos.color = Color.red;
+            Gizmos.DrawRay(_collider.bounds.center, -transform.up * hitInfo.distance);
+            Gizmos.DrawWireSphere(_collider.bounds.center + -transform.up * hitInfo.distance, radius);
+        } else {
+            Gizmos.color = Color.green;
+            Gizmos.DrawRay(_collider.bounds.center, -transform.up * maxDistance);
+            Gizmos.DrawWireSphere(_collider.bounds.center + -transform.up * maxDistance, radius);
+        }
+    }
     #endregion
 
 
@@ -398,7 +403,6 @@ public class PlayerMovement : NetworkBehaviour
     #region Event Functions
     private void OnGrounded(object sender, EventArgs e)
     {
-        grounded = true;
         canJump = true;
 
         currentGravity = groundedGravity;
@@ -407,6 +411,7 @@ public class PlayerMovement : NetworkBehaviour
 
         falling = false;
         diving = false;
+        fallingTimer = 0.5f;
         animator.SetBool("IsFalling", false);
 
     }
@@ -493,11 +498,13 @@ public class PlayerMovement : NetworkBehaviour
         float radius = _collider.bounds.extents.x - OFFSET;
         float maxDistance = (_collider.bounds.extents.y / 2) + (OFFSET * 10);
         grounded = Physics.SphereCast(_collider.bounds.center, radius, -transform.up, out RaycastHit hitInfo, maxDistance);
+        //Collider[] colliders = Physics.OverlapSphere(_collider.bounds.center - (transform.up * maxDistance), radius);
 
         if (wasGrounded == grounded) return grounded;
 
         animator.SetBool("IsGrounded", grounded);
         if (grounded) {
+            respawnProjector.spline = hitInfo.collider.GetComponent<SplineComputer>();
             OnGroundedEvent?.Invoke(this, EventArgs.Empty);
         } else {
             OnAirbourneEvent?.Invoke(this, EventArgs.Empty);
@@ -509,7 +516,9 @@ public class PlayerMovement : NetworkBehaviour
     {
         if (grounded) return;
 
-        falling = (_rigidbody.velocity.y <= fallingThreshold || falling);
+        falling = (fallingTimer <= 0 || falling);
+
+        fallingTimer -= Time.deltaTime;
 
         animator.SetBool("IsFalling", falling);
 
