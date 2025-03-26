@@ -108,7 +108,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 },
                 {
-                    ""name"": ""2D Vector"",
+                    ""name"": ""WASD"",
                     ""id"": ""999d4142-d9cb-478b-acd6-403b29a64289"",
                     ""path"": ""2DVector"",
                     ""interactions"": """",
@@ -163,7 +163,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": true
                 },
                 {
-                    ""name"": ""2D Vector"",
+                    ""name"": ""Arrow Keys"",
                     ""id"": ""9e140b0e-7935-4b11-ae35-1d6e58a48cae"",
                     ""path"": ""2DVector"",
                     ""interactions"": """",
@@ -306,6 +306,12 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""Null"",
+            ""id"": ""c1906fc5-a277-4de0-84a8-662c10f9cc1d"",
+            ""actions"": [],
+            ""bindings"": []
         }
     ],
     ""controlSchemes"": [
@@ -345,11 +351,14 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         m_Player_Sprint = m_Player.FindAction("Sprint", throwIfNotFound: true);
         m_Player_Crouch = m_Player.FindAction("Crouch", throwIfNotFound: true);
         m_Player_Respawn = m_Player.FindAction("Respawn", throwIfNotFound: true);
+        // Null
+        m_Null = asset.FindActionMap("Null", throwIfNotFound: true);
     }
 
     ~@PlayerInput()
     {
         UnityEngine.Debug.Assert(!m_Player.enabled, "This will cause a leak and performance issues, PlayerInput.Player.Disable() has not been called.");
+        UnityEngine.Debug.Assert(!m_Null.enabled, "This will cause a leak and performance issues, PlayerInput.Null.Disable() has not been called.");
     }
 
     public void Dispose()
@@ -485,6 +494,44 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         }
     }
     public PlayerActions @Player => new PlayerActions(this);
+
+    // Null
+    private readonly InputActionMap m_Null;
+    private List<INullActions> m_NullActionsCallbackInterfaces = new List<INullActions>();
+    public struct NullActions
+    {
+        private @PlayerInput m_Wrapper;
+        public NullActions(@PlayerInput wrapper) { m_Wrapper = wrapper; }
+        public InputActionMap Get() { return m_Wrapper.m_Null; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(NullActions set) { return set.Get(); }
+        public void AddCallbacks(INullActions instance)
+        {
+            if (instance == null || m_Wrapper.m_NullActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_NullActionsCallbackInterfaces.Add(instance);
+        }
+
+        private void UnregisterCallbacks(INullActions instance)
+        {
+        }
+
+        public void RemoveCallbacks(INullActions instance)
+        {
+            if (m_Wrapper.m_NullActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        public void SetCallbacks(INullActions instance)
+        {
+            foreach (var item in m_Wrapper.m_NullActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_NullActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    public NullActions @Null => new NullActions(this);
     private int m_KeyboardMouseSchemeIndex = -1;
     public InputControlScheme KeyboardMouseScheme
     {
@@ -510,5 +557,8 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         void OnSprint(InputAction.CallbackContext context);
         void OnCrouch(InputAction.CallbackContext context);
         void OnRespawn(InputAction.CallbackContext context);
+    }
+    public interface INullActions
+    {
     }
 }

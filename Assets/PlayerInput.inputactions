@@ -86,7 +86,7 @@
                     "isPartOfComposite": false
                 },
                 {
-                    "name": "2D Vector",
+                    "name": "WASD",
                     "id": "999d4142-d9cb-478b-acd6-403b29a64289",
                     "path": "2DVector",
                     "interactions": "",
@@ -141,7 +141,7 @@
                     "isPartOfComposite": true
                 },
                 {
-                    "name": "2D Vector",
+                    "name": "Arrow Keys",
                     "id": "9e140b0e-7935-4b11-ae35-1d6e58a48cae",
                     "path": "2DVector",
                     "interactions": "",
@@ -284,6 +284,12 @@
                     "isPartOfComposite": false
                 }
             ]
+        },
+        {
+            "name": "Null",
+            "id": "c1906fc5-a277-4de0-84a8-662c10f9cc1d",
+            "actions": [],
+            "bindings": []
         }
     ],
     "controlSchemes": [

@@ -114,7 +114,7 @@ public class PlayerMovement : NetworkBehaviour
 
         animator = GetComponentInChildren<Animator>();
         networkAnimator = GetComponentInChildren<OwnerNetworkAnimator>();
-        inputActions = new PlayerInput();
+        inputActions = InputManager.inputActions;
         
     }
 
@@ -247,7 +247,8 @@ public class PlayerMovement : NetworkBehaviour
 
     public void DisableInput()
     {
-        inputActions.Disable();
+        print("disabled");
+        inputActions.Player.Jump.Disable();
     }
     private void OnJumpPressed(InputAction.CallbackContext context)
     {
