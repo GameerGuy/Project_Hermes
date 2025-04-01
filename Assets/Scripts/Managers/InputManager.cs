@@ -20,6 +20,21 @@ public class InputManager : MonoBehaviour
         }
     }
 
+    public static void EnableInput()
+    {
+        if (inputActions != null){
+            inputActions.Player.Enable();
+        }
+    }
+
+    public static void DisableInput()
+    {
+        if (inputActions != null){
+            inputActions.Player.Disable();
+        }
+    }
+
+
     public static void StartRebind(string actionName, int bindingIndex, TMP_Text statusText, bool excludeMouse)
     {
         InputAction action = inputActions.asset.FindAction(actionName);

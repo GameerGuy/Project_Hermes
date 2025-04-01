@@ -248,7 +248,7 @@ public class PlayerMovement : NetworkBehaviour
     public void DisableInput()
     {
         print("disabled");
-        inputActions.Player.Jump.Disable();
+        inputActions.Disable();
     }
     private void OnJumpPressed(InputAction.CallbackContext context)
     {

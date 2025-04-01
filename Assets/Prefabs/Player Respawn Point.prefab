@@ -80,7 +80,7 @@ MonoBehaviour:
     percent: 1
   _loopSamples: 0
   _clipFrom: 0
-  _clipTo: 1
+  _clipTo: 0.8999999761581421
   animClipFrom: 0
   animClipTo: 1
   multithreaded: 0
@@ -125,7 +125,7 @@ MonoBehaviour:
     color: {r: 1, g: 1, b: 1, a: 1}
     size: 1
     percent: 0.014657425383726757
-  _mode: 1
+  _mode: 0
   _autoProject: 1
   _subdivide: 4
   _projectTarget: {fileID: 0}
@@ -133,7 +133,7 @@ MonoBehaviour:
   _targetObject: {fileID: 3171612123517201662}
   _offset: {x: 0, y: 0}
   _rotationOffset: {x: 0, y: 0, z: 0}
-  lastPosition: {x: 0.11045079, y: 1.0065794, z: -974.86316}
+  lastPosition: {x: -0.17888205, y: 0.00000005828909, z: -1038.9994}
 --- !u!114 &741658668496566136
 MonoBehaviour:
   m_ObjectHideFlags: 0

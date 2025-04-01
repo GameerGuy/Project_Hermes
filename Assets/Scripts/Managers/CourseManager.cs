@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using TMPro;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.Playables;
 using UnityEngine.SceneManagement;
 
@@ -14,6 +15,7 @@ public class CourseManager : NetworkBehaviour
     [SerializeField] private TextMeshProUGUI countdownDisplay;
     [SerializeField] private TextMeshProUGUI stopwatchDisplay;
     [SerializeField] private GameObject levelClearMenu;
+    [SerializeField] private GameObject pauseMenu;
     [SerializeField] private TextMeshProUGUI waitingForPlayersDisplay;
 
     [SerializeField] private PlayableAsset returnToMenu;
@@ -35,11 +37,12 @@ public class CourseManager : NetworkBehaviour
         Vector3 pos =  spawnPoint.position;
         GameManager.Instance.SpawnPlayersServerRpc(pos.x, pos.y, pos.z);
         GetComponent<NetworkObject>().DestroyWithScene = true;
+        InputManager.inputActions.Player.Pause.started += Pause;
     }
 
     private void Start()
     {
-        GameManager.Instance.DisableAllPlayersInput();
+        GameManager.Instance.DisableAllPlayersInputClientRpc();
         timeManager.StopwatchClear();
 
         stopwatchDisplay.enabled = false;
@@ -68,6 +71,20 @@ public class CourseManager : NetworkBehaviour
 
         CountdownChange();
     }
+
+    private void Pause(InputAction.CallbackContext context)
+    {
+        GameManager.Instance.isPaused = true;
+        GameManager.Instance.DisablePlayerInput();
+        pauseMenu.SetActive(true);
+    }
+
+    public void Resume()
+    {
+        GameManager.Instance.isPaused = false;
+        GameManager.Instance.EnablePlayerInput();
+        pauseMenu.SetActive(false);
+    }
     
 
     private void RaceCountdown(int time)
@@ -93,7 +110,7 @@ public class CourseManager : NetworkBehaviour
     {
         stopwatchDisplay.enabled = true;
         timeManager.StopwatchStart();
-        GameManager.Instance.EnableAllPlayersInput();
+        GameManager.Instance.EnableAllPlayersInputClientRpc();
     }
 
     private void CountdownChange()
@@ -115,7 +132,7 @@ public class CourseManager : NetworkBehaviour
         timeManager.StopwatchPause();
         raceEnded = true;
 
-        GameManager.Instance.DisablePlayerInput(id);
+        GameManager.Instance.DisablePlayerInput();
         playerCam.SetActiveCamera(0);
 
         countdownDisplay.text = "Finish!"; 
@@ -160,7 +177,7 @@ public class CourseManager : NetworkBehaviour
 
             raceEnded = true;
 
-            GameManager.Instance.DisableAllPlayersInput();
+            GameManager.Instance.DisableAllPlayersInputClientRpc();
             playerCam.SetActiveCamera(0);
 
             countdownDisplay.text = "DNF!";

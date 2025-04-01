@@ -12,6 +12,8 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : NetworkBehaviour
 {
+    public CancellationTokenSource tokenSource = new();
+
     private const float TRANSITION_TIME = 1f;
     [SerializeField] private AnimationCurve curve;
     [SerializeField] private GameObject playerPrefab;
@@ -24,8 +26,7 @@ public class GameManager : NetworkBehaviour
     private Dictionary<ulong, bool> _playerReady;
     public Dictionary<ulong, bool> PlayerReady => _playerReady;
 
-
-    public CancellationTokenSource tokenSource = new();
+    public bool isPaused = false;
 
     public const int MAX_PLAYER_COUNT = 4;
     public int playerCount = 1;
@@ -145,34 +146,29 @@ public class GameManager : NetworkBehaviour
         _players.Add(id, player);
         //RegisterPlayerClientRpc(id);
     }
-    
 
-    public void EnableAllPlayersInput()
+    [ClientRpc]
+    public void EnableAllPlayersInputClientRpc()
     {
-        foreach (PlayerMovement pm in _players.Values)
-        {
-            pm.EnableInput();
-        }
+        EnablePlayerInput();
     }
 
-    public void DisableAllPlayersInput()
-    {
-        foreach (PlayerMovement pm in _players.Values)
-        {
-            pm.DisableInput();
-        }
-    }
-
-    public void EnablePlayerInput(ulong id)
+    public void EnablePlayerInput()
     {
         if (_players == null) return;
-        _players[id].EnableInput();
+        InputManager.EnableInput();
     }
 
-    public void DisablePlayerInput(ulong id)
+    [ClientRpc]
+    public void DisableAllPlayersInputClientRpc()
+    {
+        DisablePlayerInput();
+    }
+
+    public void DisablePlayerInput()
     {
         if (_players == null) return;
-        _players[id].DisableInput();
+        InputManager.DisableInput();
     }
 
     public void SetCourseData(CourseData data)
