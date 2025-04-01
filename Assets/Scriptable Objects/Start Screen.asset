@@ -14,3 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   courseName: Start Screen
   backgroundColour: {r: 0.18062477, g: 0.9339623, b: 0.821763, a: 254.88327}
+  skyboxIndex: 0
+  sunRotation: {x: 50, y: -30, z: 0}

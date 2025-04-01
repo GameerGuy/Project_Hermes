@@ -214,15 +214,16 @@ public class CourseManager : NetworkBehaviour
     {
         try {
             if (!returningToMenu && NetworkManager.LocalClientId == NetworkManager.ServerClientId) {
-                data.UnpackColour(out float r, out float g, out float b, out float a);
-                ReturnToMenuClientRpc(data.courseName, r, g, b, a);
+                //data.UnpackColour(out float r, out float g, out float b, out float a);
+                ReturnToMenuClientRpc(data);
                 return;
             }
 
             playerCam.ActivateEnd();
             director.Play(returnToMenu);
 
-            await GameManager.Instance.ChangeBackgroundColour(playerCam.GetCamera(), data.backgroundColour, tokenSource.Token);
+            //await GameManager.Instance.ChangeBackgroundColour(playerCam.GetCamera(), data.backgroundColour, tokenSource.Token);
+            await GameManager.Instance.ChangeSkybox(data, GameManager.Instance.tokenSource.Token);
 
             GameManager.Instance.Players.Clear();
             GameManager.Instance.PlayerReady.Clear();
@@ -240,14 +241,9 @@ public class CourseManager : NetworkBehaviour
     }
 
     [ClientRpc]
-    private void ReturnToMenuClientRpc(string courseName, float r, float g, float b, float a)
+    private void ReturnToMenuClientRpc(CourseData data)
     {
         returningToMenu = true;
-
-        Color backgroundColour = new Color(r, g, b, a);
-        CourseData data = ScriptableObject.CreateInstance<CourseData>();
-        data.courseName = courseName;
-        data.backgroundColour = backgroundColour;
         ReturnToMenu(data);
     }
 }

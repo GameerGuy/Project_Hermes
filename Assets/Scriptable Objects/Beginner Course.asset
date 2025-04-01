@@ -14,3 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   courseName: Beginner Course
   backgroundColour: {r: 0.49803922, g: 0.8956509, b: 0.9254902, a: 1}
+  skyboxIndex: 1
+  sunRotation: {x: 66.22002, y: 213.39998, z: 0}

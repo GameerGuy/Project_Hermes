@@ -10,6 +10,7 @@ using UnityEngine.SceneManagement;
 
 public class MenuManager : NetworkBehaviour
 {
+    [SerializeField] private CourseData courseData;
     [SerializeField] private PlayableAsset intro;
     [SerializeField] private PlayableAsset openLevelSelect;
     [SerializeField] private PlayableAsset closeLevelSelect;
@@ -31,6 +32,7 @@ public class MenuManager : NetworkBehaviour
         director = GetComponent<PlayableDirector>();
         director.Play(intro);
         startingRace = false;
+        GameManager.Instance.SetCourseData(courseData);
     }
 
     public void PlayOffline()
@@ -147,32 +149,28 @@ public class MenuManager : NetworkBehaviour
         if(startingRace) return;
         startingRace = true;
 
-        data.UnpackColour(out float r, out float g, out float b, out float a);
-        StartRaceListClientRpc(data.courseName, r, g, b, a);
+        //data.UnpackColour(out float r, out float g, out float b, out float a);
+        StartRaceListClientRpc(data);
         GameManager.Instance.SetPlayerReadyFalse();
         GameLobby.Instance.DeleteLobby();
         GameLobby.Instance.Cleanup();
     }
 
     [ClientRpc]
-    public void StartRaceListClientRpc(string courseName, float r, float g, float b, float a)
+    public void StartRaceListClientRpc(CourseData data)
     {
-        Color backgroundColour = new Color(r, g, b, a);
-        SceneTransition(courseName, backgroundColour);
+        SceneTransition(data);
 
-        CourseData data = ScriptableObject.CreateInstance<CourseData>();
-        data.courseName = courseName;
-        data.backgroundColour = backgroundColour;
         GameManager.Instance.SetCourseData(data);
     }
 
-    public async void SceneTransition(string courseName, Color backgroundColour)
+    public async void SceneTransition(CourseData data)
     {
         director.Play(EnterLevel);
-        await GameManager.Instance.ChangeBackgroundColour(mainCamera, backgroundColour, GameManager.Instance.tokenSource.Token);
+        await GameManager.Instance.ChangeSkybox(data, GameManager.Instance.tokenSource.Token);
         
         if (!IsServer) return;
-        NetworkManager.SceneManager.LoadScene(courseName, LoadSceneMode.Single);
+        NetworkManager.SceneManager.LoadScene(data.courseName, LoadSceneMode.Single);
     }
 
     

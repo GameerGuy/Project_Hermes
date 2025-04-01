@@ -20,13 +20,13 @@ RenderSettings:
   m_FogDensity: 0.01
   m_LinearFogStart: 0
   m_LinearFogEnd: 300
-  m_AmbientSkyColor: {r: 0.212, g: 0.227, b: 0.259, a: 1}
+  m_AmbientSkyColor: {r: 0.045156192, g: 0.23349057, b: 0.20544074, a: 254.88327}
   m_AmbientEquatorColor: {r: 0.114, g: 0.125, b: 0.133, a: 1}
   m_AmbientGroundColor: {r: 0.047, g: 0.043, b: 0.035, a: 1}
-  m_AmbientIntensity: 1
+  m_AmbientIntensity: 0.5
   m_AmbientMode: 0
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
-  m_SkyboxMaterial: {fileID: 10304, guid: 0000000000000000f000000000000000, type: 0}
+  m_SkyboxMaterial: {fileID: 2100000, guid: 085c87f91dae8e14380e85df4f3987c7, type: 2}
   m_HaloStrength: 0.5
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
@@ -35,9 +35,9 @@ RenderSettings:
   m_DefaultReflectionMode: 0
   m_DefaultReflectionResolution: 128
   m_ReflectionBounces: 1
-  m_ReflectionIntensity: 1
+  m_ReflectionIntensity: 0.5
   m_CustomReflection: {fileID: 0}
-  m_Sun: {fileID: 0}
+  m_Sun: {fileID: 985411226}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -606,7 +606,7 @@ GameObject:
   m_Component:
   - component: {fileID: 63185084}
   m_Layer: 5
-  m_Name: Join Button Container
+  m_Name: Join Container
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1177,7 +1177,7 @@ GameObject:
   m_Component:
   - component: {fileID: 152947248}
   m_Layer: 5
-  m_Name: Controls Button Container
+  m_Name: Controls Container
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2000,7 +2000,7 @@ GameObject:
   m_Component:
   - component: {fileID: 265965760}
   m_Layer: 5
-  m_Name: Online Lobby Back Button Container
+  m_Name: Online Lobby Back Container
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2910,7 +2910,7 @@ Camera:
   m_GameObject: {fileID: 494665097}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 2
+  m_ClearFlags: 1
   m_BackGroundColor: {r: 0.18062477, g: 0.9339623, b: 0.821763, a: 254.88327}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
@@ -2960,8 +2960,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 494665097}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: -10}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3170,7 +3170,7 @@ MeshRenderer:
   m_StaticShadowCaster: 0
   m_MotionVectors: 1
   m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
+  m_ReflectionProbeUsage: 0
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
@@ -3857,7 +3857,7 @@ GameObject:
   m_Component:
   - component: {fileID: 613334408}
   m_Layer: 5
-  m_Name: Host Button Container
+  m_Name: Host Container
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6145,7 +6145,7 @@ GameObject:
   m_Component:
   - component: {fileID: 978796859}
   m_Layer: 5
-  m_Name: Options Button Container
+  m_Name: Options Container
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6183,7 +6183,7 @@ GameObject:
   - component: {fileID: 985411226}
   m_Layer: 0
   m_Name: Directional Light
-  m_TagString: Untagged
+  m_TagString: Sun
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -6258,7 +6258,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 985411225}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.40821788, y: -0.23456968, z: 0.10938163, w: 0.8754261}
+  m_LocalRotation: {x: 0.4082179, y: -0.23456971, z: 0.10938165, w: 0.87542605}
   m_LocalPosition: {x: 0, y: 3, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -7987,7 +7987,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1278212448}
   m_Layer: 5
-  m_Name: Offline Button Container
+  m_Name: Offline Container
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9068,7 +9068,13 @@ MonoBehaviour:
   playerPrefab: {fileID: 6549462106068090882, guid: f22fca66865c00042969abf561b9deac, type: 3}
   playerCount: 1
   isOnline: 0
-  courseData: {fileID: 0}
+  courseData: {fileID: 11400000, guid: e4b41c5197b3ab04e869d6ca04aa3945, type: 2}
+  skyboxes:
+  - {fileID: 2100000, guid: acb9399ff06653c4a930266a9d7c3f77, type: 2}
+  - {fileID: 2100000, guid: 9ca63d86341d33940a27ea7f6f6cb912, type: 2}
+  - {fileID: 2100000, guid: 8e8486dc2e314834c9d6af52c289c5bf, type: 2}
+  - {fileID: 2100000, guid: fe1d7b95a28e22e46b40a693419fcbeb, type: 2}
+  currentSkybox: {fileID: 2100000, guid: 085c87f91dae8e14380e85df4f3987c7, type: 2}
 --- !u!4 &1403096712
 Transform:
   m_ObjectHideFlags: 0
@@ -10426,7 +10432,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1631208893}
   m_Layer: 5
-  m_Name: Play Button Container
+  m_Name: Play Container
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -11475,7 +11481,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1844792494}
   m_Layer: 5
-  m_Name: Network Menu Back Button Container
+  m_Name: Network Menu Back Container
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -11818,7 +11824,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6960e84d07fb87f47956e7a81d71c4e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_ProtocolType: 1
+  m_ProtocolType: 0
   m_MaxPacketQueueSize: 128
   m_MaxPayloadSize: 6144
   m_HeartbeatTimeoutMS: 500
@@ -11902,7 +11908,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1917661718}
   m_Layer: 5
-  m_Name: Level Select Back Button Container
+  m_Name: Level Select Back Container
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -13083,7 +13089,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2081666252}
   m_Layer: 5
-  m_Name: Ready Button Container
+  m_Name: Ready Container
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -13515,7 +13521,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2142990189}
   m_Layer: 5
-  m_Name: Quit Button Container
+  m_Name: Quit Container
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -14157,6 +14163,10 @@ PrefabInstance:
       propertyPath: m_SceneBindings.Array.data[139].value
       value: 
       objectReference: {fileID: 1257076439}
+    - target: {fileID: 4951230936117663030, guid: 5a7afc7a12ecb71489f6edd8a3fdaf1b, type: 3}
+      propertyPath: courseData
+      value: 
+      objectReference: {fileID: 11400000, guid: e4b41c5197b3ab04e869d6ca04aa3945, type: 2}
     - target: {fileID: 4951230936117663030, guid: 5a7afc7a12ecb71489f6edd8a3fdaf1b, type: 3}
       propertyPath: WaitingForPlayersDisplay
       value: 

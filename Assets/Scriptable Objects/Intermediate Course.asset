@@ -14,3 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   courseName: Intermediate Course
   backgroundColour: {r: 0.9245283, g: 0.7234268, b: 0.4971519, a: 1}
+  skyboxIndex: 2
+  sunRotation: {x: 167.8, y: -44.31201, z: 0}

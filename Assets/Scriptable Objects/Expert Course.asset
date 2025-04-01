@@ -14,3 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   courseName: Expert Course
   backgroundColour: {r: 0.10312085, g: 0.19635428, b: 0.41509432, a: 1}
+  skyboxIndex: 3
+  sunRotation: {x: -50.446, y: -159.017, z: 0}

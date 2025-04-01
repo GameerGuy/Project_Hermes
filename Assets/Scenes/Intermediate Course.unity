@@ -26,7 +26,7 @@ RenderSettings:
   m_AmbientIntensity: 1
   m_AmbientMode: 0
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
-  m_SkyboxMaterial: {fileID: 10304, guid: 0000000000000000f000000000000000, type: 0}
+  m_SkyboxMaterial: {fileID: 2100000, guid: 085c87f91dae8e14380e85df4f3987c7, type: 2}
   m_HaloStrength: 0.5
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
@@ -37,7 +37,7 @@ RenderSettings:
   m_ReflectionBounces: 1
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
-  m_Sun: {fileID: 0}
+  m_Sun: {fileID: 1442370068}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -569,6 +569,8 @@ MonoBehaviour:
   playerCount: 1
   isOnline: 0
   courseData: {fileID: 0}
+  skyboxes: []
+  currentSkybox: {fileID: 0}
 --- !u!4 &147098164
 Transform:
   m_ObjectHideFlags: 0
@@ -4300,7 +4302,7 @@ GameObject:
   - component: {fileID: 1442370068}
   m_Layer: 0
   m_Name: Directional Light
-  m_TagString: Untagged
+  m_TagString: Sun
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -4375,13 +4377,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1442370067}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.52397215, y: -0.0903131, z: 0.84508055, w: 0.055996493}
+  m_LocalRotation: {x: 0.92091495, y: -0.040075738, z: 0.3749982, w: 0.0984174}
   m_LocalPosition: {x: 0, y: 3, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1347244889}
-  m_LocalEulerAnglesHint: {x: 167.8, y: -116.4, z: 0}
+  m_LocalEulerAnglesHint: {x: 167.8, y: -44.31201, z: 0}
 --- !u!1 &1507086715
 GameObject:
   m_ObjectHideFlags: 0

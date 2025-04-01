@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Unity.Netcode;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -30,7 +31,11 @@ public class GameManager : NetworkBehaviour
     public int playerCount = 1;
     public bool isOnline;
     public bool allPlayersReady {get; private set;}
+
     [SerializeField] public CourseData courseData;
+    public List<Material> skyboxes;
+    [SerializeField] private Material currentSkybox;
+
 
 
     private static GameManager _instance;
@@ -173,6 +178,7 @@ public class GameManager : NetworkBehaviour
     public void SetCourseData(CourseData data)
     {
         courseData = data;
+        currentSkybox.Lerp(currentSkybox, skyboxes[data.skyboxIndex], 1);
     }
 
     public async Task ChangeBackgroundColour(Camera mainCamera , Color target, CancellationToken token)
@@ -189,6 +195,31 @@ public class GameManager : NetworkBehaviour
         } catch (OperationCanceledException){
             ResetCancellationToken(tokenSource);
             mainCamera.backgroundColor = startColour;
+            throw;
+        }
+    }
+
+    public async Task ChangeSkybox(CourseData data, CancellationToken token)
+    {
+        try {
+            Material startMaterial = skyboxes[courseData.skyboxIndex];
+            Material targetMaterial = skyboxes[data.skyboxIndex];
+
+            GameObject Sun = GameObject.FindGameObjectWithTag("Sun");
+            Quaternion startRotation = Sun.transform.rotation;
+            Quaternion targetRotation = Quaternion.Euler(data.sunRotation);
+
+            float time = 0;
+            while (time < TRANSITION_TIME) {
+                
+                currentSkybox.Lerp(startMaterial, targetMaterial, curve.Evaluate(time / (TRANSITION_TIME)));
+                Sun.transform.rotation = Quaternion.Slerp(startRotation, targetRotation, curve.Evaluate(time/TRANSITION_TIME));
+                time += Time.deltaTime;
+                token.ThrowIfCancellationRequested();
+                await UniTask.Yield();
+            }
+        } catch (OperationCanceledException) {
+            ResetCancellationToken(tokenSource);
             throw;
         }
     }

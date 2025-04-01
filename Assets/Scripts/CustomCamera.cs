@@ -124,14 +124,13 @@ public class CustomCamera : NetworkBehaviour
     public void SetCameraColourServerRpc()
     {
         print("server set colour");
-        GameManager.Instance.courseData.UnpackColour(out float r, out float g, out float b, out float a);   
-        SetCameraColourClientRpc(r,g,b,a);
+        SetCameraColourClientRpc(GameManager.Instance.courseData);
     }
 
     [ClientRpc]
-    public void SetCameraColourClientRpc(float r, float g, float b, float a)
+    public void SetCameraColourClientRpc(CourseData data)
     {
         print("client set colour");
-        cam.backgroundColor = new Color(r, g, b, a);
+        cam.backgroundColor = data.backgroundColour;
     }
 }
