@@ -124,6 +124,7 @@ public class PlayerMovement : NetworkBehaviour
         currentDeceleration = airbourneDeceleration;
         currentTurnSpeed = baseTurnSpeed;
         fallingTimer = 0.5f;
+        toggleSprint = PlayerPrefs.GetInt(InputManager.TOGGLE_SPRINT_KEY) != 0;
         DisableTrails();
 
         if (IsOwner) {

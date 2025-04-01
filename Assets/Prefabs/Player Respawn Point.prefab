@@ -127,7 +127,7 @@ MonoBehaviour:
     percent: 0.014657425383726757
   _mode: 0
   _autoProject: 1
-  _subdivide: 4
+  _subdivide: 3
   _projectTarget: {fileID: 0}
   applyTarget: {fileID: 0}
   _targetObject: {fileID: 3171612123517201662}

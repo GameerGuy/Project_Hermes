@@ -12,6 +12,8 @@ public class MenuManager : NetworkBehaviour
 {
     [SerializeField] private CourseData courseData;
     [SerializeField] private PlayableAsset intro;
+    [SerializeField] private PlayableAsset openOptionsMenu;
+    [SerializeField] private PlayableAsset closeOptionsMenu;
     [SerializeField] private PlayableAsset openLevelSelect;
     [SerializeField] private PlayableAsset closeLevelSelect;
     [SerializeField] private PlayableAsset openLevelSelect_Lobby;
@@ -136,8 +138,15 @@ public class MenuManager : NetworkBehaviour
     public void OpenOptionsMenu()
     {
         if (director.state == PlayState.Playing) return;
-        print("options");
+        director.Play(openOptionsMenu);
     }
+
+    public void CloseOptionsMenu()
+    {
+        if (director.state == PlayState.Playing) return;
+        director.Play(closeOptionsMenu);
+    }
+
     public void QuitGame()
     {
         GameManager.Instance.tokenSource.Cancel();

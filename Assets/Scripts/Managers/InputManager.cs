@@ -7,6 +7,8 @@ using UnityEngine.InputSystem;
 
 public class InputManager : MonoBehaviour
 {
+    public const string TOGGLE_SPRINT_KEY = "ToggleStrintTrue";
+    
     public static PlayerInput inputActions;
 
     public static event Action rebindComplete;
@@ -45,8 +47,8 @@ public class InputManager : MonoBehaviour
 
         if (action.bindings[bindingIndex].isComposite) {
             int firstIndex = bindingIndex + 1;
-            if (firstIndex < action.bindings.Count && action.bindings[firstIndex].isComposite) {
-                DoRebind(action, bindingIndex, statusText, true, excludeMouse);
+            if (firstIndex < action.bindings.Count && action.bindings[firstIndex].isPartOfComposite) {
+                DoRebind(action, firstIndex, statusText, true, excludeMouse);
             } 
         } else {
             DoRebind(action, bindingIndex, statusText, false, excludeMouse);
@@ -70,7 +72,7 @@ public class InputManager : MonoBehaviour
 
             if (allCompositeParts) {
                 int nextBindingindex = bindingIndex + 1;
-                if (nextBindingindex < actionToRebind.bindings.Count && actionToRebind.bindings[nextBindingindex].isComposite) {
+                if (nextBindingindex < actionToRebind.bindings.Count && actionToRebind.bindings[nextBindingindex].isPartOfComposite) {
                     DoRebind(actionToRebind, nextBindingindex, statusText, allCompositeParts, excludeMouse);
                 }
             }
@@ -142,7 +144,7 @@ public class InputManager : MonoBehaviour
         }
 
         if (action.bindings[bindingIndex].isComposite) {
-            for (int i = bindingIndex; i < action.bindings.Count && action.bindings[i].isComposite; i++) {
+            for (int i = bindingIndex + 1; i < action.bindings.Count && action.bindings[i].isPartOfComposite; i++) {
                 action.RemoveBindingOverride(i);
             }
         } else {
