@@ -355,11 +355,12 @@ public class PlayerMovement : NetworkBehaviour
     {
         Vector3 verticalVector = GetVerticalVelocity();
         Vector3 horizontalVector = GetHorizontalVelocity();
+        float cameraAngle = _customCamera.GetHorizontalAngle() * Mathf.Deg2Rad;
         float horizontalSpeed = horizontalVector.magnitude;
         float maxSpeed = sprinting ? maxRunSpeed * sprintSpeedMult : maxRunSpeed;
         //float turningLeniency = Mathf.Sin(Vector3.Angle(horizontalVector, transform.forward) * Mathf.Deg2Rad);
 
-        if (movementDir.z == 0 || crouching) {
+        if (movementDir.magnitude == 0 || crouching) {
 
             if (horizontalSpeed <= 1) {
                 _rigidbody.velocity = verticalVector;
@@ -373,21 +374,26 @@ public class PlayerMovement : NetworkBehaviour
 
         animator.SetBool("IsMoving", true);
         animator.SetFloat("runAnimSpeed",(sprinting) ? 2 : 1);
+    
+        float rotatedX = MathF.Cos(cameraAngle);
+        float rotatedZ = movementDir.z * MathF.Cos(cameraAngle) - movementDir.x * MathF.Sin(cameraAngle);
+
+        Vector3 finalMoveDir = new Vector3(rotatedX , 0, rotatedZ);
 
         if (horizontalSpeed < maxSpeed) {
-            _rigidbody.AddForce(movementDir.z * transform.forward * runAcceleration, ForceMode.Acceleration);
+            _rigidbody.AddForce(movementDir.normalized * runAcceleration, ForceMode.Acceleration);
         } else if (horizontalSpeed > maxSpeed) {
             _rigidbody.AddForce(horizontalVector.normalized * -1 * currentDeceleration, ForceMode.Acceleration);
         } else {
-            _rigidbody.velocity = transform.forward * movementDir.normalized.x * maxSpeed + verticalVector;
+            _rigidbody.velocity = transform.forward * movementDir.magnitude * maxSpeed + verticalVector;
         }
     }
 
     private void HandleRotation()
     {
-        if (movementDir.x == 0) return;
+        if (movementDir.magnitude == 0) return;
         
-        Quaternion toRotation = Quaternion.LookRotation(transform.right * movementDir.x, Vector3.up);
+        Quaternion toRotation = Quaternion.LookRotation(movementDir.normalized, Vector3.up);
         
         float horizontalSpeed = GetHorizontalVelocity().magnitude;
         float scaledTurnSpeed = baseTurnSpeed - turnScaling * (horizontalSpeed * horizontalSpeed / (maxRunSpeed * maxRunSpeed)) + turnScaling;
