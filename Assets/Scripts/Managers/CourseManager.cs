@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using TMPro;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.Playables;
 using UnityEngine.SceneManagement;
@@ -15,7 +16,9 @@ public class CourseManager : NetworkBehaviour
     [SerializeField] private TextMeshProUGUI countdownDisplay;
     [SerializeField] private TextMeshProUGUI stopwatchDisplay;
     [SerializeField] private GameObject levelClearMenu;
+    [SerializeField] private GameObject levelClearMenuFirst;
     [SerializeField] private GameObject pauseMenu;
+    [SerializeField] private GameObject pauseMenuFirst;
     [SerializeField] private TextMeshProUGUI waitingForPlayersDisplay;
 
     [SerializeField] private PlayableAsset returnToMenu;
@@ -72,11 +75,19 @@ public class CourseManager : NetworkBehaviour
         CountdownChange();
     }
 
+    override public void OnDestroy()
+    {
+        InputManager.inputActions.Player.Pause.started -= Pause;
+    }
+
     private void Pause(InputAction.CallbackContext context)
     {
         GameManager.Instance.isPaused = true;
         GameManager.Instance.DisablePlayerInput();
         pauseMenu.SetActive(true);
+
+        EventSystem.current.SetSelectedGameObject(null);
+        EventSystem.current.SetSelectedGameObject(pauseMenuFirst);
     }
 
     public void Resume()
@@ -132,6 +143,7 @@ public class CourseManager : NetworkBehaviour
         timeManager.StopwatchPause();
         raceEnded = true;
 
+        Resume();
         GameManager.Instance.DisablePlayerInput();
         playerCam.SetActiveCamera(0);
 
@@ -150,6 +162,9 @@ public class CourseManager : NetworkBehaviour
             }
             if (levelClearMenu != null) {
                 levelClearMenu.SetActive(true);
+
+                EventSystem.current.SetSelectedGameObject(null);
+                EventSystem.current.SetSelectedGameObject(levelClearMenuFirst);
             }
         });
     }
@@ -177,6 +192,7 @@ public class CourseManager : NetworkBehaviour
 
             raceEnded = true;
 
+            Resume();
             GameManager.Instance.DisableAllPlayersInputClientRpc();
             playerCam.SetActiveCamera(0);
 
@@ -190,6 +206,9 @@ public class CourseManager : NetworkBehaviour
             }
             if (levelClearMenu != null) {
                 levelClearMenu.SetActive(true);
+
+                EventSystem.current.SetSelectedGameObject(null);
+                EventSystem.current.SetSelectedGameObject(levelClearMenuFirst);
             }
 
 

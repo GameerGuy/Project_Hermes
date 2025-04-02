@@ -228,6 +228,17 @@ public class PlayerMovement : NetworkBehaviour
         OnSlideEvent += OnSlide;
     }
 
+    public override void OnDestroy()
+    {
+        inputActions.Player.Jump.started -= OnJumpPressed;
+        inputActions.Player.Jump.canceled -= OnJumpReleased;
+        inputActions.Player.Sprint.started -= OnSprintPressed;
+        inputActions.Player.Sprint.canceled -= OnSprintReleased;
+        inputActions.Player.Crouch.started -= OnCrouchPressed;
+        inputActions.Player.Crouch.canceled -= OnCrouchReleased;
+        inputActions.Player.Respawn.started -= OnRespawnPressed;
+    }
+
     private void SpawnDependents()
     {
         respawnPoint = Instantiate(respawnPoint, transform.position, quaternion.identity);

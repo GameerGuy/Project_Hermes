@@ -1948,6 +1948,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1737973521}
     - target: {fileID: 3994913469156221221, guid: b98a567a61d1afe43b8e3afd1f0b3760, type: 3}
+      propertyPath: pauseMenuFirst
+      value: 
+      objectReference: {fileID: 145717754}
+    - target: {fileID: 3994913469156221221, guid: b98a567a61d1afe43b8e3afd1f0b3760, type: 3}
       propertyPath: countdownDisplay
       value: 
       objectReference: {fileID: 789270327}
@@ -1955,6 +1959,10 @@ PrefabInstance:
       propertyPath: stopwatchDisplay
       value: 
       objectReference: {fileID: 1507086717}
+    - target: {fileID: 3994913469156221221, guid: b98a567a61d1afe43b8e3afd1f0b3760, type: 3}
+      propertyPath: levelClearMenuFirst
+      value: 
+      objectReference: {fileID: 1959308941}
     - target: {fileID: 3994913469156221221, guid: b98a567a61d1afe43b8e3afd1f0b3760, type: 3}
       propertyPath: waitingForPlayersDisplay
       value: 

@@ -13,9 +13,7 @@ public class JoinLobbyUI : CreateLobbyUI
 
     private void Awake()
     {
-        Hide(this.gameObject);
         ToggleJoinButton();
-        
     }
 
     public void ToggleJoinButton()

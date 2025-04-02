@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using TMPro;
 using Unity.Services.Lobbies.Models;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.Playables;
 using UnityEngine.UI;
 
@@ -12,6 +13,8 @@ public class CreateLobbyUI : MonoBehaviour
     [SerializeField] protected TMP_InputField lobbyNameInputField;
     [SerializeField] protected Toggle privacyToggle;
     [SerializeField] protected GameObject createButton;
+    [SerializeField] protected GameObject MenuFirst;
+    [SerializeField] protected GameObject previousMenuFirst;
     [SerializeField] protected TextMeshProUGUI lobbyData;
     // [SerializeField] private GameObject passwordRequest;
     // [SerializeField] private TMP_InputField passwordInputField;
@@ -21,7 +24,6 @@ public class CreateLobbyUI : MonoBehaviour
     private void Awake()
     {
         ToggleCreateButton();
-        Hide(this.gameObject);
     }
 
     // public void TogglePasswordRequest()
@@ -56,12 +58,23 @@ public class CreateLobbyUI : MonoBehaviour
 
     public void Show(GameObject gameObject)
     {
-        if (menuManager.director.state == PlayState.Playing) return;
+        //if (menuManager.director.state == PlayState.Playing) return;
         gameObject.SetActive(true);
+
+        print(gameObject + " : " + this.gameObject);
+        if (gameObject == this.gameObject) {
+            EventSystem.current.SetSelectedGameObject(null);
+            EventSystem.current.SetSelectedGameObject(MenuFirst);
+        }
     }
 
     public void Hide(GameObject gameObject)
     {
+        if (gameObject == this.gameObject) {
+            EventSystem.current.SetSelectedGameObject(null);
+            EventSystem.current.SetSelectedGameObject(previousMenuFirst);
+        }
+        
         gameObject.SetActive(false);
     }
 }

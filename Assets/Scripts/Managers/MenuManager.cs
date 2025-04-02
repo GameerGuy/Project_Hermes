@@ -1,16 +1,23 @@
 using Cysharp.Threading.Tasks;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using TMPro;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.Playables;
 using UnityEngine.SceneManagement;
 
 public class MenuManager : NetworkBehaviour
 {
     [SerializeField] private CourseData courseData;
+    
+    [Header("Buttons")]
+    [SerializeField] private GameObject mainMenuFirst;
+    [SerializeField] private GameObject optionsMenuFirst;
+    [SerializeField] private GameObject networkModeMenuFirst;
+    [SerializeField] private GameObject lobbyMenuFirst;
+    [SerializeField] private GameObject levelSelectMenuFirst;
+
+    [Header("Animations")]
     [SerializeField] private PlayableAsset intro;
     [SerializeField] private PlayableAsset openOptionsMenu;
     [SerializeField] private PlayableAsset closeOptionsMenu;
@@ -35,6 +42,9 @@ public class MenuManager : NetworkBehaviour
         director.Play(intro);
         startingRace = false;
         GameManager.Instance.SetCourseData(courseData);
+
+        EventSystem.current.SetSelectedGameObject(null);
+        EventSystem.current.SetSelectedGameObject(mainMenuFirst);
     }
 
     public void PlayOffline()
@@ -60,6 +70,9 @@ public class MenuManager : NetworkBehaviour
     {
         if (director.state == PlayState.Playing) return;
         director.Play(openLobby);
+
+        EventSystem.current.SetSelectedGameObject(null);
+        EventSystem.current.SetSelectedGameObject(lobbyMenuFirst);
     }
 
     public void CloseLobbyMenu()
@@ -79,6 +92,9 @@ public class MenuManager : NetworkBehaviour
             NetworkManager.Singleton.Shutdown();
             GameLobby.Instance.LeaveLobby();
             GameManager.Instance.PlayerReady.Remove(OwnerClientId);
+
+            EventSystem.current.SetSelectedGameObject(null);
+            EventSystem.current.SetSelectedGameObject(networkModeMenuFirst);
         }
 
     }
@@ -88,18 +104,27 @@ public class MenuManager : NetworkBehaviour
     {
         director.Play(closelobby);
         NetworkManager.Singleton.Shutdown();
+
+        EventSystem.current.SetSelectedGameObject(null);
+        EventSystem.current.SetSelectedGameObject(networkModeMenuFirst);
     }
 
     public void OpenNetworkModeMenu()
     {
         if (director.state == PlayState.Playing) return;
         director.Play(openNetworkModeMenu);
+
+        EventSystem.current.SetSelectedGameObject(null);
+        EventSystem.current.SetSelectedGameObject(networkModeMenuFirst);
     }
 
     public void CloseNetworkModeMenu()
     {
         if (director.state == PlayState.Playing) return;
         director.Play(closeNetworkModeMenu);
+
+        EventSystem.current.SetSelectedGameObject(null);
+        EventSystem.current.SetSelectedGameObject(mainMenuFirst);
     }
 
     [ServerRpc(RequireOwnership = false)]
@@ -113,23 +138,35 @@ public class MenuManager : NetworkBehaviour
     {
         if (director.state == PlayState.Playing) return;
         WaitingForPlayersDisplay.enabled = false;
+
         if (GameManager.Instance.isOnline){
             director.Play(openLevelSelect_Lobby);
         } else {            
             director.Play(openLevelSelect);
         }
+
+        EventSystem.current.SetSelectedGameObject(null);
+        EventSystem.current.SetSelectedGameObject(levelSelectMenuFirst);
     }
 
     [ClientRpc]
     public void CloseLevelSelectClientRpc()
     {
         if (director.state == PlayState.Playing) return;
+
         if (GameManager.Instance.isOnline){
             director.Play(closeLevelSelect_Lobby);
+
+            EventSystem.current.SetSelectedGameObject(null);
+            EventSystem.current.SetSelectedGameObject(lobbyMenuFirst);
         } else {            
             director.Play(closeLevelSelect);
             NetworkManager.Singleton.Shutdown();
+
+            EventSystem.current.SetSelectedGameObject(null);
+            EventSystem.current.SetSelectedGameObject(networkModeMenuFirst);
         }
+
         if (GameLobby.Instance.IsLobbyHost()) {
             GameManager.Instance.SetPlayerReadyServerRPC(false);
         }
@@ -139,12 +176,18 @@ public class MenuManager : NetworkBehaviour
     {
         if (director.state == PlayState.Playing) return;
         director.Play(openOptionsMenu);
+
+        EventSystem.current.SetSelectedGameObject(null);
+        EventSystem.current.SetSelectedGameObject(optionsMenuFirst);
     }
 
     public void CloseOptionsMenu()
     {
         if (director.state == PlayState.Playing) return;
         director.Play(closeOptionsMenu);
+
+        EventSystem.current.SetSelectedGameObject(null);
+        EventSystem.current.SetSelectedGameObject(mainMenuFirst);
     }
 
     public void QuitGame()
@@ -155,7 +198,7 @@ public class MenuManager : NetworkBehaviour
 
     public void StartRace(CourseData data)
     {
-        if(startingRace) return;
+        if(startingRace || director.state == PlayState.Playing) return;
         startingRace = true;
 
         //data.UnpackColour(out float r, out float g, out float b, out float a);
