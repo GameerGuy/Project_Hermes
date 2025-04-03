@@ -135,16 +135,12 @@ public class GameManager : NetworkBehaviour
             netObject.SpawnAsPlayerObject(clientId);
             netObject.DestroyWithScene = true;
 
-
-
         }
-
     }
 
     public void RegisterPlayer(ulong id, PlayerMovement player)
     {
         _players.Add(id, player);
-        //RegisterPlayerClientRpc(id);
     }
 
     [ClientRpc]

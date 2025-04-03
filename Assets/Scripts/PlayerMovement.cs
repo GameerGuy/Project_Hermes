@@ -10,16 +10,14 @@ using Unity.Mathematics;
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Linq;
 
 public class PlayerMovement : NetworkBehaviour
 {
     #region Variables
-
+    [Header("")]
     [Range(1,50)][Tooltip("How high in units the player jumps with a full press")]
     [SerializeField] private float jumpHeight;
-
-    // [Range(-50, 50)][Tooltip("Velocity threshold for the player to start falling faster")]
-    // [SerializeField] private float fallingThreshold;
 
     [Range(1,50)][Tooltip("Force that keeps the player grounded")]
     [SerializeField] private float groundedGravity;
@@ -30,6 +28,7 @@ public class PlayerMovement : NetworkBehaviour
     [Range(1,100)][Tooltip("Gravity when falling")]
     [SerializeField] private float fallingGravity;
 
+    [Header("")]
     [Range(1,100)][Tooltip("Baseline movement acceleration")]
     [SerializeField] private float runAcceleration;
 
@@ -48,6 +47,7 @@ public class PlayerMovement : NetworkBehaviour
     [Range(1, 1000)][Tooltip("Max speed achievable with basic movement")]
     [SerializeField] private float trueSpeedCap;
 
+    [Header("")]
     [Range(1,100)][Tooltip("Baseline turn rate")]
     [SerializeField] private float baseTurnSpeed;
 
@@ -56,22 +56,22 @@ public class PlayerMovement : NetworkBehaviour
 
     [Range(1,100)][Tooltip("Minimum turn rate")]
     [SerializeField] private float minTurnSpeed;
-    
+
+    [Header("")]
     [Range(0,10)][Tooltip("Multiplyer for the initial speed boost when sliding (proportional to current speed)")]
     [SerializeField] private float slideMult;
 
     [Range(0, 5000)][Tooltip("Minimum time between slides")]
     [SerializeField] private int slideCooldown;
 
+    [Header("")] 
     [Range(1,100)][Tooltip("Downwards force applied when diving")]
     [SerializeField] private float diveForce;
 
     [Range(0, 10)][Tooltip("Horizontal speed penalty applied when diving")]
     [SerializeField] private float divePenalty;
 
-    [Tooltip("Does the print button need to be held or is it a toggle?")]
-    [SerializeField] private bool toggleSprint;
-
+    [Header("")]
     [SerializeField] private CustomCamera _customCamera;
     public CustomCamera customCamera => _customCamera;
     [SerializeField] private GameObject respawnPoint;
@@ -95,6 +95,7 @@ public class PlayerMovement : NetworkBehaviour
     private float currentDeceleration;
     private float currentGravity;
     private float fallingTimer;
+    private bool toggleSprint;
     private bool sprinting;
     private bool crouching;
     private bool grounded;
@@ -237,6 +238,7 @@ public class PlayerMovement : NetworkBehaviour
         inputActions.Player.Crouch.started -= OnCrouchPressed;
         inputActions.Player.Crouch.canceled -= OnCrouchReleased;
         inputActions.Player.Respawn.started -= OnRespawnPressed;
+        base.OnDestroy();
     }
 
     private void SpawnDependents()
@@ -355,7 +357,7 @@ public class PlayerMovement : NetworkBehaviour
     {
         Vector3 verticalVector = GetVerticalVelocity();
         Vector3 horizontalVector = GetHorizontalVelocity();
-        float cameraAngle = _customCamera.GetHorizontalAngle() * Mathf.Deg2Rad;
+        float cameraAngle = _customCamera.GetRotation() * Mathf.Deg2Rad;
         float horizontalSpeed = horizontalVector.magnitude;
         float maxSpeed = sprinting ? maxRunSpeed * sprintSpeedMult : maxRunSpeed;
         //float turningLeniency = Mathf.Sin(Vector3.Angle(horizontalVector, transform.forward) * Mathf.Deg2Rad);
@@ -375,25 +377,26 @@ public class PlayerMovement : NetworkBehaviour
         animator.SetBool("IsMoving", true);
         animator.SetFloat("runAnimSpeed",(sprinting) ? 2 : 1);
     
-        float rotatedX = MathF.Cos(cameraAngle);
+        float rotatedX = movementDir.x * MathF.Cos(cameraAngle) + movementDir.z * MathF.Sin(cameraAngle);
         float rotatedZ = movementDir.z * MathF.Cos(cameraAngle) - movementDir.x * MathF.Sin(cameraAngle);
 
         Vector3 finalMoveDir = new Vector3(rotatedX , 0, rotatedZ);
 
         if (horizontalSpeed < maxSpeed) {
-            _rigidbody.AddForce(movementDir.normalized * runAcceleration, ForceMode.Acceleration);
+            _rigidbody.AddForce(finalMoveDir.normalized * runAcceleration, ForceMode.Acceleration);
         } else if (horizontalSpeed > maxSpeed) {
             _rigidbody.AddForce(horizontalVector.normalized * -1 * currentDeceleration, ForceMode.Acceleration);
         } else {
-            _rigidbody.velocity = transform.forward * movementDir.magnitude * maxSpeed + verticalVector;
+            _rigidbody.velocity = transform.forward * finalMoveDir.magnitude * maxSpeed + verticalVector;
         }
     }
 
     private void HandleRotation()
     {
         if (movementDir.magnitude == 0) return;
-        
+        float cameraRotation = _customCamera.GetRotation();
         Quaternion toRotation = Quaternion.LookRotation(movementDir.normalized, Vector3.up);
+        toRotation.eulerAngles += new Vector3(0, cameraRotation, 0);
         
         float horizontalSpeed = GetHorizontalVelocity().magnitude;
         float scaledTurnSpeed = baseTurnSpeed - turnScaling * (horizontalSpeed * horizontalSpeed / (maxRunSpeed * maxRunSpeed)) + turnScaling;

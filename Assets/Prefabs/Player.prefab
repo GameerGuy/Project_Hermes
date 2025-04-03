@@ -445,7 +445,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   jumpHeight: 6
-  fallingThreshold: 3
   groundedGravity: 10
   airbourneGravity: 20
   fallingGravity: 60
@@ -455,14 +454,13 @@ MonoBehaviour:
   maxRunSpeed: 30
   sprintSpeedMult: 2
   trueSpeedCap: 1000
-  baseTurnSpeed: 3
-  turnScaling: 0.45
+  baseTurnSpeed: 20
+  turnScaling: 3.33
   minTurnSpeed: 1
   slideMult: 0.45
   slideCooldown: 440
   diveForce: 20
   divePenalty: 0.5
-  toggleSprint: 1
   _customCamera: {fileID: 7443295739311508055, guid: 7c95f6d2a249b8a41b50d6f55a24a549, type: 3}
   respawnPoint: {fileID: 3171612123517201662, guid: c9c650eb7ddff954ab827184456443b1, type: 3}
   Trails:

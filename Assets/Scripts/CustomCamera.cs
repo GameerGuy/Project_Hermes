@@ -134,7 +134,7 @@ public class CustomCamera : NetworkBehaviour
         cam.backgroundColor = data.backgroundColour;
     }
 
-    public float GetHorizontalAngle()
+    public float GetRotation()
     {
         return activeCamera.transform.rotation.eulerAngles.y;
     }

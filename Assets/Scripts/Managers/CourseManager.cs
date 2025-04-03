@@ -41,6 +41,7 @@ public class CourseManager : NetworkBehaviour
         GameManager.Instance.SpawnPlayersServerRpc(pos.x, pos.y, pos.z);
         GetComponent<NetworkObject>().DestroyWithScene = true;
         InputManager.inputActions.Player.Pause.started += Pause;
+        Cursor.lockState = CursorLockMode.Locked;
     }
 
     private void Start()
@@ -82,6 +83,7 @@ public class CourseManager : NetworkBehaviour
 
     private void Pause(InputAction.CallbackContext context)
     {
+        Cursor.lockState = CursorLockMode.None;
         GameManager.Instance.isPaused = true;
         GameManager.Instance.DisablePlayerInput();
         pauseMenu.SetActive(true);
@@ -92,6 +94,7 @@ public class CourseManager : NetworkBehaviour
 
     public void Resume()
     {
+        Cursor.lockState = CursorLockMode.Locked;
         GameManager.Instance.isPaused = false;
         GameManager.Instance.EnablePlayerInput();
         pauseMenu.SetActive(false);
@@ -161,6 +164,8 @@ public class CourseManager : NetworkBehaviour
                 countdownDisplay.enabled = false;
             }
             if (levelClearMenu != null) {
+                Cursor.lockState = CursorLockMode.None;
+
                 levelClearMenu.SetActive(true);
 
                 EventSystem.current.SetSelectedGameObject(null);
@@ -205,6 +210,7 @@ public class CourseManager : NetworkBehaviour
                 countdownDisplay.enabled = false;
             }
             if (levelClearMenu != null) {
+                Cursor.lockState = CursorLockMode.None;
                 levelClearMenu.SetActive(true);
 
                 EventSystem.current.SetSelectedGameObject(null);
