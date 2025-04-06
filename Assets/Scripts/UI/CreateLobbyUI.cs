@@ -61,7 +61,6 @@ public class CreateLobbyUI : MonoBehaviour
         //if (menuManager.director.state == PlayState.Playing) return;
         gameObject.SetActive(true);
 
-        print(gameObject + " : " + this.gameObject);
         if (gameObject == this.gameObject) {
             EventSystem.current.SetSelectedGameObject(null);
             EventSystem.current.SetSelectedGameObject(MenuFirst);
