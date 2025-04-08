@@ -11414,8 +11414,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1403096712}
   - component: {fileID: 1403096711}
-  - component: {fileID: 1403096714}
   - component: {fileID: 1403096715}
+  - component: {fileID: 1403096714}
   m_Layer: 0
   m_Name: Game Manager
   m_TagString: Untagged
@@ -17101,7 +17101,7 @@ GameObject:
   - component: {fileID: 2138786655}
   - component: {fileID: 2138786652}
   m_Layer: 0
-  m_Name: ff
+  m_Name: Floor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

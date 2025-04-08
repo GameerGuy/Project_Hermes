@@ -170,7 +170,9 @@ public class GameManager : NetworkBehaviour
     public void SetCourseData(CourseData data)
     {
         courseData = data;
-        currentSkybox.Lerp(currentSkybox, skyboxes[data.skyboxIndex], 1);
+        if (data.courseName == "Start Screen") {
+            currentSkybox.Lerp(currentSkybox, skyboxes[data.skyboxIndex], 1);
+        }
     }
 
     public async Task ChangeBackgroundColour(Camera mainCamera , Color target, CancellationToken token)

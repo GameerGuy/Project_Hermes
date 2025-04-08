@@ -13,7 +13,7 @@ public class ControlsMenu : MonoBehaviour
 
     private void Awake()
     {
-        sprintToggle.isOn = PlayerPrefs.GetInt(InputManager.TOGGLE_SPRINT_KEY) != 0;
+        sprintToggle.isOn = PlayerPrefs.GetInt(InputManager.TOGGLE_SPRINT_KEY, 1) != 0;
     }
 
     public void Show(GameObject gameObject)
