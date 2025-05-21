@@ -527,6 +527,7 @@ public class PlayerMovement : NetworkBehaviour
         animator.SetBool("IsGrounded", grounded);
         if (grounded) {
             respawnProjector.spline = hitInfo.collider.GetComponent<SplineComputer>();
+            respawnProjector.clipTo = hitInfo.collider.GetComponent<Path>().clipTo;
             OnGroundedEvent?.Invoke(this, EventArgs.Empty);
         } else {
             OnAirbourneEvent?.Invoke(this, EventArgs.Empty);
