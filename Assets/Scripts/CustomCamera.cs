@@ -51,6 +51,12 @@ public class CustomCamera : NetworkBehaviour
             virtualCameras[i].Priority = 1;
             activeCamera = virtualCameras[i];
             activeIndex = i;
+
+
+            CinemachinePOV followCam = virtualCameras[i].GetCinemachineComponent<CinemachinePOV>();
+            if (followCam != null) {
+                SetSensitivity(followCam);
+            }
         }
         //SetActiveCameraClientRpc(index, new ClientRpcParams { Send = new ClientRpcSendParams { TargetClientIds = new List<ulong> {serverRpcParams.Receive.SenderClientId} } });        
     }
@@ -119,6 +125,19 @@ public class CustomCamera : NetworkBehaviour
     {
         cam.backgroundColor = backgroundColour;
     }
+
+    public void SetSensitivity(CinemachinePOV followCam)
+    {
+        float sens = PlayerPrefs.GetFloat(InputManager.LOOK_SENSITIVITY_KEY);
+        if (sens == 0) {
+            sens = 0.2f;
+            PlayerPrefs.SetFloat(InputManager.LOOK_SENSITIVITY_KEY, sens);
+        }
+        followCam.m_HorizontalAxis.m_MaxSpeed = sens;
+        followCam.m_VerticalAxis.m_MaxSpeed = sens;
+    }
+
+
 
     [ServerRpc(RequireOwnership = false)]
     public void SetCameraColourServerRpc()

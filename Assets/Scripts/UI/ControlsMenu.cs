@@ -9,6 +9,7 @@ public class ControlsMenu : MonoBehaviour
     [SerializeField] private GameObject MenuFirst;
     [SerializeField] private GameObject previousMenuFirst;
     [SerializeField] private Toggle sprintToggle;
+    [SerializeField] private Slider lookSensSlider;
 
 
     private void Awake()
@@ -41,5 +42,11 @@ public class ControlsMenu : MonoBehaviour
     public void SetToggleSprint()
     {
         PlayerPrefs.SetInt(InputManager.TOGGLE_SPRINT_KEY, sprintToggle.isOn ? 1 : 0);
+    }
+
+    public void SetLookSensitivity()
+    {
+        PlayerPrefs.SetFloat(InputManager.LOOK_SENSITIVITY_KEY, lookSensSlider.value);
+        print(PlayerPrefs.GetFloat(InputManager.LOOK_SENSITIVITY_KEY));
     }
 }
