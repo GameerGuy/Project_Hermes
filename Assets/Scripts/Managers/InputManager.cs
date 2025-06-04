@@ -8,6 +8,7 @@ using UnityEngine.InputSystem;
 public class InputManager : MonoBehaviour
 {
     public const string TOGGLE_SPRINT_KEY = "ToggleStrintTrue";
+    public const string LOOK_SENSITIVITY_KEY = "LookSens";
     
     public static PlayerInput inputActions;
 

@@ -415,7 +415,7 @@ public class PlayerMovement : NetworkBehaviour
     private void Respawn()
     {
         _rigidbody.velocity = Vector3.zero;
-        transform.position = respawnPoint.transform.position + new Vector3(0, 1, 0);
+        transform.position = respawnPoint.transform.position + new Vector3(0, 1.5f, 0);
         transform.rotation = respawnPoint.transform.rotation;
     }
     #endregion
