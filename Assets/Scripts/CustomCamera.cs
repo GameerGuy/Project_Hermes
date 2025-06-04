@@ -128,8 +128,13 @@ public class CustomCamera : NetworkBehaviour
 
     public void SetSensitivity(CinemachinePOV followCam)
     {
-        followCam.m_HorizontalAxis.m_MaxSpeed = PlayerPrefs.GetFloat(InputManager.LOOK_SENSITIVITY_KEY);
-        followCam.m_VerticalAxis.m_MaxSpeed = PlayerPrefs.GetFloat(InputManager.LOOK_SENSITIVITY_KEY);
+        float sens = PlayerPrefs.GetFloat(InputManager.LOOK_SENSITIVITY_KEY);
+        if (sens == 0) {
+            sens = 0.2f;
+            PlayerPrefs.SetFloat(InputManager.LOOK_SENSITIVITY_KEY, sens);
+        }
+        followCam.m_HorizontalAxis.m_MaxSpeed = sens;
+        followCam.m_VerticalAxis.m_MaxSpeed = sens;
     }
 
 
